@@ -1,0 +1,61 @@
+   // create projects function
+    // const projectformSubmit = (values) => {
+    //     // e.preventDefault();   
+    //     projectform.validateFields()
+    //         .then((values) => {
+
+    //             const requestData = { ...values, project_id }
+                
+    //             axios.post(`${createProject}`, requestData)
+    //                 .then((result) => {
+    //                     if (result.status === 200) {
+
+    //                         if (project_id == null) {
+    //                             toast.success('Project Added Successfully!');
+    //                         } else {
+    //                             toast.success('Project Details Updated Successfully!');
+    //                         }
+
+    //                         projectform.resetFields();
+    //                         setModalVisible(false);
+    //                         //   SetCallApi(true);
+    //                         //   navigate('/dashboard')
+    //                     } else {
+    //                         toast.error(result.data.message);
+    //                     }
+    //                 }).catch((error) => {
+    //                     console.log(error);
+    //                     // toast.error(error.response.data.message);
+    //                 })
+    //         })
+    //         .catch((errorInfo) => {
+    //             console.log('Validation failed:', errorInfo);
+    //         });
+    // }
+
+
+
+       // const openProjectEdit = async (id) => {
+    //     setModalVisible(true);
+    //     SetProjectId(id);
+    //     console.log("project id", id)
+    //     try {
+
+    //         const response = await axios.post(`${editProject}` + id);
+
+    //         if (response.status) {
+    //             let projectrecord = response.data;
+    //             console.log("project record for editing", projectrecord);
+    //             const projectDatas = {
+    //                 project_name: projectrecord.project_name,
+    //                 schedule_start_date: projectrecord.schedule_start_date,
+    //                 schedule_end_date: projectrecord.schedule_end_date,
+    //             };
+    //             projectform.setFieldsValue(projectDatas);
+    //         }
+
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+
+    // };
