@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Forgot() {
 
-  const [user_id, setUser_id] = useState("")
+  const [email, setEmail] = useState("")
   const [newpassword, setNewpassword] = useState("");
   const [confirmpassword, setConfirmpassword] = useState("");
   const [otp, setOtp] = useState("");
@@ -22,8 +22,8 @@ export default function Forgot() {
   const sendOtp = (event) => {
     event.preventDefault();
 
-    if(user_id!=null && user_id!=''){
-      const requestData = { user_id }
+    if(email!=null && email!=''){
+      const requestData = {email}
       Setloader(true)
 
       axios.post(`${forgotPassword}`, requestData)
@@ -33,7 +33,7 @@ export default function Forgot() {
           Setloader(false)
           toast.success('Mail Sent Successfully!');
         }else{
-          toast.error('Invalid username');  
+          toast.error('Invalid email');  
         }
       })
       .catch((error) => {
@@ -42,7 +42,7 @@ export default function Forgot() {
 
     }else{
 
-      toast.error('Please enter username');
+      toast.error('Please enter email');
 
     }
   
@@ -51,7 +51,7 @@ export default function Forgot() {
   // otp verification function
   const verifyotp = (event) => {
     event.preventDefault();
-    const requestData = { user_id, password:newpassword, password_confirmation:confirmpassword, otp }
+    const requestData = { email, password:newpassword, password_confirm:confirmpassword, otp }
     console.log(requestData);
     axios.post(`${forgotPasswordVerify}`, requestData)
       .then((result) => {
@@ -75,8 +75,8 @@ export default function Forgot() {
         <p className='text-center' style={{ fontSize: '40px', fontWeight: '700', lineHeight: '40px' }}><span className='text-info'>Recover your</span><br /><span className='text-dark'>Account</span></p>
         <p className='textgrey text-center fst-italic text-secondary'>Upon entering the username you will receive an OTP to recover your account.</p>
         <div className="mb-3">
-          <label htmlFor="exampleInput" className="form-label text-info">Username</label>
-          <Input value={user_id} onChange={(e) => setUser_id(e.target.value)} className="form-control" type="text" placeholder="username" id='exampleInput' aria-label="default input example" />
+          <label htmlFor="exampleInput" className="form-label text-info">Email</label>
+          <Input value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" type="email" placeholder="email" id='exampleInput' aria-label="default input example" />
         </div>
         <div className="d-grid">
 

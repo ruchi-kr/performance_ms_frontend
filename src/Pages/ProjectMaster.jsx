@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react'
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { deleteProject, getAllProjects, createProject, editProject } from '../Config.js';
+import { deleteProject, getAllProjects, createProject, editProject,CONFIG_OBJ } from '../Config.js';
 import axios from 'axios';
 import { Col, Form, Input, Modal, Row} from 'antd';
 import { toast } from 'react-toastify'
 const ProjectMaster = () => {
 
     const [allProjectData, setAllProjectData] = useState([])
-
+   
     // get all projects function
     const getAllProjectsHandler = async () => {
 
         try {
-            const response = await axios.get(`${getAllProjects}`);
+            const response = await axios.get(`${getAllProjects}`,CONFIG_OBJ);
             setAllProjectData(response.data)
             console.log("project details data", response.data);
         } catch (err) {
@@ -32,7 +32,7 @@ const ProjectMaster = () => {
                 try {
                     const requestData = { ...values,  id: editingProject ? editingProject.project_id : null };
                     const url = editingProject ? `${editProject}/${editingProject.project_id}` : `${createProject}`;
-                    const response = axios.post(url, formatDates(requestData));
+                    const response = axios.post(url, formatDates(requestData),CONFIG_OBJ);
                     if (response.status===200) {
                         if (editingProject && editingProject.project_id !== null) {
                             toast.success('Project Details Updated Successfully!');
@@ -70,7 +70,7 @@ const ProjectMaster = () => {
     // delete projects function
     const deleteProjectHandler = async (id) => {                            //creating a function for deleting data
         try {
-            await axios.delete(`${deleteProject}` + id)          // deleting data from server
+            await axios.delete(`${deleteProject}` + id, CONFIG_OBJ)          // deleting data from server
             window.location.reload()                             //reloading the page
         } catch (err) {
             console.log("error deleting project", err);                                 //if error occurs then log it

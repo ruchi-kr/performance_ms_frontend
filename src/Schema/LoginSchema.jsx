@@ -1,10 +1,10 @@
 import * as Yup from 'yup';
 
-const loginSchema = Yup.object().shape({
-  user_id: Yup.string()
-    .min(4, 'User ID must be at least 4 characters')
-    .max(30, 'User ID must be less than 20 characters')
-    .required('User ID is required'),
+const LoginSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(4, 'Username must be at least 4 characters')
+    .max(30, 'Username must be less than 20 characters')
+    .required('Username is required'),
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters')
     .max(20, 'Password must be less than 20 characters')
@@ -13,4 +13,4 @@ const loginSchema = Yup.object().shape({
   //   .required('Email is required'),
 });
 
-export default loginSchema;
+export default LoginSchema;

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-
+import { Tooltip } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBell, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { Avatar } from 'antd';
 
 const Header = () => {
     let [username, SetUserName] = useState('');
@@ -33,8 +36,15 @@ const Header = () => {
                 {/* Right navbar links */}
                 <ul className="navbar-nav ml-auto ">
                     {/* Navbar Search */}
-                    {/* <li className='nav-item'> */}
-                  
+                 
+                    <li className="nav-item ">
+                        <Tooltip title="logout" color="grey">
+                            <button className="nav-link text-white" onClick={() => logout()}>
+                                <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
+                            </button>
+                        </Tooltip>
+                      
+                    </li>
 
                     <li className="nav-item ">
                         <a className="nav-link text-white" data-widget="fullscreen" href="#" role="button">

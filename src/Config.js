@@ -26,10 +26,20 @@ export const deleteUser = `${baseURL}/api/admin/deleteUser/`;
 
 
 // for login,forgot
-export const forgotPasswordVerify = ``;
-export const forgotPassword = ``;
-export const loginUrl =``;
+export const forgotPasswordVerify = `${baseURL}/api/forgotPasswordVerify`;
+export const forgotPassword = `${baseURL}/api/forgotPassword`;
+export const loginUrl =`${baseURL}/api/login`;
 
 // for dropdown list
 export const getManagerList = `${baseURL}/api/admin/getManagersList`;
 export const getEmployerList = `${baseURL}/api/admin/getEmployeesList`;
+
+// for dashdata counter
+export const getDashData = `${baseURL}/api/getDashData`;
+
+export const CONFIG_OBJ = {                                         //config object
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + sessionStorage.getItem("token")
+    }
+  }
