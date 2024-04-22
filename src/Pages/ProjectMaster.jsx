@@ -14,7 +14,7 @@ const ProjectMaster = () => {
     const getAllProjectsHandler = async () => {
 
         try {
-            const response = await axios.get(`${getAllProjects}`,CONFIG_OBJ);
+            const response = await axios.get(`${getAllProjects}`);
             setAllProjectData(response.data)
             console.log("project details data", response.data);
         } catch (err) {

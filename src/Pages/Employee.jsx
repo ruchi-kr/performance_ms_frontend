@@ -1,69 +1,116 @@
 import React, { useState, useEffect } from 'react';
-import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
+import { PlusOutlined, CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
+import { getAllProjects, addTask, getTask } from '../Config.js'
+import { Select } from 'antd';
+
+const { Option } = Select;
 
 const Employee = () => {
 
-  const [allTaskRecords, setAllTaskRecords] = useState([])
+  // const [allTaskRecords, setAllTaskRecords] = useState([])
 
-  const [paymentRecords, setPaymentRecords] = useState([{ description: '', stage: '', percent: '', amount: '' }]);
+  const [taskRecords, setTaskRecords] = useState([{ project: '', task: '', start_time: '', end_time: '', status: '', remarks: '' }]);
 
-  const addPayment = () => {
-    setPaymentRecords([...paymentRecords, { description: '', stage: '', percent: '', amount: '' }]);
+  const addTask = () => {
+    setTaskRecords([...taskRecords, { project: '', task: '', start_time: '', end_time: '', status: '', remarks: '' }]);
   };
 
+  // CREATE
+  const createTask = async (task) => {
+    try {
+      const response = await axios.post('/api/user/addTask', task);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating task:', error);
+      throw error;
+    }
+  };
 
-  // const handlePaymentChange = (index, event) => {
-  //   const { name, value } = event.target;
-  //   const newPayments = paymentRecords.map((payment, idx) => {
-  //     if (idx === index) {
-  //       let updatedPayment = { ...payment, [name]: value };
-  
-  //       if (name === 'percent') {
-  //         const baseValue = parseFloat(formData.implemented_fees);
-  //         if (!isNaN(baseValue)) {
-  //           const newAmount = (baseValue * parseFloat(value)) / 100;
-  //           updatedPayment.amount = newAmount.toFixed(2);
-  //         } else {
-  //           // Handle the case where formData.implemented_fees is not a valid number
-  //         }
-  //       } else if (name === 'amount') {
-  //         const baseValue = parseFloat(formData.implemented_fees);
-  //         if (!isNaN(baseValue)) {
-  //           const amount = parseFloat(value);
-  //           const per = (amount * 100) / baseValue;
-  //           updatedPayment.percent = per.toFixed(2);
-  //         } else {
-  //           // Handle the case where formData.implemented_fees is not a valid number
-  //         }
-  //       }
-  
-  //       return updatedPayment;
-  //     }
-  //     return payment;
-  //   });
-  
-  //   setPaymentRecords(newPayments);
+  // READ (GET)
+  const getTasks = async () => {
+    try {
+      const response = await axios.get(`${getTask}`);
+      console.log(response.data);
+      setTaskRecords(response.data);
+    } catch (error) {
+      console.log('Error fetching tasks:', error);
+      // throw error;
+    }
+  };
+  useEffect(() => {
+    getTasks();
+  }, [])
+
+
+  // UPDATE
+  const updateTask = async (taskId, updatedTask) => {
+    try {
+      const response = await axios.put(`/api/user/updateTask/${taskId}`, updatedTask);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating task:', error);
+      throw error;
+    }
+  };
+
+  // DELETE
+  // const deleteTask = async (taskId) => {
+  //   try {
+  //     const response = await axios.delete(`/api/user/deleteTask/${taskId}`);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error('Error deleting task:', error);
+  //     throw error;
+  //   }
   // };
+  // const addTask = async (index) => {
+  //   const newTask = taskRecords[index];
+  //   try {
+  //     await createTask(newTask);
+  // Remove the added task from the local state
 
- 
-
-  const deletePayment = (index) => {
-    const newPayments = paymentRecords.filter((_, idx) => idx !== index);
-    setPaymentRecords(newPayments);
+  const deleteTask = (index) => {
+    const newPayments = taskRecords.filter((_, idx) => idx !== index);
+    setTaskRecords(newPayments);
   };
- // delete task function
- const deleteTask = async (id) => {                            //creating a function for deleting data
-  try {
-      await axios.delete(`${deleteTask}` + id)          // deleting data from server
-      window.location.reload()                             //reloading the page
-  } catch (err) {
-      console.log("error deleting task", err);                                 //if error occurs then log it
+
+  // delete task function
+  // const deleteTask = async (id) => {                            //creating a function for deleting data
+  //   try {
+  //     await axios.delete(`${deleteTask}` + id)          // deleting data from server
+  //     window.location.reload()                             //reloading the page
+  //   } catch (err) {
+  //     console.log("error deleting task", err);                                 //if error occurs then log it
+  //   }
+  // }
+
+
+  // for project list
+  const filterOption = (input, option) =>
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+  const [projectList, setProjectList] = useState([]);
+
+  const getProjects = async (value) => {
+    try {
+      const result = await axios.get(`${getAllProjects}`);
+      setProjectList(result.data);
+      console.log("project list", result.data);
+    } catch (error) {
+
+      console.log('Error fetching project list data', error)
+    }
   }
-}
+  useEffect(() => {
+    getProjects();
+  }, []);
+  // const handleManagerSearch = (value) => {
+  //     setManager(value)
+  // }
+
 
   return (
     <>
@@ -75,7 +122,7 @@ const Employee = () => {
             <div className="row my-5">
               <div className="col-10 mx-auto">
                 <div className='d-flex justify-content-between'>
-                  <h3 className='text-primary'>Dalily Tracking Sheet</h3>
+                  <h3 className='text-primary'>Daily Tracking Sheet</h3>
                 </div>
                 <hr className='bg-primary border-4' />
                 <table className="table table-bordered table-hover table-responsive-sm mt-5">
@@ -105,7 +152,7 @@ const Employee = () => {
                       <th>
                         <a className="">
                           <PlusOutlined
-                          // onClick={addTask}
+                            onClick={addTask}
                           />
                         </a>
                       </th>
@@ -114,16 +161,44 @@ const Employee = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {allTaskRecords.map((record, index) => (
+                    {taskRecords.map((record, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
 
+
+                        <td>
+
+                          <Select
+                            showSearch
+                            allowClear
+                            placeholder="Select"
+                            optionFilterProp="children"
+                            filterOption={filterOption}
+                            // onChange={handleManagerSearch}
+                            style={{ width: "150px" }}
+                            className="rounded-2"
+                            required
+                          >
+
+                            <Option value="">Select</Option>
+
+                            {projectList.map((project, index) => (
+                              <Option
+                                key={index}
+                                value={project.project_id}
+                                label={project.project_name}
+                              >
+                                {project.project_name}
+                              </Option>
+                            ))}
+                          </Select>
+                        </td>
                         <td>
                           <input
                             type="text"
                             name="description"
                             className="form-control"
-                            value={record.description}
+                            // value={record.task}
 
                             // onChange={(e) => handlePaymentChange(index, e)}
                             placeholder=""
@@ -132,30 +207,13 @@ const Employee = () => {
                         </td>
 
                         <td>
-
-                          <select name="stage" id=""
-                            value={record.stage}
-
-                            className="form-control"
-                            // onChange={(e) => handlePaymentChange(index, e)}
-                            required
-                          >
-                            <option value="">Select</option>
-                            <option value="1">Contract Signed</option>
-                            <option value="2">Site Visit</option>
-                            <option value="3">CC Review</option>
-                            <option value="3">RFI</option>
-                          </select>
-
-                        </td>
-
-                        <td>
                           <input
-                            type="number"
-                            name="percent"
+                            type="datetime-local"
+                            name="start_time"
                             // disabled={formdisabled}
                             className="form-control"
-
+                            // value={record.start_time}
+                            // onChange={}
                             // value={typeof record.percent == 'number' ? record.percent.toFixed(2) : record.percent}
                             // onChange={(e) => handlePaymentChange(index, e)}
                             placeholder="0"
@@ -168,10 +226,10 @@ const Employee = () => {
 
                         <td>
                           <input
-                            type="number"
+                            type="datetime-local"
 
-                            name="amount"
-                            value=""
+                            name="end_time"
+                            // value={record.end_time}
                             className="form-control"
                             // onChange={(e) => handlePaymentChange(index, e)}
                             placeholder="0"
@@ -179,14 +237,44 @@ const Employee = () => {
                           />
                         </td>
 
-
-
-
                         <td>
-                          <CloseOutlined
-                          // onClick={() => deleteTask(data.task_id)} 
-                          />
+                          <select name="status" id="status"
+                            style={{ width: "100px" }}
+                            className="form-control"
+                            // onChange={(e) => handlePaymentChange(index, e)}
+                            required
+                          >
+                            <option value="">Select</option>
+                            <option value="inprocess"
+                             defaultValue={record.status === "inprocess"}
+                            
+                            >In Process</option>
+                            <option value="completed" defaultValue={record.status === "completed"}>Completed</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            name="description"
+                            className="form-control"
+                            // value={record.remarks}
 
+                            // onChange={(e) => handlePaymentChange(index, e)}
+                            placeholder=""
+                            required
+                          />
+                        </td>
+
+                        <td className='d-flex gap-3'>
+                          <CloseOutlined
+                            style={{ color: "red" }}
+                            onClick={() => deleteTask(index)}
+
+                          />
+                          <CheckOutlined
+                            style={{ color: "green" }}
+                            onClick={() => addTask(index)}
+                          />
                         </td>
 
 

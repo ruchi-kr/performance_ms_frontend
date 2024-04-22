@@ -40,7 +40,7 @@ export default function Login() {
                     navigate('/employee');
                 }
                 else if (role == "management") {
-                    navigate('/management');
+                    navigate('/manager');
                 }
                 else {
                     navigate('/homepage');

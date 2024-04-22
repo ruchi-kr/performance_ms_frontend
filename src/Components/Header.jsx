@@ -46,9 +46,9 @@ const Header = () => {
                             className='d-lg-block d-md-none d-none bg-secondary'
                         />
                         {/* </div> */}
-                        <div className="info"style={{ lineHeight: '0.5' }} >
+                        <div className="info"style={{ lineHeight: '0.2' }} >
                             <p className='text-white'>{username}</p>
-                            <p className='text-dark bg-white p-2 text-sm rounded-2 mb-0'>{role}</p>
+                            <p className='text-dark bg-white p-2 text-sm rounded-2 mb-0 text-capitalize'>{role}</p>
                         </div>
                     </li>
                     <li className="nav-item ">

@@ -271,11 +271,12 @@ const EmployeeMaster = () => {
                                             <Col span={12}>
                                                 <Form.Item name="mobile_no" label={<span className='text-info'>Mobile No.</span>}
                                                     rules={[
-                                                        { required: true, message: 'Mobile No. is required' },
-
-                                                    ]}
-                                                >
-                                                    <Input type="number" placeholder="mobile no." />
+                                                        // { required: true, message: 'Mobile is required' },
+                                                        { pattern: /^[0-9]+$/, message: 'Mobile number must contain only digits' },
+                                                        { len: 10, message: 'Mobile number must be exactly 10 digits' },
+                                                      ]}>
+                                                    
+                                                    <Input type="number" placeholder="mobile no." maxLength={10} />
                                                 </Form.Item>
                                             </Col>
                                             <Col span={12}>

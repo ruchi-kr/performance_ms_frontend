@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
+import { PlusOutlined, CloseOutlined,CheckOutlined } from "@ant-design/icons";
 import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
@@ -7,7 +7,19 @@ import Footer from '../Components/Footer'
 
 const Manager = () => {
 
-  const [allEmployeeRecords, setAllEmployeeRecords] = useState([]);
+  const [employeeRecords, setEmployeeRecords] = useState([{ project: '', task: '', start_time: '', end_time: '',status:'',remarks:'' }]);
+
+  const addRemarks = () => {
+    setEmployeeRecords([...employeeRecords, { project: '', task: '', start_time: '', end_time: '',status:'',remarks:'' }]);
+  };
+  const deleteRemarks = async (id) => {                            //creating a function for deleting data
+    try {
+        await axios.delete(`${deleteRemarks}` + id)          // deleting data from server
+        window.location.reload()                             //reloading the page
+    } catch (err) {
+        console.log("error deleting remarks", err);                                 //if error occurs then log it
+    }
+  }
   return (
    <>
    <Header />
@@ -18,7 +30,7 @@ const Manager = () => {
           <div className="row my-5">
               <div className="col-10 mx-auto">
                 <div className='d-flex justify-content-between'>
-                  <h3 className='text-primary'>Dalily Tracking Sheet</h3>
+                  <h3 className='text-primary'>Daily Tracking Sheet</h3>
                 </div>
                 <hr className='bg-primary border-4' />
                 <table className="table table-bordered table-hover table-responsive-sm mt-5">
@@ -61,7 +73,7 @@ const Manager = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {allEmployeeRecords.map((record, index) => (
+                    {employeeRecords.map((record, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
 
@@ -88,38 +100,100 @@ const Manager = () => {
                             required
                           >
                             <option value="">Select</option>
-                            <option value="1">Contract Signed</option>
+                            {/* <option value="1">Contract Signed</option>
                             <option value="2">Site Visit</option>
                             <option value="3">CC Review</option>
-                            <option value="3">RFI</option>
+                            <option value="3">RFI</option> */}
                           </select>
 
                         </td>
-
                         <td>
                           <input
-                            type="number"
-                            name="percent"
-                            // disabled={formdisabled}
+                            type="text"
+                            name="description"
                             className="form-control"
-                            placeholder="0"
+                            value={record.description}
+
+                            // onChange={(e) => handlePaymentChange(index, e)}
+                            placeholder=""
                             required
                           />
                         </td>
 
                         <td>
                           <input
-                            type="number"
-                            name="amount"
-                            value=""
+                            type="datetime-local"
+                            name="start_time"
+                            // disabled={formdisabled}
+                            className="form-control"
+
+                            // value={typeof record.percent == 'number' ? record.percent.toFixed(2) : record.percent}
+                            // onChange={(e) => handlePaymentChange(index, e)}
+                            placeholder="0"
+                            required
+
+                          />
+
+
+                        </td>
+
+                        <td>
+                          <input
+                            type="datetime-local"
+
+                            name="end_time"
+                            // value=""
                             className="form-control"
                             // onChange={(e) => handlePaymentChange(index, e)}
                             placeholder="0"
+
                           />
                         </td>
                         <td>
+                          <select name="status" id="status"
+                            style={{ width: "100px" }}
+                            className="form-control"
+                            // onChange={(e) => handlePaymentChange(index, e)}
+                            required
+                          >
+                            <option value="">Select</option>
+                            <option value="inprocess" defaultValue={record.status === "inprocess"}>In Process</option>
+                            <option value="completed" defaultValue={record.status === "completed"}>Completed</option>
+                          </select>
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            name="description"
+                            className="form-control"
+                            value={record.description}
+
+                            // onChange={(e) => handlePaymentChange(index, e)}
+                            placeholder=""
+                            required
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            name="description"
+                            className="form-control"
+                            value={record.description}
+
+                            // onChange={(e) => handlePaymentChange(index, e)}
+                            placeholder=""
+                            required
+                          />
+                        </td>
+                        <td className='d-flex gap-3'>
                           <CloseOutlined
-                          // onClick={() => deleteTask(data.task_id)} 
+                            style={{ color: "red" }}
+                            // onClick={() => deleteTask(index)}
+
+                          />
+                          <CheckOutlined
+                            style={{ color: "green" }}
+                            // onClick={() => addTask(index)}
                           />
                         </td>
                       </tr>

@@ -39,9 +39,9 @@ export const getDashData = `${baseURL}/api/getDashData`;
 
 // for employee dts
 export const deleteTask = `${baseURL}/api/general/deleteTask/`;
-export const addTask = `${baseURL}/api/general/addTask`;
-export const editTask =   ``;
-
+export const addTask = `${baseURL}/api/user/addTask`;
+// export const editTask =   ``;
+export const getTask = `${baseURL}/api/user/getTasks`;
 
 export const CONFIG_OBJ = {                                         //config object
     headers: {
