@@ -37,6 +37,12 @@ export const getEmployerList = `${baseURL}/api/admin/getEmployeesList`;
 // for dashdata counter
 export const getDashData = `${baseURL}/api/getDashData`;
 
+// for employee dts
+export const deleteTask = `${baseURL}/api/general/deleteTask/`;
+export const addTask = `${baseURL}/api/general/addTask`;
+export const editTask =   ``;
+
+
 export const CONFIG_OBJ = {                                         //config object
     headers: {
       "Content-Type": "application/json",

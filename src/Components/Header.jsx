@@ -4,23 +4,24 @@ import { Tooltip } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 import { Avatar } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 
 const Header = () => {
     let [username, SetUserName] = useState('');
     useEffect(function () {
-        const name = sessionStorage.getItem('name');
+        const name = JSON.parse(sessionStorage.getItem('username'));
         SetUserName(name)
     }, [])
     const navigate = useNavigate();
 
-    const designation_id = sessionStorage.getItem('designation_id');
-    const designation_name = sessionStorage.getItem('designation');
+    // const name = sessionStorage.getItem('username');
+    const role = JSON.parse(sessionStorage.getItem('role'));
 
 
     const logout = () => {
         sessionStorage.clear();
-        { designation_id == 13 ? navigate("/clientlogin") : navigate("/login") }
-        //    navigate("/login");
+       
+           navigate("/login");
     }
     return (
         <>
@@ -36,14 +37,27 @@ const Header = () => {
                 {/* Right navbar links */}
                 <ul className="navbar-nav ml-auto ">
                     {/* Navbar Search */}
-                 
+                    <li className="user-panel d-flex nav-item mx-lg-1 mx-0 align-items-center ">
+                        {/* <div className=""> */}
+                        {/* <img src="dist/img/user2-160x160.jpg" className="img-circle elevation-2" alt="User Image" /> */}
+                        <Avatar
+                            size={{ xs: 16, sm: 24, md: 32, lg: 32, xl: 40, xxl: 40 }}
+                            icon={<UserOutlined />}
+                            className='d-lg-block d-md-none d-none bg-secondary'
+                        />
+                        {/* </div> */}
+                        <div className="info"style={{ lineHeight: '0.5' }} >
+                            <p className='text-white'>{username}</p>
+                            <p className='text-dark bg-white p-2 text-sm rounded-2 mb-0'>{role}</p>
+                        </div>
+                    </li>
                     <li className="nav-item ">
                         <Tooltip title="logout" color="grey">
                             <button className="nav-link text-white" onClick={() => logout()}>
                                 <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
                             </button>
                         </Tooltip>
-                      
+
                     </li>
 
                     <li className="nav-item ">

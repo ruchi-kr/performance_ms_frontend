@@ -22,14 +22,30 @@ export default function Login() {
 
             if (result.status === 200) {
                 console.log("login successful");
-                toast.success('Login Successfully'); 
-                
+                toast.success('Login Successfully');
+
                 sessionStorage.setItem("token", result.data.result.token);
-                sessionStorage.setItem('user', JSON.stringify(result.data.result.user));  
-                console.log("token set successfully",result.data.result.user);   
-                          
-                
-                navigate('/homepage');
+                sessionStorage.setItem('user', JSON.stringify(result.data.result.user));
+                sessionStorage.setItem('id', JSON.stringify(result.data.result.user.id));
+                sessionStorage.setItem('username', JSON.stringify(result.data.result.user.username));
+                sessionStorage.setItem('user_type', JSON.stringify(result.data.result.user.user_type));
+                sessionStorage.setItem('role', JSON.stringify(result.data.result.user.role));
+                console.log("token set successfully", result.data.result.user);
+                const role = result.data.result.user.role;
+                console.log("role", role)
+                if (role == "manager") {
+                    navigate('/manager');
+                }
+                else if (role == "employee") {
+                    navigate('/employee');
+                }
+                else if (role == "management") {
+                    navigate('/management');
+                }
+                else {
+                    navigate('/homepage');
+                }
+
                 console.log("navigated successfully");
                 // window.location.reload();
             } else {

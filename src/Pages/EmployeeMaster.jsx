@@ -28,29 +28,67 @@ const EmployeeMaster = () => {
     }, []);
 
     // create project
+    // const employeeFormSubmit = (values) => {
+    //     employeeForm.validateFields()
+    //         .then((values) => {
+    //             try {
+    //                 const requestData = { ...values, id: editingEmployee ? editingEmployee.employee_id : null };
+    //                 const url = editingEmployee ? `${editEmployee}/${editingEmployee.employee_id}` : `${createEmployee}`;
+    //                 const response = axios.post(url, formatDates(requestData));
+    //                 if (response.status === 200) {
+    //                     if (editingEmployee && editingEmployee.project_id !== null) {
+    //                         toast.success('Employee Details Updated Successfully!');
+    //                     } else {
+    //                         toast.success('Employee Added Successfully!');
+    //                     }
+    //                     employeeForm.resetFields();
+    //                     setModalVisible(false);
+
+    //                     getAllEmployeesHandler();
+    //                 } else {
+    //                     console.log("error employee",response.data);
+    //                     // toast.error(error.response.data.error);
+    //                 }
+    //             } catch (error) {
+    //                 console.log("error",error);
+    //                 toast.error(error);
+    //             }
+    //         })
+    //         .catch((errorInfo) => {
+    //             console.log('Validation failed:', errorInfo);
+    //         });
+    // };
+
     const employeeFormSubmit = (values) => {
         employeeForm.validateFields()
             .then((values) => {
                 try {
                     const requestData = { ...values, id: editingEmployee ? editingEmployee.employee_id : null };
                     const url = editingEmployee ? `${editEmployee}/${editingEmployee.employee_id}` : `${createEmployee}`;
-                    const response = axios.post(url, formatDates(requestData));
-                    if (response.status === 200) {
-                        if (editingEmployee && editingEmployee.project_id !== null) {
-                            toast.success('Employee Details Updated Successfully!');
-                        } else {
-                            toast.success('Employee Added Successfully!');
-                        }
-                        employeeForm.resetFields();
-                        setModalVisible(false);
-
-                        getAllEmployeesHandler();
-                    } else {
-                        // console.log(response.data.message);
-                        // toast.error(response.data.message);
-                    }
+                    axios.post(url, formatDates(requestData))
+                        .then((response) => {
+                            if (response.status === 200) {
+                                if (editingEmployee && editingEmployee.project_id !== null) {
+                                    toast.success('Employee Details Updated Successfully!');
+                                } else {
+                                    toast.success('Employee Added Successfully!');
+                                }
+                                employeeForm.resetFields();
+                                setModalVisible(false);
+                                getAllEmployeesHandler();
+                            }
+                        })
+                        .catch((error) => {
+                            if (error.response && error.response.data.error === "User with this email already registered") {
+                                toast.error('User with this email already exists');
+                            } else {
+                                console.log("error employee", error.response.data);
+                                // toast.error(error.response.data.error);
+                            }
+                        });
                 } catch (error) {
-                    console.log(error);
+                    console.log("error", error);
+                    toast.error(error);
                 }
             })
             .catch((errorInfo) => {

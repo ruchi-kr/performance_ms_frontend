@@ -64,6 +64,7 @@ const UserMaster = () => {
         try {
             await axios.delete(`${deleteUser}` + id)          // deleting data from server
             window.location.reload()                             //reloading the page
+            // setEmployer('');
         } catch (err) {
             console.log("error deleting user", err);                                 //if error occurs then log it
         }
@@ -82,6 +83,8 @@ const UserMaster = () => {
         status: '',
         username: '',
         password: '',
+        // email_id:'',
+        role: ''
     };
 
     const openUserAdd = () => {
@@ -102,7 +105,9 @@ const UserMaster = () => {
             password: user.password,
             user_type: user.user_type,
             status: user.status,
-            employee_id: user.employee_id
+            employee_id: user.employee_id,
+            // email_id: user.email_id,
+            role: user.role
         });
     };
 
@@ -196,7 +201,62 @@ const UserMaster = () => {
                                                     </Select>
                                                 </Form.Item>
                                             </Col>
+                                            {/* <Col span={12}>
+                                                <Form.Item name="email_id" label={<span className='text-info'>Email</span>}
 
+                                                    rules={[
+                                                        { required: false, message: 'Email is required' },
+                                                    ]}
+                                                >
+                                                    <Select
+                                                        showSearch
+                                                        allowClear
+                                                        placeholder="Select"
+                                                        optionFilterProp="children"
+                                                        filterOption={filterOption}
+                                                        onChange={handleEmployerSearch}
+                                                        style={{ width: "100%" }}
+                                                        className="rounded-2"
+                                                    >
+
+                                                        <Option value="">Select</Option>
+
+                                                        {employerList.map((employer, index) => (
+                                                            <Option
+                                                                key={index}
+                                                                value={employer.employee_id}
+                                                                label={employer.email}
+                                                            >
+                                                                {employer.email}
+                                                            </Option>
+                                                        ))}
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col> */}
+                                            <Col span={12}>
+                                                <Form.Item name="role" label={<span className='text-info'>Role</span>}
+                                                    rules={[
+                                                        { required: true, message: 'Role is required' },
+
+                                                    ]}
+                                                >
+                                                    <Select
+                                                        showSearch
+                                                        allowClear
+                                                        placeholder="Select"
+                                                        optionFilterProp="children"
+                                                        filterOption={filterOption}
+                                                        onChange={handleUserTypeSearch}
+                                                        style={{ width: "100%" }}
+                                                        className="rounded-2"
+                                                    >
+                                                        <Option value="">Select</Option>
+                                                        <Option value="manager" className='text-info'>Manager</Option>
+                                                        <Option value="employee" className='text-info'>Employee</Option>
+                                                        <Option value="management" className='text-info'>Management</Option>
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
                                             <Col span={12}>
                                                 <Form.Item name="user_type" label={<span className='text-info'>User Type</span>}
                                                     rules={[
@@ -281,9 +341,10 @@ const UserMaster = () => {
                                             <th scope="col">S.No.</th>
                                             <th scope="col">UserName</th>
                                             <th scope="col">Password</th>
-
                                             <th scope="col">User Type</th>
                                             <th scope="col">Employee Name</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Role</th>
                                             <th scope="col">Status</th>
                                             <th scope="col">Action</th>
                                         </tr>
@@ -298,6 +359,8 @@ const UserMaster = () => {
                                                         <td className='text-capitalize'>{data.password}</td>
                                                         <td className='text-capitalize'>{data.user_type}</td>
                                                         <td className='text-capitalize'>{data.employee_name}</td>
+                                                        <td className='text-capitalize'>{data.email}</td>
+                                                        <td className='text-capitalize'>{data.role}</td>
                                                         <td className={`text-capitalize ${data.status === 'active' ? 'text-success' : 'text-danger'}`}>{data.status}</td>
                                                         <td className='d-flex gap-2'>
                                                             <button className="btn btn-primary btn-sm" onClick={() => openUserEdit(data)} >Edit</button>

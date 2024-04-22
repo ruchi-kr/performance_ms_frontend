@@ -7,6 +7,9 @@ import ReportingManagerMaster from './Pages/ReportingManagerMaster';
 import Login from './Auth/Login';
 import Forgot from './Auth/Forgot';
 import HomePage from './Pages/HomePage';
+import Employee from './Pages/Employee';
+import Manager from './Pages/Manager';
+
 function App() {
   return (
     <>
@@ -22,6 +25,9 @@ function App() {
         <Route path="/employeemaster" element={<EmployeeMaster/>}></Route>
         <Route path="/projectmaster" element={<ProjectMaster/>}></Route>
         <Route path="/rmmaster" element={<ReportingManagerMaster/>}></Route>
+
+        <Route path="/employee" element={<Employee/>}></Route>
+        <Route path="/manager" element={<Manager/>}></Route>
       </Routes>
     </BrowserRouter>
     </div>
