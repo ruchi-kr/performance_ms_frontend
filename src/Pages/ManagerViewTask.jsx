@@ -1,12 +1,13 @@
 import React from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { formatDate } from "../utils/dateFormatter.js";
 import { PlusOutlined, CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import { Space, Table, Tag } from "antd";
+import { Flex, Space, Table, Tag } from "antd";
 import {
   getAllProjects,
   addTask,
@@ -24,6 +25,7 @@ const ManagerViewTask = () => {
   const filterOption = (input, option) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
   const [projectList, setProjectList] = useState([]);
+  const [taskRecords, setTaskRecords] = useState([]);
 
   const getProjects = async (value) => {
     try {
@@ -38,12 +40,10 @@ const ManagerViewTask = () => {
     getProjects();
   }, []);
 
-  const [taskRecords, setTaskRecords] = useState([]);
-
   // Function to fetch tasks from the server
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${getTask}`);
+      const response = await axios.get(`${getTask}/${employee_id}`);
       setTaskRecords(response.data);
       console.log("task records", response.data);
     } catch (error) {
@@ -55,36 +55,21 @@ const ManagerViewTask = () => {
     fetchTasks();
   }, []);
 
-  // Function to add a new task
-  const handleAddTask = () => {
-    setTaskRecords([
-      ...taskRecords,
-      {
-        project_name: "",
-        task: "",
-        allocated_time: "",
-        actual_time: "",
-        status: "",
-        remarks: "",
-      },
-    ]);
-  };
-
   // Function to delete a task
-  const handleDeleteTask = async (taskId) => {
-    try {
-      const response = await axios.delete(`${deleteTask}/${taskId}`);
-      setTaskRecords(taskRecords.filter((task) => task.id !== taskId));
-      if (response.status === 200) {
-        toast.success("Task Deleted Successfully");
-        // window.location.reload()
-      } else {
-        toast.error("Task Not Deleted");
-      }
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
+  //   const handleDeleteTask = async (taskId) => {
+  //     try {
+  //       const response = await axios.delete(`${deleteTask}/${taskId}`);
+  //       setTaskRecords(taskRecords.filter((task) => task.id !== taskId));
+  //       if (response.status === 200) {
+  //         toast.success("Task Deleted Successfully");
+  //         // window.location.reload()
+  //       } else {
+  //         toast.error("Task Not Deleted");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error deleting task:", error);
+  //     }
+  //   };
 
   // Function to handle task status change
   const handleStatusChange = (index, value) => {
@@ -96,14 +81,18 @@ const ManagerViewTask = () => {
   // Function to save task changes
   const saveTask = async (index) => {
     const task = taskRecords[index];
+    console.log("------task------", task);
     try {
       if (task.id) {
         // If the task already has an ID, it's an existing task, so update it
-        const response1 = await axios.put(`${editTask}${task.id}`, task);
+        const response1 = await axios.patch(
+          `http://localhost:8000/api/project/task/${task.id}`,
+          task
+        );
         if (response1.status === 200) {
-          toast.success("Task Updated Successfully");
+          toast.success("Remark added Successfully");
         } else {
-          toast.error("Task Not Updated");
+          toast.error("Remark Not Updated");
         }
       } else {
         // If the task doesn't have an ID, it's a new task, so create it
@@ -121,13 +110,6 @@ const ManagerViewTask = () => {
     }
   };
 
-  // Function to handle changes in project selection
-  const handleProjectChange = (index, value) => {
-    const updatedTaskRecords = [...taskRecords];
-    updatedTaskRecords[index].project_name = value;
-    setTaskRecords(updatedTaskRecords);
-  };
-
   // Function to handle changes in other inputs
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
@@ -135,7 +117,6 @@ const ManagerViewTask = () => {
     updatedTaskRecords[index][name] = value;
     setTaskRecords(updatedTaskRecords);
   };
-  console.log("data accessed for user", employee_id);
   return (
     <>
       return (
@@ -156,22 +137,22 @@ const ManagerViewTask = () => {
                       <tr>
                         <th className="form-label lightgreen fs-6">S.No.</th>
                         <th className="form-label lightgreen fs-6">
-                          Project Name<span style={{ color: "red" }}>*</span>
+                          Project Name<span style={{ color: "red" }}></span>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Task<span style={{ color: "red" }}>*</span>
+                          Task<span style={{ color: "red" }}></span>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Allocated time<span style={{ color: "red" }}>*</span>
+                          Allocated time<span style={{ color: "red" }}></span>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Actual time<span style={{ color: "red" }}>*</span>
+                          Actual time<span style={{ color: "red" }}></span>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Status<span style={{ color: "red" }}>*</span>
+                          Status<span style={{ color: "red" }}></span>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Remarks<span style={{ color: "red" }}>*</span>
+                          Remarks<span style={{ color: "red" }}></span>
                         </th>
                       </tr>
                     </thead>
@@ -181,7 +162,9 @@ const ManagerViewTask = () => {
                           <td>{index + 1}</td>
                           <td>
                             {
-                              <NavLink to={`/view/project/tasks/${record.project_id}`}>
+                              <NavLink
+                                to={`/view/project/tasks/${record.project_id}`}
+                              >
                                 <Tag
                                   color={"orange"}
                                   style={{ fontSize: "1rem" }}
@@ -190,34 +173,6 @@ const ManagerViewTask = () => {
                                 </Tag>
                               </NavLink>
                             }
-                            {/* <Select
-                              showSearch
-                              allowClear
-                              placeholder="Select"
-                              optionFilterProp="children"
-                              filterOption={(input, option) =>
-                                option.label
-                                  .toLowerCase()
-                                  .includes(input.toLowerCase())
-                              }
-                              style={{ width: "150px" }}
-                              className="rounded-2"
-                              value={record.project_name}
-                              onChange={(value) =>
-                                handleProjectChange(index, value)
-                              }
-                              required
-                            >
-                              {projectList.map((project) => (
-                                <Option
-                                  key={project.project_id}
-                                  value={project.project_name}
-                                  label={project.project_name}
-                                >
-                                  {project.project_name}
-                                </Option>
-                              ))}
-                            </Select> */}
                           </td>
                           <td>
                             <input
@@ -260,31 +215,29 @@ const ManagerViewTask = () => {
                                 {record.status.toUpperCase()}{" "}
                               </Tag>
                             )}
-
-                            {/* <select
-                              name="status"
-                              className="form-control"
-                              value={record.status}
-                              onChange={(e) =>
-                                handleStatusChange(index, e.target.value)
-                              }
-                              disabled
-                            >
-                              <option value="">Select</option>
-                              <option value="inprocess">In Process</option>
-                              <option value="completed">Completed</option>
-                            </select> */}
                           </td>
-                          <td>
-                            <input
-                              type="text"
-                              name="remarks"
-                              className="form-control"
-                              value={record.remarks}
-                              onChange={(e) => handleInputChange(index, e)}
-                              placeholder=""
-                              required
-                            />
+                          <td style={{ display: "flex" }}>
+                            <div>
+                              <input
+                                type="text"
+                                name="remarks"
+                                className="form-control"
+                                value={record.remarks}
+                                onChange={(e) => handleInputChange(index, e)}
+                                placeholder=""
+                                required
+                              />
+                            </div>
+                            <div style={{ display: "flex" }}>
+                              <CheckOutlined
+                                style={{ color: "green", marginLeft: "1rem" }}
+                                onClick={() => saveTask(index)}
+                              />
+                              {/* <CloseOutlined
+                                style={{ color: "red", marginLeft: "1rem" }}
+                                onClick={() => handleDeleteTask(record.id)}
+                              /> */}
+                            </div>
                           </td>
                         </tr>
                       ))}

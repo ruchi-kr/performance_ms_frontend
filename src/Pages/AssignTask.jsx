@@ -26,6 +26,7 @@ import {
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
+import { formatDate } from "../utils/dateFormatter.js";
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -51,7 +52,7 @@ const AssignTask = () => {
     const resp = await axios.get(
       "http://localhost:8000/api/user/project/teams/5"
     );
-    console.log(resp.data.data);
+    console.log("team data ******", resp.data.data);
     setTeamsData(resp.data.data);
   };
 
@@ -346,6 +347,7 @@ const AssignTask = () => {
                     <tr>
                       <th scope="col">S.No.</th>
                       <th scope="col">Project</th>
+                      <th scope="col">Start Date / End Date </th>
                       <th scope="col">Team Members</th>
                       <th scope="col">Action</th>
                     </tr>
@@ -356,9 +358,22 @@ const AssignTask = () => {
                         <tr key={data?.employee_id}>
                           <th scope="row">{index + 1}</th>
                           <th scope="row">{data?.project_name}</th>
+                          <th scope="row">
+                            <Tag
+                              color={"green"}
+                              key={data?.schedule_start_date}
+                            >
+                              {formatDate(data?.schedule_start_date)}
+                            </Tag>
+                            <Tag color={"red"} key={data?.schedule_end_date}>
+                              {formatDate(data?.schedule_end_date)}
+                            </Tag>
+                          </th>
                           <td className="text-capitalize">
                             {data?.employee_details?.map((item) => (
-                              <NavLink to={`/view/teammember/tasks/${item?.employee_id}`}>
+                              <NavLink
+                                to={`/view/teammember/tasks/${item?.user_id}`}
+                              >
                                 <Tag color={"blue"} key={item?.index}>
                                   {item?.name}
                                 </Tag>
