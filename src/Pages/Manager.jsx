@@ -30,7 +30,7 @@ const Manager = () => {
           <div className="row my-5">
               <div className="col-10 mx-auto">
                 <div className='d-flex justify-content-between'>
-                  <h3 className='text-primary heading'>Daily Tracking Sheet</h3>
+                  <h3 className='text-primary'>Daily Tracking Sheet</h3>
                 </div>
                 <hr className='bg-primary border-4' />
                 <table className="table table-bordered table-hover table-responsive-sm mt-5">

@@ -177,7 +177,7 @@ const ProjectMaster = () => {
                                     <thead>
                                         <tr>
                                             <th scope="col">S.No.</th>
-                                            <th scope="col">Project Id</th>
+                                            {/* <th scope="col">Project Id</th> */}
                                             <th scope="col">Project Name</th>
                                             <th scope="col">Sche. Start Date</th>
                                             <th scope="col">Sche. End Date</th>
@@ -190,7 +190,7 @@ const ProjectMaster = () => {
                                                 return (
                                                     <tr key={data.project_id}>
                                                         <th scope="row">{index + 1}</th>
-                                                        <td>{data.project_id}</td>
+                                                        {/* <td>{data.project_id}</td> */}
                                                         <td>{data.project_name}</td>
                                                         <td>{data.schedule_start_date.slice(8, 10)}/{data.schedule_start_date.slice(5, 7)}/{data.schedule_start_date.slice(0, 4)}</td>
                                                         <td>{data.schedule_end_date.slice(8, 10)}/{data.schedule_end_date.slice(5, 7)}/{data.schedule_end_date.slice(0, 4)}</td>
