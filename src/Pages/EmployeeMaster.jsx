@@ -12,52 +12,32 @@ const EmployeeMaster = () => {
 
     const [allEmployeeData, setAllEmployeeData] = useState([])
 
+    // for pagination
+    const pageSize = 10; // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
     // get all projects function
-    const getAllEmployeesHandler = async () => {
+    const getAllEmployeesHandler = async (page) => {
 
         try {
-            const response = await axios.get(`${getAllEmployees}`);
+            const response = await axios.get(`${getAllEmployees}?page=${page}&pageSize=${pageSize}`);         
             setAllEmployeeData(response.data)
+            setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
             console.log("employee details data", response.data);
         } catch (err) {
             console.log(err);
         }
     }
+    
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
+        getAllEmployeesHandler(pageNumber == 0 ? 1 : pageNumber);
+    };
+
     useEffect(() => {
-        getAllEmployeesHandler();
-    }, []);
+        getAllEmployeesHandler(currentPage);
+    }, [currentPage]);
 
-    // create project
-    // const employeeFormSubmit = (values) => {
-    //     employeeForm.validateFields()
-    //         .then((values) => {
-    //             try {
-    //                 const requestData = { ...values, id: editingEmployee ? editingEmployee.employee_id : null };
-    //                 const url = editingEmployee ? `${editEmployee}/${editingEmployee.employee_id}` : `${createEmployee}`;
-    //                 const response = axios.post(url, formatDates(requestData));
-    //                 if (response.status === 200) {
-    //                     if (editingEmployee && editingEmployee.project_id !== null) {
-    //                         toast.success('Employee Details Updated Successfully!');
-    //                     } else {
-    //                         toast.success('Employee Added Successfully!');
-    //                     }
-    //                     employeeForm.resetFields();
-    //                     setModalVisible(false);
-
-    //                     getAllEmployeesHandler();
-    //                 } else {
-    //                     console.log("error employee",response.data);
-    //                     // toast.error(error.response.data.error);
-    //                 }
-    //             } catch (error) {
-    //                 console.log("error",error);
-    //                 toast.error(error);
-    //             }
-    //         })
-    //         .catch((errorInfo) => {
-    //             console.log('Validation failed:', errorInfo);
-    //         });
-    // };
 
     const employeeFormSubmit = (values) => {
         employeeForm.validateFields()
@@ -385,6 +365,32 @@ const EmployeeMaster = () => {
                                             })
                                         }
                                     </tbody>
+                                    <tfoot >
+                                        <tr className='row' >                           
+                                            {/* Your component JSX code */}
+                                            <nav aria-label="Page navigation example"className='d-flex align-self-end mt-3'>
+                                                <ul className="pagination">
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
+                                                            <span aria-hidden="true">«</span>
+                                                        </a>
+                                                    </li>
+                                                    {Array.from({ length: totalPages }, (_, index) => (
+                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                            <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
+                                                                {index + 1}
+                                                            </a>
+                                                        </li>
+                                                    ))}
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
+                                                            <span aria-hidden="true">»</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </tr>
+                                    </tfoot>
                                 </table>
 
                             </div>

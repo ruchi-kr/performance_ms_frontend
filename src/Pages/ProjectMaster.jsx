@@ -9,21 +9,34 @@ import { toast } from 'react-toastify'
 const ProjectMaster = () => {
 
     const [allProjectData, setAllProjectData] = useState([])
-   
+   // for pagination
+   const pageSize = 10; // Number of items per page
+   const [currentPage, setCurrentPage] = useState(1);
+   const [totalPages, setTotalPages] = useState(0);
     // get all projects function
-    const getAllProjectsHandler = async () => {
+    const getAllProjectsHandler = async (page) => {
 
         try {
-            const response = await axios.get(`${getAllProjects}`);
+            const response = await axios.get(`${getAllProjects}?page=${page}&pageSize=${pageSize}`);
             setAllProjectData(response.data)
             console.log("project details data", response.data);
+                  
+            setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
         } catch (err) {
             console.log(err);
         }
     }
+  
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
+        getAllProjectsHandler(pageNumber == 0 ? 1 : pageNumber);
+    };
+
     useEffect(() => {
-        getAllProjectsHandler();
-    }, []);
+        getAllProjectsHandler(currentPage);
+    }, [currentPage]);
+
+
  
     // create project
     const projectFormSubmit = (values) => {
@@ -119,7 +132,7 @@ const ProjectMaster = () => {
 
                     <div className="container-fluid bg-white">
                         <div className="row my-5">
-                            <div className="col-10 mx-auto">
+                            <div className="col-11 mx-auto">
                                 <div className='d-flex justify-content-between'>
                                     <h3 className='text-primary'>Project Details</h3>
                                     <button className='btn btn-sm btn-info d-flex align-items-center' onClick={openProjectAdd} >
@@ -203,6 +216,32 @@ const ProjectMaster = () => {
                                             })
                                         }
                                     </tbody>
+                                    <tfoot >
+                                        <tr className='row' >                           
+                                            {/* Your component JSX code */}
+                                            <nav aria-label="Page navigation example"className='d-flex align-self-end mt-3'>
+                                                <ul className="pagination">
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
+                                                            <span aria-hidden="true">«</span>
+                                                        </a>
+                                                    </li>
+                                                    {Array.from({ length: totalPages }, (_, index) => (
+                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                            <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
+                                                                {index + 1}
+                                                            </a>
+                                                        </li>
+                                                    ))}
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
+                                                            <span aria-hidden="true">»</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>

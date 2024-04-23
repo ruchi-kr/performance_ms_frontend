@@ -121,7 +121,7 @@ const ManagerViewTask = () => {
     <>
       return (
       <>
-        <Header />
+        <Header/>
         <SideNavbar />
         <div className="content-wrapper bg-white">
           <div className="content">

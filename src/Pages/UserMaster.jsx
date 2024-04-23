@@ -144,7 +144,7 @@ const UserMaster = () => {
                     <div className="container-bg-white">
                         {/* 3rd row */}
                         <div className="row my-5">
-                            <div className="col-10 mx-auto">
+                            <div className="col-11 mx-auto">
                                 {/* user master detailed table */}
 
                                 <div className='d-flex justify-content-between'>

@@ -1,38 +1,47 @@
-import React,{useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
 import { getAllManagers, createManager, editManager, deleteManager } from '../Config.js';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Col, Form, Input, Modal, Row} from 'antd';
+import { Col, Form, Input, Modal, Row } from 'antd';
 
 
 const ReportingManagerMaster = () => {
 
-    const [allManagerData, setAllManagerData] = useState([])
+    // get all manager function with pagination
+    const pageSize = 10; // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [allManagerData, setAllManagerData] = useState([]);
 
-    // get all manager function
-    const getAllManagersHandler = async () => {
-
+    const getAllManagersHandler = async (page) => {
         try {
-            const response = await axios.get(`${getAllManagers}`);
-            setAllManagerData(response.data)
-            console.log("manager details data", response.data);
+            const response = await axios.get(`${getAllManagers}?page=${page}&pageSize=${pageSize}`);
+            setAllManagerData(response.data);
+            setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
         } catch (err) {
             console.log(err);
         }
-    }
+    };
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
+        getAllManagersHandler(pageNumber == 0 ? 1 : pageNumber);
+    };
+
     useEffect(() => {
-        getAllManagersHandler();
-    }, []);
- 
+        getAllManagersHandler(currentPage);
+    }, [currentPage]);
+
+
     // create manager
     const managerFormSubmit = (values) => {
         managerForm.validateFields()
             .then((values) => {
                 try {
-                    const requestData = { ...values,  id: editingManager ? editingManager.reporting_manager_id	 : null };
+                    const requestData = { ...values, id: editingManager ? editingManager.reporting_manager_id : null };
                     const url = editingManager ? `${editManager}/${editingManager.reporting_manager_id}` : `${createManager}`;
                     const response = axios.post(url, requestData);
                     if (response.status) {
@@ -45,10 +54,10 @@ const ReportingManagerMaster = () => {
                         managerForm.resetFields();
                         setModalVisible(false);
                         window.location.reload()
-                      
+
                         getAllManagersHandler();
                     } else {
-                        // console.log(response.data.message);
+                        console.log(response.data.message);
                         // toast.error(response.data.message);
                     }
                 } catch (error) {
@@ -60,16 +69,27 @@ const ReportingManagerMaster = () => {
             });
     };
 
-   
-    // delete manager function
-    const deleteManagerHandler = async (id) => {                            //creating a function for deleting data
+
+    const deleteManagerHandler = async (id) => {
         try {
-            await axios.delete(`${deleteManager}` + id)          // deleting data from server
-            window.location.reload()                             //reloading the page
+            const response = await axios.delete(`${deleteManager}` + id);
+            if (response.status === 200) {
+                // Manager deleted successfully
+                console.log(response.data);
+                window.location.reload();
+            } else if (response.status === 400) {
+                // Manager is assigned to an employee
+                console.log("error reporting manager deletion", response.error);
+                toast.error(response.data.error);
+            }
         } catch (err) {
-            console.log("error deleting manager", err);                                 //if error occurs then log it
+            console.log("error deleting manager", err);
+            // Display a generic error message if there's an unexpected error
+            toast.error("Manager cannot be deleted as it is assigned to an employee");
+            // toast.error(response.data.error);
         }
     }
+
     // edit manager function
 
     const [managerForm] = Form.useForm();
@@ -92,8 +112,8 @@ const ReportingManagerMaster = () => {
         managerForm.setFieldsValue(managerData);
         setFormDisabled(false);
     }
-   
- 
+
+
     const openManagerEdit = async (manager) => {
         setEditingManager(manager);
         setModalVisible(true);
@@ -114,7 +134,7 @@ const ReportingManagerMaster = () => {
                     <div className="container-fluid bg-white">
                         {/* 1st row */}
                         <div className="row my-5">
-                            <div className="col-10 mx-auto">
+                            <div className="col-11 mx-auto">
                                 {/* reporting manager master detailed table */}
 
                                 <div className='d-flex justify-content-between'>
@@ -123,7 +143,7 @@ const ReportingManagerMaster = () => {
                                         <span className='fs-4'> + </span>&nbsp;Add Reporting Manager
                                     </button>
                                 </div>
-                                <hr className='bg-primary border-4'/>
+                                <hr className='bg-primary border-4' />
                                 {/* modal */}
                                 <Modal title={editingManager ? 'Edit Manager' : 'Add Manager'} visible={modalVisible}
                                     onOk={managerFormSubmit}
@@ -212,6 +232,49 @@ const ReportingManagerMaster = () => {
                                             })
                                         }
                                     </tbody>
+                                    <tfoot >
+                                        <tr className='row' >
+                                            {/* <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
+                                                <ul className="pagination">
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Previous">
+                                                            <span aria-hidden="true">«</span>
+                                                        </a>
+                                                    </li>
+                                                    <li className="page-item"><a className="page-link" href="#">1</a></li>
+                                                    <li className="page-item"><a className="page-link" href="#">2</a></li>
+                                                    <li className="page-item"><a className="page-link" href="#">3</a></li>
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Next">
+                                                            <span aria-hidden="true">»</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav> */}
+                                            {/* Your component JSX code */}
+                                            <nav aria-label="Page navigation example"className='d-flex align-self-end mt-3'>
+                                                <ul className="pagination">
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
+                                                            <span aria-hidden="true">«</span>
+                                                        </a>
+                                                    </li>
+                                                    {Array.from({ length: totalPages }, (_, index) => (
+                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                            <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
+                                                                {index + 1}
+                                                            </a>
+                                                        </li>
+                                                    ))}
+                                                    <li className="page-item">
+                                                        <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
+                                                            <span aria-hidden="true">»</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>

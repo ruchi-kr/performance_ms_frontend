@@ -39,7 +39,7 @@ function App() {
             />
 
             <Route path="/employee" element={<Employee />}></Route>
-            <Route path="/manager" element={<Manager />}></Route>
+            <Route path="/manager" element={<AssignTask />}></Route>
           </Routes>
         </BrowserRouter>
       </div>

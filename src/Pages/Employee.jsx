@@ -140,7 +140,7 @@ const Employee = () => {
         <div className="content">
           <div className="container-fluid bg-white">
             <div className="row my-5">
-              <div className="col-10 mx-auto">
+              <div className="col-11 mx-auto">
                 <div className='d-flex justify-content-between'>
                   <h3 className='text-primary'>Daily Tracking Sheet</h3>
                 </div>
@@ -190,6 +190,7 @@ const Employee = () => {
                             name="task"
                             className="form-control"
                             value={record.task}
+                            // style={{ width: "150px" }}
                             onChange={(e) => handleInputChange(index, e)}
                             placeholder=""
                             required
