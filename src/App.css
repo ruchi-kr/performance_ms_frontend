@@ -85,5 +85,20 @@
   }
   
   
+  .heading {
+    border-right: 0.1rem solid #10a0a5;
+    width: 0;
+    white-space: nowrap;
+    animation: typing 5s steps(21, end) infinite forwards;
+    overflow: hidden;
+  }
+  @keyframes typing {
+    0% {
+      width: 0;
+    }
   
+    50% {
+      width: 21%;
+    }
+  }
   

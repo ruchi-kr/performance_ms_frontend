@@ -38,9 +38,9 @@ export const getEmployerList = `${baseURL}/api/admin/getEmployeesList`;
 export const getDashData = `${baseURL}/api/getDashData`;
 
 // for employee dts
-export const deleteTask = `${baseURL}/api/general/deleteTask/`;
+export const deleteTask = `${baseURL}/api/user/deleteTask`;
 export const addTask = `${baseURL}/api/user/addTask`;
-// export const editTask =   ``;
+export const editTask =   `${baseURL}/api/user/updateTask/`;
 export const getTask = `${baseURL}/api/user/getTasks`;
 
 export const CONFIG_OBJ = {                                         //config object

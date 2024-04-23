@@ -4,113 +4,121 @@ import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { getAllProjects, addTask, getTask } from '../Config.js'
+import { getAllProjects, addTask, getTask,editTask, deleteTask } from '../Config.js'
 import { Select } from 'antd';
+import { toast } from 'react-toastify';
 
 const { Option } = Select;
 
 const Employee = () => {
 
-  // const [allTaskRecords, setAllTaskRecords] = useState([])
+// for project list
+const filterOption = (input, option) =>
+(option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+const [projectList, setProjectList] = useState([]);
 
-  const [taskRecords, setTaskRecords] = useState([{ project: '', task: '', start_time: '', end_time: '', status: '', remarks: '' }]);
+const getProjects = async (value) => {
+try {
+  const result = await axios.get(`${getAllProjects}`);
+  setProjectList(result.data);
+  console.log("project list", result.data);
+} catch (error) {
 
-  const addTask = () => {
-    setTaskRecords([...taskRecords, { project: '', task: '', start_time: '', end_time: '', status: '', remarks: '' }]);
-  };
+  console.log('Error fetching project list data', error)
+}
+}
+useEffect(() => {
+getProjects();
+}, []);
 
-  // CREATE
-  const createTask = async (task) => {
-    try {
-      const response = await axios.post('/api/user/addTask', task);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating task:', error);
-      throw error;
-    }
-  };
 
-  // READ (GET)
-  const getTasks = async () => {
+  const [taskRecords, setTaskRecords] = useState([]);
+
+  // Function to fetch tasks from the server
+  const fetchTasks = async () => {
     try {
       const response = await axios.get(`${getTask}`);
-      console.log(response.data);
       setTaskRecords(response.data);
     } catch (error) {
       console.log('Error fetching tasks:', error);
-      // throw error;
     }
   };
+
   useEffect(() => {
-    getTasks();
-  }, [])
-
-
-  // UPDATE
-  const updateTask = async (taskId, updatedTask) => {
-    try {
-      const response = await axios.put(`/api/user/updateTask/${taskId}`, updatedTask);
-      return response.data;
-    } catch (error) {
-      console.error('Error updating task:', error);
-      throw error;
-    }
-  };
-
-  // DELETE
-  // const deleteTask = async (taskId) => {
-  //   try {
-  //     const response = await axios.delete(`/api/user/deleteTask/${taskId}`);
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error('Error deleting task:', error);
-  //     throw error;
-  //   }
-  // };
-  // const addTask = async (index) => {
-  //   const newTask = taskRecords[index];
-  //   try {
-  //     await createTask(newTask);
-  // Remove the added task from the local state
-
-  const deleteTask = (index) => {
-    const newPayments = taskRecords.filter((_, idx) => idx !== index);
-    setTaskRecords(newPayments);
-  };
-
-  // delete task function
-  // const deleteTask = async (id) => {                            //creating a function for deleting data
-  //   try {
-  //     await axios.delete(`${deleteTask}` + id)          // deleting data from server
-  //     window.location.reload()                             //reloading the page
-  //   } catch (err) {
-  //     console.log("error deleting task", err);                                 //if error occurs then log it
-  //   }
-  // }
-
-
-  // for project list
-  const filterOption = (input, option) =>
-    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
-  const [projectList, setProjectList] = useState([]);
-
-  const getProjects = async (value) => {
-    try {
-      const result = await axios.get(`${getAllProjects}`);
-      setProjectList(result.data);
-      console.log("project list", result.data);
-    } catch (error) {
-
-      console.log('Error fetching project list data', error)
-    }
-  }
-  useEffect(() => {
-    getProjects();
+    fetchTasks();
   }, []);
-  // const handleManagerSearch = (value) => {
-  //     setManager(value)
-  // }
 
+  // Function to add a new task
+  const handleAddTask = () => {
+    setTaskRecords([...taskRecords, { project_name: '', task: '', allocated_time: '', actual_time: '', status: '', remarks: '' }]);
+  };
+
+  // Function to delete a task
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const response =await axios.delete(`${deleteTask}/${taskId}`);
+      setTaskRecords(taskRecords.filter(task => task.id !== taskId));
+      if(response.status===200){
+        toast.success("Task Deleted Successfully")
+        // window.location.reload()
+      }else{
+        toast.error("Task Not Deleted")
+      }
+      
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+
+  // Function to handle task status change
+  const handleStatusChange = (index, value) => {
+    const updatedTaskRecords = [...taskRecords];
+    updatedTaskRecords[index].status = value;
+    setTaskRecords(updatedTaskRecords);
+  };
+
+  // Function to save task changes
+  const saveTask = async (index) => {
+    const task = taskRecords[index];
+    try {
+      if (task.id) {
+        // If the task already has an ID, it's an existing task, so update it
+       const response1= await axios.put(`${editTask}${task.id}`, task);
+        if(response1.status===200){
+            toast.success("Task Updated Successfully")
+          }else{
+            toast.error("Task Not Updated")
+          }
+      } else {
+        // If the task doesn't have an ID, it's a new task, so create it
+        const response2=await axios.post(`${addTask}`, task);
+        if(response2.status===200){
+            toast.success("Task added Successfully")
+          }else{
+            toast.error("Task Not added")
+          }
+      }
+      // Refresh tasks after saving
+      fetchTasks();
+    } catch (error) {
+      console.error('Error saving task:', error);
+    }
+  };
+
+  // Function to handle changes in project selection
+  const handleProjectChange = (index, value) => {
+    const updatedTaskRecords = [...taskRecords];
+    updatedTaskRecords[index].project_name = value;
+    setTaskRecords(updatedTaskRecords);
+  };
+
+  // Function to handle changes in other inputs
+  const handleInputChange = (index, event) => {
+    const { name, value } = event.target;
+    const updatedTaskRecords = [...taskRecords];
+    updatedTaskRecords[index][name] = value;
+    setTaskRecords(updatedTaskRecords);
+  };
 
   return (
     <>
@@ -122,72 +130,43 @@ const Employee = () => {
             <div className="row my-5">
               <div className="col-10 mx-auto">
                 <div className='d-flex justify-content-between'>
-                  <h3 className='text-primary'>Daily Tracking Sheet</h3>
+                  <h3 className='text-primary heading'>Daily Tracking Sheet</h3>
                 </div>
                 <hr className='bg-primary border-4' />
                 <table className="table table-bordered table-hover table-responsive-sm mt-5">
                   <thead>
                     <tr>
                       <th className="form-label lightgreen fs-6">S.No.</th>
-                      <th className="form-label lightgreen fs-6">Project
-                        <span style={{ color: "red" }}>*</span>
-                      </th>
-                      <th className="form-label lightgreen fs-6">Task
-                        <span style={{ color: "red" }}>*</span>
-                      </th>
-                      <th className="form-label lightgreen fs-6">Start time
-                        <span style={{ color: "red" }}>*</span>
-                      </th>
-                      <th className="form-label lightgreen fs-6">End time
-                        <span style={{ color: "red" }}>*</span>
-                      </th>
-                      <th className="form-label lightgreen fs-6">Status
-                        <span style={{ color: "red" }}>*</span>
-                      </th>
-                      <th className="form-label lightgreen fs-6">Remarks
-                        <span style={{ color: "red" }}>*</span>
-                      </th>
-
-
-                      <th>
-                        <a className="">
-                          <PlusOutlined
-                            onClick={addTask}
-                          />
-                        </a>
-                      </th>
-
-
+                      <th className="form-label lightgreen fs-6">Project Name<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label lightgreen fs-6">Task<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label lightgreen fs-6">Allocated time<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label lightgreen fs-6">Actual time<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label lightgreen fs-6">Status<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label lightgreen fs-6">Remarks<span style={{ color: "red" }}>*</span></th>
+                      <th><PlusOutlined onClick={handleAddTask} /></th>
                     </tr>
                   </thead>
                   <tbody>
                     {taskRecords.map((record, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
-
-
                         <td>
-
                           <Select
                             showSearch
                             allowClear
                             placeholder="Select"
                             optionFilterProp="children"
-                            filterOption={filterOption}
-                            // onChange={handleManagerSearch}
+                            filterOption={(input, option) =>
+                              option.label.toLowerCase().includes(input.toLowerCase())
+                            }
                             style={{ width: "150px" }}
                             className="rounded-2"
+                            value={record.project_name}
+                            onChange={(value) => handleProjectChange(index, value)}
                             required
                           >
-
-                            <Option value="">Select</Option>
-
-                            {projectList.map((project, index) => (
-                              <Option
-                                key={index}
-                                value={project.project_id}
-                                label={project.project_name}
-                              >
+                            {projectList.map((project) => (
+                              <Option key={project.project_id} value={project.project_name} label={project.project_name}>
                                 {project.project_name}
                               </Option>
                             ))}
@@ -196,91 +175,64 @@ const Employee = () => {
                         <td>
                           <input
                             type="text"
-                            name="description"
+                            name="task"
                             className="form-control"
-                            // value={record.task}
-
-                            // onChange={(e) => handlePaymentChange(index, e)}
+                            value={record.task}
+                            onChange={(e) => handleInputChange(index, e)}
                             placeholder=""
                             required
                           />
                         </td>
-
                         <td>
                           <input
-                            type="datetime-local"
-                            name="start_time"
-                            // disabled={formdisabled}
+                            type="number"
+                            name="allocated_time"
                             className="form-control"
-                            // value={record.start_time}
-                            // onChange={}
-                            // value={typeof record.percent == 'number' ? record.percent.toFixed(2) : record.percent}
-                            // onChange={(e) => handlePaymentChange(index, e)}
-                            placeholder="0"
+                            value={record.allocated_time}
+                            onChange={(e) => handleInputChange(index, e)}
                             required
-
                           />
-
-
                         </td>
-
                         <td>
                           <input
-                            type="datetime-local"
-
-                            name="end_time"
-                            // value={record.end_time}
+                            type="number"
+                            name="actual_time"
                             className="form-control"
-                            // onChange={(e) => handlePaymentChange(index, e)}
-                            placeholder="0"
-
+                            value={record.actual_time}
+                            onChange={(e) => handleInputChange(index, e)}
+                            required
                           />
                         </td>
-
                         <td>
-                          <select name="status" id="status"
-                            style={{ width: "100px" }}
+                          <select
+                            name="status"
                             className="form-control"
-                            // onChange={(e) => handlePaymentChange(index, e)}
+                            value={record.status}
+                            onChange={(e) => handleStatusChange(index, e.target.value)}
                             required
                           >
                             <option value="">Select</option>
-                            <option value="inprocess"
-                             defaultValue={record.status === "inprocess"}
-                            
-                            >In Process</option>
-                            <option value="completed" defaultValue={record.status === "completed"}>Completed</option>
+                            <option value="inprocess">In Process</option>
+                            <option value="completed">Completed</option>
                           </select>
                         </td>
                         <td>
                           <input
                             type="text"
-                            name="description"
+                            name="remarks"
                             className="form-control"
-                            // value={record.remarks}
-
-                            // onChange={(e) => handlePaymentChange(index, e)}
+                            value={record.remarks}
+                            onChange={(e) => handleInputChange(index, e)}
                             placeholder=""
                             required
                           />
                         </td>
-
                         <td className='d-flex gap-3'>
-                          <CloseOutlined
-                            style={{ color: "red" }}
-                            onClick={() => deleteTask(index)}
-
-                          />
-                          <CheckOutlined
-                            style={{ color: "green" }}
-                            onClick={() => addTask(index)}
-                          />
+                          <CloseOutlined style={{ color: "red" }} onClick={() => handleDeleteTask(record.id)} />
+                          <CheckOutlined style={{ color: "green" }} onClick={() => saveTask(index)} />
                         </td>
-
-
                       </tr>
                     ))}
-
                   </tbody>
                 </table>
               </div>
@@ -289,13 +241,9 @@ const Employee = () => {
         </div>
       </div>
       <Footer />
-    </>
-  )
+      </>
+     
+)
 }
-
-// export default function PaymentTerms({ paymentRecords, addPayment, formdisabled, handlePaymentChange, deletePayment }) {
-
-// }
-
 
 export default Employee
