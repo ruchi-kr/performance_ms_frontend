@@ -4,7 +4,7 @@ import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { getAllProjects, addTask, getTask,editTask, deleteTask } from '../Config.js'
+import { getAllProjects, addTask, getTask, editTask, deleteTask } from '../Config.js'
 import { Select } from 'antd';
 import { toast } from 'react-toastify';
 
@@ -12,24 +12,29 @@ const { Option } = Select;
 
 const Employee = () => {
 
-// for project list
-const filterOption = (input, option) =>
-(option?.label ?? "").toLowerCase().includes(input.toLowerCase());
-const [projectList, setProjectList] = useState([]);
+  // user_id
+  const user_id = sessionStorage.getItem("id");
 
-const getProjects = async (value) => {
-try {
-  const result = await axios.get(`${getAllProjects}`);
-  setProjectList(result.data);
-  console.log("project list", result.data);
-} catch (error) {
 
-  console.log('Error fetching project list data', error)
-}
-}
-useEffect(() => {
-getProjects();
-}, []);
+  // for project list
+  const filterOption = (input, option) =>
+    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+  const [projectList, setProjectList] = useState([]);
+
+  const getProjects = async (value) => {
+    try {
+     
+      const result = await axios.get(`${getAllProjects}`);
+      setProjectList(result.data);
+      console.log("project list", result.data);
+    } catch (error) {
+
+      console.log('Error fetching project list data', error)
+    }
+  }
+  useEffect(() => {
+    getProjects();
+  }, []);
 
 
   const [taskRecords, setTaskRecords] = useState([]);
@@ -37,7 +42,7 @@ getProjects();
   // Function to fetch tasks from the server
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${getTask}`);
+      const response = await axios.get(`${getTask}/${user_id}`);
       setTaskRecords(response.data);
     } catch (error) {
       console.log('Error fetching tasks:', error);
@@ -50,21 +55,21 @@ getProjects();
 
   // Function to add a new task
   const handleAddTask = () => {
-    setTaskRecords([...taskRecords, { project_name: '', task: '', allocated_time: '', actual_time: '', status: '', remarks: '' }]);
+    setTaskRecords([...taskRecords, { project_name: '', user_id: user_id, task: '', allocated_time: '', actual_time: '', status: '', remarks: '' }]);
   };
 
   // Function to delete a task
   const handleDeleteTask = async (taskId) => {
     try {
-      const response =await axios.delete(`${deleteTask}/${taskId}`);
+      const response = await axios.delete(`${deleteTask}/${taskId}`);
       setTaskRecords(taskRecords.filter(task => task.id !== taskId));
-      if(response.status===200){
+      if (response.status === 200) {
         toast.success("Task Deleted Successfully")
         // window.location.reload()
-      }else{
+      } else {
         toast.error("Task Not Deleted")
       }
-      
+
     } catch (error) {
       console.error('Error deleting task:', error);
     }
@@ -82,21 +87,28 @@ getProjects();
     const task = taskRecords[index];
     try {
       if (task.id) {
+        const payload = {
+          "user_id": user_id
+        }
         // If the task already has an ID, it's an existing task, so update it
-       const response1= await axios.put(`${editTask}${task.id}`, task);
-        if(response1.status===200){
-            toast.success("Task Updated Successfully")
-          }else{
-            toast.error("Task Not Updated")
-          }
+        const response1 = await axios.put(`${editTask}${task.id}`, task,payload);
+        if (response1.status === 200) {
+          toast.success("Task Updated Successfully")
+        } else {
+          toast.error("Task Not Updated")
+        }
       } else {
+        const payload = {
+          "user_id": user_id
+        }
+
         // If the task doesn't have an ID, it's a new task, so create it
-        const response2=await axios.post(`${addTask}`, task);
-        if(response2.status===200){
-            toast.success("Task added Successfully")
-          }else{
-            toast.error("Task Not added")
-          }
+        const response2 = await axios.post(`${addTask}`, task, payload);
+        if (response2.status === 200) {
+          toast.success("Task added Successfully")
+        } else {
+          toast.error("Task Not added")
+        }
       }
       // Refresh tasks after saving
       fetchTasks();
@@ -130,19 +142,19 @@ getProjects();
             <div className="row my-5">
               <div className="col-10 mx-auto">
                 <div className='d-flex justify-content-between'>
-                  <h3 className='text-primary heading'>Daily Tracking Sheet</h3>
+                  <h3 className='text-primary'>Daily Tracking Sheet</h3>
                 </div>
                 <hr className='bg-primary border-4' />
                 <table className="table table-bordered table-hover table-responsive-sm mt-5">
                   <thead>
                     <tr>
-                      <th className="form-label lightgreen fs-6">S.No.</th>
-                      <th className="form-label lightgreen fs-6">Project Name<span style={{ color: "red" }}>*</span></th>
-                      <th className="form-label lightgreen fs-6">Task<span style={{ color: "red" }}>*</span></th>
-                      <th className="form-label lightgreen fs-6">Allocated time<span style={{ color: "red" }}>*</span></th>
-                      <th className="form-label lightgreen fs-6">Actual time<span style={{ color: "red" }}>*</span></th>
-                      <th className="form-label lightgreen fs-6">Status<span style={{ color: "red" }}>*</span></th>
-                      <th className="form-label lightgreen fs-6">Remarks<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label text-info fs-6 text-center">S.No.</th>
+                      <th className="form-label text-info fs-6 text-center">Project Name<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label text-info fs-6 text-center">Task<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label text-info fs-6 text-center">Alloc.hrs<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label text-info fs-6 text-center">Act.hrs<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label text-info fs-6 text-center">Status<span style={{ color: "red" }}>*</span></th>
+                      <th className="form-label text-info fs-6 text-center">Remarks<span style={{ color: "red" }}>*</span></th>
                       <th><PlusOutlined onClick={handleAddTask} /></th>
                     </tr>
                   </thead>
@@ -187,6 +199,7 @@ getProjects();
                           <input
                             type="number"
                             name="allocated_time"
+                            style={{ width: "70px" }}
                             className="form-control"
                             value={record.allocated_time}
                             onChange={(e) => handleInputChange(index, e)}
@@ -197,6 +210,7 @@ getProjects();
                           <input
                             type="number"
                             name="actual_time"
+                            style={{ width: "70px" }}
                             className="form-control"
                             value={record.actual_time}
                             onChange={(e) => handleInputChange(index, e)}
@@ -241,9 +255,9 @@ getProjects();
         </div>
       </div>
       <Footer />
-      </>
-     
-)
+    </>
+
+  )
 }
 
 export default Employee

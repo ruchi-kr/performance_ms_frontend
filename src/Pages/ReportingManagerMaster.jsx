@@ -12,7 +12,7 @@ const ReportingManagerMaster = () => {
 
     const [allManagerData, setAllManagerData] = useState([])
 
-    // get all projects function
+    // get all manager function
     const getAllManagersHandler = async () => {
 
         try {
@@ -27,7 +27,7 @@ const ReportingManagerMaster = () => {
         getAllManagersHandler();
     }, []);
  
-    // create project
+    // create manager
     const managerFormSubmit = (values) => {
         managerForm.validateFields()
             .then((values) => {
@@ -41,6 +41,7 @@ const ReportingManagerMaster = () => {
                         } else {
                             toast.success('Manager Added Successfully!');
                         }
+                        console.log("response added", response.data);
                         managerForm.resetFields();
                         setModalVisible(false);
                         window.location.reload()
@@ -60,7 +61,7 @@ const ReportingManagerMaster = () => {
     };
 
    
-    // delete projects function
+    // delete manager function
     const deleteManagerHandler = async (id) => {                            //creating a function for deleting data
         try {
             await axios.delete(`${deleteManager}` + id)          // deleting data from server
@@ -69,7 +70,7 @@ const ReportingManagerMaster = () => {
             console.log("error deleting manager", err);                                 //if error occurs then log it
         }
     }
-    // edit projects function
+    // edit manager function
 
     const [managerForm] = Form.useForm();
     let [managerId, setManagerId] = useState(null);
@@ -185,7 +186,7 @@ const ReportingManagerMaster = () => {
                                     <thead>
                                         <tr>
                                             <th scope="col">S.No.</th>
-                                            <th scope="col">Reporting Manager Id</th>
+                                            {/* <th scope="col">Reporting Manager Id</th> */}
                                             <th scope="col">Reporting Manager Name</th>
                                             <th scope="col">Designation</th>
                                             <th scope="col">Department</th>
@@ -198,7 +199,7 @@ const ReportingManagerMaster = () => {
                                                 return (
                                                     <tr key={data.reporting_manager_id}>
                                                         <th scope="row">{index + 1}</th>
-                                                        <td>{data.reporting_manager_id}</td>
+                                                        {/* <td>{data.reporting_manager_id}</td> */}
                                                         <td className='text-capitalize'>{data.name}</td>
                                                         <td className='text-capitalize'>{data.designation}</td>
                                                         <td className='text-capitalize'>{data.department}</td>

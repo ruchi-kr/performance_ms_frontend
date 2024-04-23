@@ -348,7 +348,7 @@ const EmployeeMaster = () => {
                                     <thead>
                                         <tr>
                                             <th scope="col">S.No.</th>
-                                            <th scope="col">Id</th>
+                                            {/* <th scope="col">Id</th> */}
                                             <th scope="col">Name</th>
                                             <th scope="col">Designation</th>
                                             <th scope="col">D.O.J</th>
@@ -366,7 +366,7 @@ const EmployeeMaster = () => {
                                                 return (
                                                     <tr key={data.employee_id}>
                                                         <th scope="row">{index + 1}</th>
-                                                        <td>{data.employee_id}</td>
+                                                        {/* <td>{data.employee_id}</td> */}
                                                         <td className='text-capitalize'>{data.name}</td>
                                                         <td className='text-capitalize'>{data.designation}</td>
                                                         <td>{data.doj.slice(8, 10)}/{data.doj.slice(5, 7)}/{data.doj.slice(0, 4)}</td>
