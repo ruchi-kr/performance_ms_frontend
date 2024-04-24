@@ -192,8 +192,8 @@ const ProjectMaster = () => {
                                             <th scope="col">S.No.</th>
                                             {/* <th scope="col">Project Id</th> */}
                                             <th scope="col">Project Name</th>
-                                            <th scope="col">Sche. Start Date</th>
-                                            <th scope="col">Sche. End Date</th>
+                                            <th scope="col">Schd. Start Date</th>
+                                            <th scope="col">Schd. End Date</th>
                                             <th scope="col">Action</th>
                                         </tr>
                                     </thead>

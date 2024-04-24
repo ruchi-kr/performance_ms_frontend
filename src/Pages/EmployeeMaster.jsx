@@ -3,14 +3,14 @@ import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { getAllEmployees, createEmployee, editEmployee, deleteEmployee, getManagerList,getDesignationList } from '../Config.js';
+import { getAllEmployees, createEmployee, editEmployee, deleteEmployee, getManagerList, getDesignationList } from '../Config.js';
 import { toast } from 'react-toastify';
 import { Col, Form, Input, Modal, Row, Select } from 'antd';
 const { TextArea } = Input;
 const { Option } = Select;
 const EmployeeMaster = () => {
-// to hide the reporting manager col
-const [hideManager, setHideManager] = useState(false);
+    // to hide the reporting manager col
+    const [hideManager, setHideManager] = useState(false);
 
 
 
@@ -148,12 +148,12 @@ const [hideManager, setHideManager] = useState(false);
     const filterOption = (input, option) =>
         (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
     const [managerList, setManagerList] = useState([]);
-    
+
     const [manager, setManager] = useState([]);
     const getManagers = async (value) => {
         try {
             // ?designation_id=${value}
-            const result = await axios.get(`${getManagerList}`);
+            const result = await axios.get(`${getAllEmployees}`);
             setManagerList(result.data);
             console.log("manager list", result.data);
         } catch (error) {
@@ -265,7 +265,7 @@ const [hideManager, setHideManager] = useState(false);
                                                                 value={item.designation_id}
                                                                 label={item.designation_name}
                                                             >
-                                                                {item.designation_name }
+                                                                {item.designation_name}
                                                             </Option>
                                                         ))}
                                                     </Select>
@@ -320,48 +320,60 @@ const [hideManager, setHideManager] = useState(false);
                                                 </Form.Item>
                                             </Col>
 
-                                            { (!hideManager) ?(
-                                                    <>
-                                                     <Col span={12}>
-                                                <Form.Item name="manager_id" label={<span className='text-info'>Reporting Manager</span>}
-                                                    rules={[
-                                                        { required: true, message: 'Reporting Manager is required' },
+                                            {(!hideManager) ? (
+                                                <>
+                                                    <Col span={12}>
+                                                        <Form.Item name="manager_id" label={<span className='text-info'>Reporting Manager</span>}
+                                                            rules={[
+                                                                { required: true, message: 'Reporting Manager is required' },
 
-                                                    ]}
-                                                >
-                                                    <Select
-                                                        showSearch
-                                                        allowClear
-                                                        placeholder="Select"
-                                                        optionFilterProp="children"
-                                                        filterOption={filterOption}
-                                                        onChange={handleManagerSearch}
-                                                        style={{ width: "100%" }}
-                                                        className="rounded-2"
-                                                    >
+                                                            ]}
+                                                        >
+                                                            <Select
+                                                                showSearch
+                                                                allowClear
+                                                                placeholder="Select"
+                                                                optionFilterProp="children"
+                                                                filterOption={filterOption}
+                                                                onChange={handleManagerSearch}
+                                                                style={{ width: "100%" }}
+                                                                className="rounded-2"
+                                                            >
 
-                                                        <Option value="">Select</Option>
+                                                                <Option value="">Select</Option>
 
-                                                        {managerList.map((manager, index) => (
+                                                                {/* {managerList.map((manager, index) => (
                                                             <Option
                                                                 key={index}
-                                                                value={manager.reporting_manager_id}
-                                                                label={manager.manager_name}
+                                                                value={manager.manager_id}
+                                                                label={manager.name}
                                                             >
-                                                                {manager.manager_name }
+                                                                {manager.name }
                                                             </Option>
-                                                        ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>  
-                                                    </>)
-                                                    :
-                                                    <>
-                                                    
-                                                    </>
-                                              
+                                                        ))} */}
+                                                                {managerList
+                                                                    .filter(manager => manager.manager_id === null)
+                                                                    .map((manager, index) => (
+                                                                        <Option
+                                                                            key={index}
+                                                                            value={manager.employee_id}
+                                                                            label={manager.name}
+                                                                        >
+                                                                            {manager.name}
+                                                                        </Option>
+                                                                    ))}
+
+                                                            </Select>
+                                                        </Form.Item>
+                                                    </Col>
+                                                </>)
+                                                :
+                                                <>
+
+                                                </>
+
                                             }
-                                           
+
                                         </Row>
                                         <Row gutter={[8, 4]}>
                                             <Col span={24}>
