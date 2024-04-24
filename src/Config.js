@@ -7,7 +7,7 @@ export const createProject = `${baseURL}/api/admin/addProject`;
 export const editProject = `${baseURL}/api/admin/editProject`;
 export const deleteProject = `${baseURL}/api/admin/deleteProject/`;
 
-// for employee master crud
+// for employee master crud /api/admin/getEmployees
 export const getAllEmployees = `${baseURL}/api/admin/getEmployees`;
 export const getAllEmployeeslist = `${baseURL}/api/admin/getEmployeeslist`;
 export const createEmployee = `${baseURL}/api/admin/addEmployee`;

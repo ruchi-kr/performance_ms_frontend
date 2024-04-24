@@ -46,6 +46,17 @@ const ManagerViewTask = () => {
       const response = await axios.get(`${getTask}/${employee_id}`);
       setTaskRecords(response.data);
       console.log("task records", response.data);
+      // Function to add project name to tasks
+      const tasksWithProjectName = response?.data?.map((task) => {
+        const project = projectList?.find(
+          (p) => p.project_id === task.project_id
+        );
+        return {
+          ...task,
+          project_name: project ? project.project_name : null,
+        };
+      });
+      console.log("modified task", tasksWithProjectName);
     } catch (error) {
       console.log("Error fetching tasks:", error);
     }
@@ -54,22 +65,6 @@ const ManagerViewTask = () => {
   useEffect(() => {
     fetchTasks();
   }, []);
-
-  // Function to delete a task
-  //   const handleDeleteTask = async (taskId) => {
-  //     try {
-  //       const response = await axios.delete(`${deleteTask}/${taskId}`);
-  //       setTaskRecords(taskRecords.filter((task) => task.id !== taskId));
-  //       if (response.status === 200) {
-  //         toast.success("Task Deleted Successfully");
-  //         // window.location.reload()
-  //       } else {
-  //         toast.error("Task Not Deleted");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error deleting task:", error);
-  //     }
-  //   };
 
   // Function to handle task status change
   const handleStatusChange = (index, value) => {
@@ -121,7 +116,7 @@ const ManagerViewTask = () => {
     <>
       return (
       <>
-        <Header/>
+        <Header />
         <SideNavbar />
         <div className="content-wrapper bg-white">
           <div className="content">
@@ -129,7 +124,13 @@ const ManagerViewTask = () => {
               <div className="row my-5">
                 <div className="col-10 mx-auto">
                   <div className="d-flex justify-content-between">
-                    <h3 className="text-primary ">View Employee Task</h3>
+                    <h3 className="text-primary ">
+                      {taskRecords[0]?.name}'s Daily Task Sheet
+                    </h3>
+                    <NavLink to={"/assignteam"}>
+                      <i class="bi bi-backspace">back to Teams</i>
+                      <h5 className="text-secondary ">back to teams</h5>
+                    </NavLink>
                   </div>
                   <hr className="bg-primary border-4" />
                   <table className="table table-bordered table-hover table-responsive-sm mt-5">
@@ -193,6 +194,7 @@ const ManagerViewTask = () => {
                               value={record.allocated_time}
                               onChange={(e) => handleInputChange(index, e)}
                               disabled
+                              style={{ maxWidth: "4rem" }}
                             />
                           </td>
                           <td>
@@ -203,6 +205,7 @@ const ManagerViewTask = () => {
                               value={record.actual_time}
                               onChange={(e) => handleInputChange(index, e)}
                               disabled
+                              style={{ maxWidth: "4rem" }}
                             />
                           </td>
                           <td>
