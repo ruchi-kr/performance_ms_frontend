@@ -51,12 +51,16 @@ const ManagerViewTask = () => {
         const project = projectList?.find(
           (p) => p.project_id === task.project_id
         );
+        console.log("Task:", task);
+        console.log("Matching Project:", project);
+
         return {
           ...task,
           project_name: project ? project.project_name : null,
         };
       });
       console.log("modified task", tasksWithProjectName);
+      setTaskRecords(tasksWithProjectName);
     } catch (error) {
       console.log("Error fetching tasks:", error);
     }
