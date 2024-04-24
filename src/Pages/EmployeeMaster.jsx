@@ -3,12 +3,16 @@ import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { getAllEmployees, createEmployee, editEmployee, deleteEmployee, getManagerList } from '../Config.js';
+import { getAllEmployees, createEmployee, editEmployee, deleteEmployee, getManagerList,getDesignationList } from '../Config.js';
 import { toast } from 'react-toastify';
 import { Col, Form, Input, Modal, Row, Select } from 'antd';
 const { TextArea } = Input;
 const { Option } = Select;
 const EmployeeMaster = () => {
+// to hide the reporting manager col
+const [hideManager, setHideManager] = useState(false);
+
+
 
     const [allEmployeeData, setAllEmployeeData] = useState([])
 
@@ -20,7 +24,7 @@ const EmployeeMaster = () => {
     const getAllEmployeesHandler = async (page) => {
 
         try {
-            const response = await axios.get(`${getAllEmployees}?page=${page}&pageSize=${pageSize}`);         
+            const response = await axios.get(`${getAllEmployees}?page=${page}&pageSize=${pageSize}`);
             setAllEmployeeData(response.data)
             setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
             console.log("employee details data", response.data);
@@ -28,7 +32,7 @@ const EmployeeMaster = () => {
             console.log(err);
         }
     }
-    
+
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
         getAllEmployeesHandler(pageNumber == 0 ? 1 : pageNumber);
@@ -106,7 +110,7 @@ const EmployeeMaster = () => {
 
     const employeeData = {
         name: '',
-        designation: '',
+        designation_id: '',
         doj: '',
         experience: '',
         skills: '',
@@ -130,7 +134,7 @@ const EmployeeMaster = () => {
         setModalVisible(true);
         employeeForm.setFieldsValue({
             name: employee.name,
-            designation: employee.designation,
+            designation_id: employee.designation_id,
             doj: employee.doj.split('T')[0],
             experience: employee.experience,
             skills: employee.skills,
@@ -144,9 +148,11 @@ const EmployeeMaster = () => {
     const filterOption = (input, option) =>
         (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
     const [managerList, setManagerList] = useState([]);
+    
     const [manager, setManager] = useState([]);
     const getManagers = async (value) => {
         try {
+            // ?designation_id=${value}
             const result = await axios.get(`${getManagerList}`);
             setManagerList(result.data);
             console.log("manager list", result.data);
@@ -161,8 +167,20 @@ const EmployeeMaster = () => {
     const handleManagerSearch = (value) => {
         setManager(value)
     }
+    const [designationList, setDesignationList] = useState([]);
+    const getDesignation = async (value) => {
+        try {
+            const result = await axios.get(`${getDesignationList}`);
+            setDesignationList(result.data);
+            console.log("Designation list", result.data);
+        } catch (error) {
 
-
+            console.log('Error fetching Designation list data', error)
+        }
+    }
+    useEffect(() => {
+        getDesignation();
+    }, []);
     return (
         <>
             <Header />
@@ -196,7 +214,7 @@ const EmployeeMaster = () => {
                                     centered
                                 >
                                     <Form form={employeeForm} onFinish={employeeFormSubmit} layout="vertical" disabled={formDisabled}>
-                                        <p className='text-info text-decoration-underline'>Employee Details</p>
+                                        {/* <p className='text-info text-decoration-underline'>Employee Details</p> */}
                                         <Row gutter={[8, 4]}>
                                             <Col span={12}>
                                                 <Form.Item name="name" label={<span className='text-info'>Employee Name</span>}
@@ -212,7 +230,7 @@ const EmployeeMaster = () => {
                                                 </Form.Item>
                                             </Col>
                                             <Col span={12}>
-                                                <Form.Item name="designation" label={<span className='text-info'>Designation</span>}
+                                                <Form.Item name="designation_id" label={<span className='text-info'>Designation</span>}
                                                     rules={[
                                                         { required: true, message: 'Designation is required' },
                                                         {
@@ -221,7 +239,39 @@ const EmployeeMaster = () => {
                                                         }
                                                     ]}
                                                 >
-                                                    <Input placeholder='designation' />
+                                                    {/* <Input placeholder='designation' /> */}
+                                                    <Select
+                                                        showSearch
+                                                        allowClear
+                                                        placeholder="Select"
+                                                        optionFilterProp="children"
+                                                        filterOption={filterOption}
+                                                        onChange={(value) => {
+                                                            if (value == '1') {
+                                                                setHideManager(true);
+                                                            } else {
+                                                                setHideManager(false);
+                                                            }
+                                                        }}
+                                                        style={{ width: "100%" }}
+                                                        className="rounded-2"
+                                                    >
+
+                                                        <Option value="">Select</Option>
+
+                                                        {designationList.map((item, index) => (
+                                                            <Option
+                                                                key={index}
+                                                                value={item.designation_id}
+                                                                label={item.designation_name}
+                                                            >
+                                                                {item.designation_name }
+                                                            </Option>
+                                                        ))}
+                                                    </Select>
+
+
+
                                                 </Form.Item>
                                             </Col>
                                         </Row>
@@ -251,11 +301,11 @@ const EmployeeMaster = () => {
                                             <Col span={12}>
                                                 <Form.Item name="mobile_no" label={<span className='text-info'>Mobile No.</span>}
                                                     rules={[
-                                                        // { required: true, message: 'Mobile is required' },
+                                                        { required: true, message: 'Mobile is required' },
                                                         { pattern: /^[0-9]+$/, message: 'Mobile number must contain only digits' },
                                                         { len: 10, message: 'Mobile number must be exactly 10 digits' },
-                                                      ]}>
-                                                    
+                                                    ]}>
+
                                                     <Input type="number" placeholder="mobile no." maxLength={10} />
                                                 </Form.Item>
                                             </Col>
@@ -269,8 +319,11 @@ const EmployeeMaster = () => {
                                                     <Input type="email" placeholder="you@example.com" />
                                                 </Form.Item>
                                             </Col>
-                                            <Col span={12}>
-                                                <Form.Item name="reporting_manager_id" label={<span className='text-info'>Reporting Manager</span>}
+
+                                            { (!hideManager) ?(
+                                                    <>
+                                                     <Col span={12}>
+                                                <Form.Item name="manager_id" label={<span className='text-info'>Reporting Manager</span>}
                                                     rules={[
                                                         { required: true, message: 'Reporting Manager is required' },
 
@@ -293,14 +346,22 @@ const EmployeeMaster = () => {
                                                             <Option
                                                                 key={index}
                                                                 value={manager.reporting_manager_id}
-                                                                label={manager.name}
+                                                                label={manager.manager_name}
                                                             >
-                                                                {manager.name}
+                                                                {manager.manager_name }
                                                             </Option>
                                                         ))}
                                                     </Select>
                                                 </Form.Item>
-                                            </Col>
+                                            </Col>  
+                                                    </>)
+                                                    :
+                                                    <>
+                                                    
+                                                    </>
+                                              
+                                            }
+                                           
                                         </Row>
                                         <Row gutter={[8, 4]}>
                                             <Col span={24}>
@@ -354,7 +415,7 @@ const EmployeeMaster = () => {
                                                         <td className='text-wrap'>{data.skills}</td>
                                                         <td>{data.email}</td>
                                                         <td>{data.mobile_no}</td>
-                                                        <td>{data.reporting_name}</td>
+                                                        <td>{data.manager_name}</td>
                                                         {/* <td>{manager}</td> */}
                                                         <td className='d-flex gap-2'>
                                                             <button className="btn btn-primary btn-sm" onClick={() => openEmployeeEdit(data)} >Edit</button>
@@ -366,9 +427,9 @@ const EmployeeMaster = () => {
                                         }
                                     </tbody>
                                     <tfoot >
-                                        <tr className='row' >                           
+                                        <tr className='row' >
                                             {/* Your component JSX code */}
-                                            <nav aria-label="Page navigation example"className='d-flex align-self-end mt-3'>
+                                            <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
                                                 <ul className="pagination">
                                                     <li className="page-item">
                                                         <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>

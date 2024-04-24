@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { deleteProject, getAllProjects, createProject, editProject,CONFIG_OBJ } from '../Config.js';
+import { deleteProject, getAllProjects, createProject, editProject,CONFIG_OBJ,getAllProjectsUrlPagination } from '../Config.js';
 import axios from 'axios';
 import { Col, Form, Input, Modal, Row} from 'antd';
 import { toast } from 'react-toastify'
@@ -17,7 +17,7 @@ const ProjectMaster = () => {
     const getAllProjectsHandler = async (page) => {
 
         try {
-            const response = await axios.get(`${getAllProjects}?page=${page}&pageSize=${pageSize}`);
+            const response = await axios.get(`${getAllProjectsUrlPagination}?page=${page}&pageSize=${pageSize}`);
             setAllProjectData(response.data)
             console.log("project details data", response.data);
                   

@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UserMaster from "./Pages/UserMaster";
 import EmployeeMaster from "./Pages/EmployeeMaster";
 import ProjectMaster from "./Pages/ProjectMaster";
-import ReportingManagerMaster from "./Pages/ReportingManagerMaster";
+import DesignationMaster from "./Pages/DesignationMaster";
 import Login from "./Auth/Login";
 import Forgot from "./Auth/Forgot";
 import HomePage from "./Pages/HomePage";
@@ -27,7 +27,7 @@ function App() {
             <Route path="/usermaster" element={<UserMaster />}></Route>
             <Route path="/employeemaster" element={<EmployeeMaster />}></Route>
             <Route path="/projectmaster" element={<ProjectMaster />}></Route>
-            <Route path="/rmmaster" element={<ReportingManagerMaster />} />
+            <Route path="/designationmaster" element={<DesignationMaster />} />
             <Route path="/assignteam" element={<AssignTask />}></Route>
             <Route
               path="/view/teammember/tasks/:employee_id"

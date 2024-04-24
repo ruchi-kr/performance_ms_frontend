@@ -84,9 +84,9 @@ const SideNavbar = () => {
                                             </Link>
                                         </li>
                                         <li className="nav-item  btnhovergrey mt-3">
-                                            <Link className={`nav-link text-white ${window.location.pathname === '/rmmaster' ? 'bg-cyan' : ''}`} to="/rmmaster">
+                                            <Link className={`nav-link text-white ${window.location.pathname === '/designationmaster' ? 'bg-cyan' : ''}`} to="/designationmaster">
                                                 <FontAwesomeIcon className='nav-icon' icon={faUsers} />
-                                                <p>RM Master</p>
+                                                <p>Designation Master</p>
 
                                             </Link>
                                         </li>
