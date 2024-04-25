@@ -3,7 +3,7 @@ import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { getAllEmployees, createEmployee, editEmployee, deleteEmployee, getManagerList, getDesignationList } from '../Config.js';
+import { getAllEmployees,getAllEmployeeslist, createEmployee, editEmployee, deleteEmployee, getManagerList, getDesignationList } from '../Config.js';
 import { toast } from 'react-toastify';
 import { Col, Form, Input, Modal, Row, Select } from 'antd';
 
@@ -23,7 +23,7 @@ const EmployeeMaster = () => {
     const pageSize = 10; // Number of items per page
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
-    // get all projects function
+    // get all projects function  &email=${search}
     const getAllEmployeesHandler = async (page) => {
 
         try {
@@ -46,53 +46,42 @@ const EmployeeMaster = () => {
     }, [currentPage,search]);
 
 
-  const employeeFormSubmit = (values) => {
-    employeeForm
-      .validateFields()
-      .then((values) => {
-        try {
-          const requestData = {
-            ...values,
-            id: editingEmployee ? editingEmployee.employee_id : null,
-          };
-          const url = editingEmployee
-            ? `${editEmployee}/${editingEmployee.employee_id}`
-            : `${createEmployee}`;
-          axios
-            .post(url, formatDates(requestData))
-            .then((response) => {
-              if (response.status === 200) {
-                if (editingEmployee && editingEmployee.project_id !== null) {
-                  toast.success("Employee Details Updated Successfully!");
-                } else {
-                  toast.success("Employee Added Successfully!");
+    const employeeFormSubmit = (values) => {
+        employeeForm.validateFields()
+            .then((values) => {
+                try {
+                    const requestData = { ...values, id: editingEmployee ? editingEmployee.employee_id : null };
+                    const url = editingEmployee ? `${editEmployee}/${editingEmployee.employee_id}` : `${createEmployee}`;
+                    axios.post(url,(requestData))
+                        .then((response) => {
+                            if (response.status === 200) {
+                                if (editingEmployee && editingEmployee.employee_id !== null) {
+                                    toast.success('Employee Details Updated Successfully!');
+                                } else {
+                                    toast.success('Employee Added Successfully!');
+                                }
+                                employeeForm.resetFields();
+                                setModalVisible(false);
+                                getAllEmployeesHandler();
+                            }
+                        })
+                        .catch((error) => {
+                            if (error.response && error.response.data.error === "User with this email already registered") {
+                                toast.error('User with this email already exists');
+                            } else {
+                                console.log("error employee", error.response.data);
+                                // toast.error(error.response.data.error);
+                            }
+                        });
+                } catch (error) {
+                    console.log("error", error);
+                    toast.error(error);
                 }
-                employeeForm.resetFields();
-                setModalVisible(false);
-                getAllEmployeesHandler();
-              }
             })
-            .catch((error) => {
-              if (
-                error.response &&
-                error.response.data.error ===
-                  "User with this email already registered"
-              ) {
-                toast.error("User with this email already exists");
-              } else {
-                console.log("error employee", error.response.data);
-                // toast.error(error.response.data.error);
-              }
+            .catch((errorInfo) => {
+                console.log('Validation failed:', errorInfo);
             });
-        } catch (error) {
-          console.log("error", error);
-          toast.error(error);
-        }
-      })
-      .catch((errorInfo) => {
-        console.log("Validation failed:", errorInfo);
-      });
-  };
+    };
 
   const formatDates = (data) => {
     // Extract only the date part from the datetime string
@@ -147,12 +136,13 @@ const EmployeeMaster = () => {
         employeeForm.setFieldsValue({
             name: employee.name,
             designation_id: employee.designation_id,
-            doj: employee.doj.split('T')[0],
+            doj: employee.doj,
             experience: employee.experience,
             skills: employee.skills,
             mobile_no: employee.mobile_no,
             email: employee.email,
             manager_id: employee.manager_name,
+            
         });
     }
 
@@ -163,12 +153,13 @@ const EmployeeMaster = () => {
         employeeForm.setFieldsValue({
             name: employee.name,
             designation_id: employee.designation_id,
-            doj: employee.doj.split('T')[0],
+            doj: employee.doj,
             experience: employee.experience,
             skills: employee.skills,
             mobile_no: employee.mobile_no,
             email: employee.email,
             manager_id: employee.manager_name,
+            // employee_id: employee.employee_id
         });
     };
 
@@ -181,7 +172,7 @@ const EmployeeMaster = () => {
     const getManagers = async (value) => {
         try {
             // ?designation_id=${value}
-            const result = await axios.get(`${getAllEmployees}`);
+            const result = await axios.get(`${getAllEmployeeslist}`);
             setManagerList(result.data);
             console.log("manager list", result.data);
         } catch (error) {
