@@ -6,14 +6,17 @@ import Footer from '../Components/Footer'
 import { getAllEmployees, createEmployee, editEmployee, deleteEmployee, getManagerList, getDesignationList } from '../Config.js';
 import { toast } from 'react-toastify';
 import { Col, Form, Input, Modal, Row, Select } from 'antd';
+
+import { EditOutlined,DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
 const { Option } = Select;
+const { Search } = Input;
+
 const EmployeeMaster = () => {
+    // for search
+    const [search, setSearch] = useState("");
     // to hide the reporting manager col
     const [hideManager, setHideManager] = useState(false);
-
-
-
     const [allEmployeeData, setAllEmployeeData] = useState([])
 
     // for pagination
@@ -24,7 +27,7 @@ const EmployeeMaster = () => {
     const getAllEmployeesHandler = async (page) => {
 
         try {
-            const response = await axios.get(`${getAllEmployees}?page=${page}&pageSize=${pageSize}`);
+            const response = await axios.get(`${getAllEmployees}?page=${page}&pageSize=${pageSize}&name=${search}&email=${search}`);
             setAllEmployeeData(response.data)
             setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
             console.log("employee details data", response.data);
@@ -40,7 +43,7 @@ const EmployeeMaster = () => {
 
     useEffect(() => {
         getAllEmployeesHandler(currentPage);
-    }, [currentPage]);
+    }, [currentPage,search]);
 
 
     const employeeFormSubmit = (values) => {
@@ -116,6 +119,7 @@ const EmployeeMaster = () => {
         skills: '',
         mobile_no: '',
         email: "",
+        manager_id: '',
 
     };
 
@@ -127,11 +131,9 @@ const EmployeeMaster = () => {
         employeeForm.setFieldsValue(employeeData);
         setFormDisabled(false);
     }
-
-
-    const openEmployeeEdit = async (employee) => {
-        setEditingEmployee(employee);
+    const openEmployeeView = async(employee)=>{
         setModalVisible(true);
+        setFormDisabled(true);
         employeeForm.setFieldsValue({
             name: employee.name,
             designation_id: employee.designation_id,
@@ -140,7 +142,23 @@ const EmployeeMaster = () => {
             skills: employee.skills,
             mobile_no: employee.mobile_no,
             email: employee.email,
-            reporting_manager_id: employee.reporting_manager_id,
+            manager_id: employee.manager_name,
+        });
+    }
+
+    const openEmployeeEdit = async (employee) => {
+        setEditingEmployee(employee);
+        setModalVisible(true);
+        setFormDisabled(false);
+        employeeForm.setFieldsValue({
+            name: employee.name,
+            designation_id: employee.designation_id,
+            doj: employee.doj.split('T')[0],
+            experience: employee.experience,
+            skills: employee.skills,
+            mobile_no: employee.mobile_no,
+            email: employee.email,
+            manager_id: employee.manager_name,
         });
     };
 
@@ -201,6 +219,21 @@ const EmployeeMaster = () => {
                                     </button>
                                 </div>
                                 <hr className='bg-primary border-4' />
+                                <div className=" col-2 flex-end">
+                                    <label className="text-capitalize fw-bold text-info">
+                                        Search by name or email
+                                    </label>
+                                    
+                                    <Search
+                                        placeholder="search by name or email"
+                                        allowClear
+                                        // onSearch={onSearch}
+                                        style={{
+                                            width: 200,
+                                        }}
+                                        value={search} onChange={(e) => setSearch(e.target.value)}
+                                    />
+                                </div>
                                 {/* modal */}
                                 <Modal title={editingEmployee ? 'Edit Employee' : 'Add Employee'} visible={modalVisible}
                                     onOk={employeeFormSubmit}
@@ -269,9 +302,6 @@ const EmployeeMaster = () => {
                                                             </Option>
                                                         ))}
                                                     </Select>
-
-
-
                                                 </Form.Item>
                                             </Col>
                                         </Row>
@@ -403,7 +433,7 @@ const EmployeeMaster = () => {
                                             <th scope="col">S.No.</th>
                                             {/* <th scope="col">Id</th> */}
                                             <th scope="col">Name</th>
-                                            <th scope="col">Designation</th>
+                                            {/* <th scope="col">Designation</th> */}
                                             <th scope="col">D.O.J</th>
                                             <th scope="col">Experience(in years)</th>
                                             <th scope="col">Skills</th>
@@ -421,7 +451,7 @@ const EmployeeMaster = () => {
                                                         <th scope="row">{index + 1}</th>
                                                         {/* <td>{data.employee_id}</td> */}
                                                         <td className='text-capitalize'>{data.name}</td>
-                                                        <td className='text-capitalize'>{data.designation}</td>
+                                                        {/* <td className='text-capitalize'>{data.designation_id}</td> */}
                                                         <td>{data.doj.slice(8, 10)}/{data.doj.slice(5, 7)}/{data.doj.slice(0, 4)}</td>
                                                         <td>{data.experience}</td>
                                                         <td className='text-wrap'>{data.skills}</td>
@@ -429,42 +459,46 @@ const EmployeeMaster = () => {
                                                         <td>{data.mobile_no}</td>
                                                         <td>{data.manager_name}</td>
                                                         {/* <td>{manager}</td> */}
-                                                        <td className='d-flex gap-2'>
-                                                            <button className="btn btn-primary btn-sm" onClick={() => openEmployeeEdit(data)} >Edit</button>
-                                                            <button className="btn btn-danger btn-sm" onClick={() => deleteEmployeeHandler(data.employee_id)}>Delete</button>
+                                                        <td className=''>
+                                                            {/* <button className="btn btn-primary btn-sm" onClick={() => openEmployeeEdit(data)} >Edit</button>
+                                                            <button className="btn btn-danger btn-sm" onClick={() => deleteEmployeeHandler(data.employee_id)}>Delete</button> */}
+                                                            <EyeOutlined onClick={() => openEmployeeView(data)} style={{color:"blue",marginRight:"1rem"}}/>
+                                                            {/* <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button> */}
+                                                            <EditOutlined onClick={() => openEmployeeEdit(data)} style={{color:"blue",marginRight:"1rem"}}/>
+                                                            {/* <button className="btn btn-danger btn-sm" onClick={() => deleteProjectHandler(data.project_id)}>Delete</button> */}
+                                                            <DeleteOutlined onClick={() => deleteEmployeeHandler(data.employee_id)}  style={{color:"red",marginRight:"1rem"}}/>
+
                                                         </td>
                                                     </tr>
                                                 )
                                             })
                                         }
                                     </tbody>
-                                    <tfoot >
-                                        <tr className='row' >
-                                            {/* Your component JSX code */}
-                                            <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
-                                                <ul className="pagination">
-                                                    <li className="page-item">
-                                                        <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
-                                                            <span aria-hidden="true">«</span>
-                                                        </a>
-                                                    </li>
-                                                    {Array.from({ length: totalPages }, (_, index) => (
-                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                            <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
-                                                                {index + 1}
-                                                            </a>
-                                                        </li>
-                                                    ))}
-                                                    <li className="page-item">
-                                                        <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
-                                                            <span aria-hidden="true">»</span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </tr>
-                                    </tfoot>
+                                   
                                 </table>
+                                <div className="row float-right">
+                                    <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
+                                        <ul className="pagination">
+                                            <li className="page-item">
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
+                                                    <span aria-hidden="true">«</span>
+                                                </a>
+                                            </li>
+                                            {Array.from({ length: totalPages }, (_, index) => (
+                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                    <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
+                                                        {index + 1}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                            <li className="page-item">
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
+                                                    <span aria-hidden="true">»</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
 
                             </div>
                         </div>

@@ -6,25 +6,37 @@ import Header from '../Components/Header'
 import Footer from '../Components/Footer'
 import { toast } from 'react-toastify';
 import { Col, Form, Input, Modal, Row, Select } from 'antd';
+
+import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 const { Option } = Select;
 const UserMaster = () => {
 
     const [allUserData, setAllUserData] = useState([])
-
+    // for pagination
+    const pageSize = 10; // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
     // get all projects function
-    const getAllUsersHandler = async () => {
+    const getAllUsersHandler = async (page) => {
 
         try {
-            const response = await axios.get(`${getAllUsers}`);
+            const response = await axios.get(`${getAllUsers}?page=${page}&pageSize=${pageSize}`);
             setAllUserData(response.data)
             console.log("user details data", response.data);
+            setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
         } catch (err) {
             console.log(err);
         }
     }
     useEffect(() => {
-        getAllUsersHandler();
-    }, []);
+        getAllUsersHandler(currentPage);
+    }, [currentPage]);
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
+        getAllUsersHandler(pageNumber == 0 ? 1 : pageNumber);
+    };
+
+
 
     // create project
     const userFormSubmit = (values) => {
@@ -96,10 +108,24 @@ const UserMaster = () => {
         setFormDisabled(false);
     }
 
+    const openUserView = async (user) => {
+        setModalVisible(true);
+        setFormDisabled(true);
+        userForm.setFieldsValue({
+            username: user.username,
+            password: user.password,
+            user_type: user.user_type,
+            status: user.status,
+            employee_id: user.employee_id,
+            // email_id: user.email_id,
+            role: user.role
+        });
+    }
 
     const openUserEdit = async (user) => {
         setEditingUser(user);
         setModalVisible(true);
+        setFormDisabled(false);
         userForm.setFieldsValue({
             username: user.username,
             password: user.password,
@@ -357,14 +383,17 @@ const UserMaster = () => {
                                                         <th scope="row">{index + 1}</th>
                                                         <td>{data.username}</td>
                                                         <td className='text-capitalize'>{data.password}</td>
-                                                        <td className='text-capitalize'>{data.user_type}</td>
+                                                        <td className='text-capitalize'>{data.user_type === 1 ? 'admin' : 'general'}</td>
                                                         <td className='text-capitalize'>{data.employee_name}</td>
                                                         <td className='text-capitalize'>{data.email}</td>
                                                         <td className='text-capitalize'>{data.role}</td>
                                                         <td className={`text-capitalize ${data.status === 'active' ? 'text-success' : 'text-danger'}`}>{data.status}</td>
-                                                        <td className='d-flex gap-2'>
-                                                            <button className="btn btn-primary btn-sm" onClick={() => openUserEdit(data)} >Edit</button>
-                                                            <button className="btn btn-danger btn-sm" onClick={() => deleteUserHandler(data.user_id)}>Delete</button>
+                                                        <td className=''>
+                                                            {/* <button className="btn btn-primary btn-sm" onClick={() => openUserEdit(data)} >Edit</button>
+                                                            <button className="btn btn-danger btn-sm" onClick={() => deleteUserHandler(data.user_id)}>Delete</button> */}
+                                                            <EyeOutlined onClick={() => openUserView(data)} style={{ color: "blue", marginRight: "1rem" }} />
+                                                            <EditOutlined onClick={() => openUserEdit(data)} style={{ color: "blue", marginRight: "1rem" }} />
+                                                            <DeleteOutlined onClick={() => deleteUserHandler(data.user_id)} style={{ color: "red", marginRight: "1rem" }} />
                                                         </td>
                                                     </tr>
                                                 )
@@ -372,6 +401,29 @@ const UserMaster = () => {
                                         }
                                     </tbody>
                                 </table>
+                                <div className="row float-right">
+                                    <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
+                                        <ul className="pagination">
+                                            <li className="page-item">
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
+                                                    <span aria-hidden="true">«</span>
+                                                </a>
+                                            </li>
+                                            {Array.from({ length: totalPages }, (_, index) => (
+                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                    <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
+                                                        {index + 1}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                            <li className="page-item">
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
+                                                    <span aria-hidden="true">»</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
 
                             </div>
                         </div>

@@ -6,18 +6,27 @@ import { deleteProject, getAllProjects, createProject, editProject,CONFIG_OBJ,ge
 import axios from 'axios';
 import { Col, Form, Input, Modal, Row} from 'antd';
 import { toast } from 'react-toastify'
+// import {DeleteOutlined, EditOutlined} from '@ant-design/icon'
+import { EditOutlined,DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+const { Search } = Input;
+
 const ProjectMaster = () => {
+// for search by project name
+const [project, setProject] = useState("");
+
 
     const [allProjectData, setAllProjectData] = useState([])
    // for pagination
    const pageSize = 10; // Number of items per page
    const [currentPage, setCurrentPage] = useState(1);
    const [totalPages, setTotalPages] = useState(0);
+
+
     // get all projects function
     const getAllProjectsHandler = async (page) => {
 
         try {
-            const response = await axios.get(`${getAllProjectsUrlPagination}?page=${page}&pageSize=${pageSize}`);
+            const response = await axios.get(`${getAllProjectsUrlPagination}?page=${page}&pageSize=${pageSize}&name=${project}`);
             setAllProjectData(response.data)
             console.log("project details data", response.data);
                   
@@ -34,7 +43,7 @@ const ProjectMaster = () => {
 
     useEffect(() => {
         getAllProjectsHandler(currentPage);
-    }, [currentPage]);
+    }, [currentPage, project]);
 
 
  
@@ -112,10 +121,20 @@ const ProjectMaster = () => {
         setFormDisabled(false);
     }
    
+    const openProjectView = async(project)=>{
+        setModalVisible(true);
+        setFormDisabled(true);
+        projectForm.setFieldsValue({
+            project_name: project.project_name,
+            schedule_start_date: project.schedule_start_date.split('T')[0], // Display only the date part
+            schedule_end_date: project.schedule_end_date.split('T')[0] // Display only the date part
+        });
+    }
  
     const openProjectEdit = async (project) => {
         setEditingProject(project);
         setModalVisible(true);
+        setFormDisabled(false);
         projectForm.setFieldsValue({
             project_name: project.project_name,
             schedule_start_date: project.schedule_start_date.split('T')[0], // Display only the date part
@@ -140,6 +159,22 @@ const ProjectMaster = () => {
                                     </button>
                                 </div>
                                 <hr className='bg-primary border-4' />
+                                <div className=" col-2 flex-end">
+                                    <label className="text-capitalize fw-bold text-info">
+                                        project name
+                                    </label>
+                                    
+                                    <Search
+                                        placeholder="search by project name"
+                                        allowClear
+                                        // onSearch={onSearch}
+                                        style={{
+                                            width: 200,
+                                        }}
+                                        value={project} onChange={(e) => setProject(e.target.value)}
+                                    />
+                                </div>
+
                                 <Modal title={editingProject ? 'Edit Project' : 'Add Project'} visible={modalVisible}
                                     onOk={projectFormSubmit}
                                     onCancel={() => {
@@ -152,7 +187,7 @@ const ProjectMaster = () => {
                                     centered
                                 >
                                     <Form form={projectForm} onFinish={projectFormSubmit} layout="vertical" disabled={formDisabled}>
-                                        <p className='text-info text-decoration-underline'>Project Details</p>
+                                        {/* <p className='text-info text-decoration-underline'>Project Details</p> */}
                                         <Row gutter={[8, 4]}>
                                             <Col span={12}>
                                                 <Form.Item name="project_name" label={<span className='text-info'>Project Name</span>}
@@ -207,42 +242,44 @@ const ProjectMaster = () => {
                                                         <td>{data.project_name}</td>
                                                         <td>{data.schedule_start_date.slice(8, 10)}/{data.schedule_start_date.slice(5, 7)}/{data.schedule_start_date.slice(0, 4)}</td>
                                                         <td>{data.schedule_end_date.slice(8, 10)}/{data.schedule_end_date.slice(5, 7)}/{data.schedule_end_date.slice(0, 4)}</td>
-                                                        <td className='d-flex gap-2'>
-                                                            <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button>
-                                                            <button className="btn btn-danger btn-sm" onClick={() => deleteProjectHandler(data.project_id)}>Delete</button>
+                                                        <td className=''>
+                                                        <EyeOutlined onClick={() => openProjectView(data)} style={{color:"blue", marginRight:"1rem"}}/>
+                                                            {/* <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button> */}
+                                                            <EditOutlined onClick={() => openProjectEdit(data)} style={{color:"blue",marginRight:"1rem"}}/>
+                                                            {/* <button className="btn btn-danger btn-sm" onClick={() => deleteProjectHandler(data.project_id)}>Delete</button> */}
+                                                            <DeleteOutlined onClick={() => deleteProjectHandler(data.project_id)}  style={{color:"red",marginRight:"1rem"}}/>
                                                         </td>
                                                     </tr>
                                                 )
                                             })
                                         }
                                     </tbody>
-                                    <tfoot >
-                                        <tr className='row' >                           
-                                            {/* Your component JSX code */}
-                                            <nav aria-label="Page navigation example"className='d-flex align-self-end mt-3'>
-                                                <ul className="pagination">
-                                                    <li className="page-item">
-                                                        <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
-                                                            <span aria-hidden="true">«</span>
-                                                        </a>
-                                                    </li>
-                                                    {Array.from({ length: totalPages }, (_, index) => (
-                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                            <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
-                                                                {index + 1}
-                                                            </a>
-                                                        </li>
-                                                    ))}
-                                                    <li className="page-item">
-                                                        <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
-                                                            <span aria-hidden="true">»</span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </tr>
-                                    </tfoot>
+                                   
                                 </table>
+                                <div className="row float-right">
+                                    <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
+                                        <ul className="pagination">
+                                            <li className="page-item">
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
+                                                    <span aria-hidden="true">«</span>
+                                                </a>
+                                            </li>
+                                            {Array.from({ length: totalPages }, (_, index) => (
+                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                    <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
+                                                        {index + 1}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                            <li className="page-item">
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
+                                                    <span aria-hidden="true">»</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+
                             </div>
                         </div>
                     </div>

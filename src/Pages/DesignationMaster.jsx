@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react'
 import SideNavbar from '../Components/SideNavbar.jsx'
 import Header from '../Components/Header.jsx'
 import Footer from '../Components/Footer.jsx'
-import {getAllDesignation, createDesignation, editDesignation, deleteDesignation } from '../Config.js';
+import { getAllDesignation, createDesignation, editDesignation, deleteDesignation, getDesignationList } from '../Config.js';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Col, Form, Input, Modal, Row,Select } from 'antd';
-
+import { Col, Form, Input, Modal, Row, Select } from 'antd';
+import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 const { Option } = Select;
+const { Search } = Input;
 
 
 const DesignationMaster = () => {
@@ -15,7 +16,7 @@ const DesignationMaster = () => {
     // // for employee dropdown
     // const [allEmployeeData, setAllEmployeeData] = useState(null);
     // // get all projects function
-  
+
     // useEffect(() => {
     //   const getAllEmployeesHandler = async () => {
     //     try {
@@ -29,7 +30,28 @@ const DesignationMaster = () => {
     //   getAllEmployeesHandler();
     // }, []);
 
+    // search by designation
+    const filterOption = (input, option) =>
+        (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+    // const [designationList, setDesignationList] = useState([]);
+    const [designation, setDesignation] = useState("");
+    // const getDesignation = async (value) => {
+    //     try {
+    //         const result = await axios.get(`${getDesignationList}`);
+    //         setDesignationList(result.data);
+    //         console.log("Designation list", result.data);
+    //     } catch (error) {
 
+    //         console.log('Error fetching Designation list data', error)
+    //     }
+    // }
+    // useEffect(() => {
+    //     getDesignation();
+    // }, []);
+    // const handleDesignationSearch = (value) => {
+    //     setDesignation(value);
+    //     // Setloader(true);
+    // };
     // get all manager function with pagination
     const pageSize = 10; // Number of items per page
     const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +60,7 @@ const DesignationMaster = () => {
 
     const getAllManagersHandler = async (page) => {
         try {
-            const response = await axios.get(`${getAllDesignation}?page=${page}&pageSize=${pageSize}`);
+            const response = await axios.get(`${getAllDesignation}?page=${page}&pageSize=${pageSize}&name=${designation}`);
             setAllManagerData(response.data);
             setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
         } catch (err) {
@@ -53,7 +75,7 @@ const DesignationMaster = () => {
 
     useEffect(() => {
         getAllManagersHandler(currentPage);
-    }, [currentPage]);
+    }, [currentPage, designation]);
 
 
     // create manager
@@ -132,15 +154,25 @@ const DesignationMaster = () => {
         setFormDisabled(false);
     }
 
+    const openManagerView = async (manager) => {
+        setModalVisible(true);
+        setFormDisabled(true);
+        managerForm.setFieldsValue({
+            designation_id: manager.designation_id,
+            designation_name: manager.designation_name,
+
+        });
+    }
 
     const openManagerEdit = async (manager) => {
         setEditingManager(manager);
+        setFormDisabled(false);
         console.log("editing designation", manager);
         setModalVisible(true);
         managerForm.setFieldsValue({
             designation_id: manager.designation_id,
             designation_name: manager.designation_name,
-           
+
         });
     };
 
@@ -164,6 +196,22 @@ const DesignationMaster = () => {
                                     </button>
                                 </div>
                                 <hr className='bg-primary border-4' />
+                                <div className=" col-2 flex-end">
+                                    <label className="text-capitalize fw-bold text-info">
+                                        designation
+                                    </label>
+                                    
+                                    <Search
+                                        placeholder="search by designation"
+                                        allowClear
+                                        // onSearch={onSearch}
+                                        style={{
+                                            width: 200,
+                                        }}
+                                        value={designation} onChange={(e) => setDesignation(e.target.value)}
+                                    />
+                                </div>
+
                                 {/* modal */}
                                 <Modal title={editingManager ? 'Edit Designation' : 'Add Designation'} visible={modalVisible}
                                     onOk={managerFormSubmit}
@@ -177,43 +225,8 @@ const DesignationMaster = () => {
                                     centered
                                 >
                                     <Form form={managerForm} onFinish={managerFormSubmit} layout="vertical" disabled={formDisabled}>
-                                        {/* <p className='text-info text-decoration-underline'>Manager Details</p> */}
                                         <Row gutter={[8, 4]}>
-                                            {/* <Col span={12}>
-                                                <Form.Item name="employee_id" label={<span className='text-info'>Reporting Manager Name</span>}
-                                                    rules={[
-                                                        { required: true, message: 'Reporting Manager Name is required' },
-                                                        {
-                                                            pattern: /^[&,.\-_\w\s]{1,50}$/,
-                                                            message: 'Please enter a valid Reporting Manager Name (up to 50 characters, only &, , ., -, _ special characters are allowed)'
-                                                        }
-                                                    ]}
-                                                >
-                                                    <Select
-                                                        // showSearch
-                                                        allowClear
-                                                        placeholder="Select"
-                                                        // optionFilterProp="children"
-                                                        // onChange={handleManagerSearch}
-                                                        style={{ width: "100%" }}
-                                                        className="rounded-2"
-                                                    >
-                                                      
 
-                                                        {allEmployeeData?.map((emp) => (
-                                                            
-                                                            <Option
-                                                                key={emp.employee_id}
-                                                                value={emp.employee_id}
-                                                                label={emp.name}
-                                                            >
-                                                              <input type="text" value={emp.name}/>
-                                                                {emp.name}
-                                                            </Option>
-                                                        ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col> */}
                                             <Col span={12}>
                                                 <Form.Item name="designation_name" label={<span className='text-info mt-3'>Designation</span>}
                                                     rules={[
@@ -227,19 +240,7 @@ const DesignationMaster = () => {
                                                     <Input />
                                                 </Form.Item>
                                             </Col>
-                                            {/* <Col span={12}>
-                                                <Form.Item name="department" label={<span className='text-info'>Department</span>}
-                                                    rules={[
-                                                        { required: true, message: 'Department is required' },
-                                                        {
-                                                            pattern: /^[&,.\-_\w\s]{1,50}$/,
-                                                            message: 'Please enter a valid Department Name (up to 50 characters, only &, , ., -, _ special characters are allowed)'
-                                                        }
-                                                    ]}
-                                                >
-                                                    <Input />
-                                                </Form.Item>
-                                            </Col> */}
+
                                         </Row>
                                     </Form>
                                 </Modal>
@@ -248,10 +249,9 @@ const DesignationMaster = () => {
                                     <thead>
                                         <tr>
                                             <th scope="col">S.No.</th>
-                                            {/* <th scope="col">Reporting Manager Id</th> */}
-                                            {/* <th scope="col">Reporting Manager Name</th> */}
+
                                             <th scope="col">Designation</th>
-                                            {/* <th scope="col">Department</th> */}
+
                                             <th scope="col">Action</th>
                                         </tr>
                                     </thead>
@@ -265,30 +265,32 @@ const DesignationMaster = () => {
                                                         {/* <td className='text-capitalize'>{data.employee_name}</td> */}
                                                         <td className='text-capitalize'>{data.designation_name}</td>
                                                         {/* <td className='text-capitalize'>{data.department}</td> */}
-                                                       {(index!==0 && index!==1)?
-                                                        <>
-                                                        <td className='d-flex gap-2'>
-                                                            <button className="btn btn-primary btn-sm" onClick={() => openManagerEdit(data)} >Edit</button>
-                                                            <button className="btn btn-danger btn-sm" onClick={() => deleteManagerHandler(data.reporting_manager_id)}>Delete</button>
-                                                        </td>
-                                                        </>
-                                                        :
-                                                        <>
-                                                        <td className='d-flex gap-2'>
-                                                            <button className="btn btn-primary btn-sm" disabled>Edit</button>
-                                                            <button className="btn btn-danger btn-sm" disabled>Delete</button>
-                                                        </td>
-                                                        </>
-                                                       } 
-                                                       
+                                                        {(index !== 0 && index !== 1) ?
+                                                            <>
+                                                                <td className=''>
+
+                                                                    <EyeOutlined onClick={() => openManagerView(data)} style={{ color: "blue", marginRight: "1rem" }} />
+                                                                    <EditOutlined onClick={() => openManagerEdit(data)} style={{ color: "blue", marginRight: "1rem" }} />
+                                                                    <DeleteOutlined onClick={() => deleteManagerHandler(data.designation_id)} style={{ color: "red", marginRight: "1rem" }} />
+                                                                </td>
+                                                            </>
+                                                            :
+                                                            <>
+                                                                <td className=''>
+                                                                    <EyeOutlined onClick={() => openManagerView(data)} style={{ color: "blue" }} />
+
+                                                                </td>
+                                                            </>
+                                                        }
+
                                                     </tr>
                                                 )
                                             })
                                         }
                                     </tbody>
                                     {/* <tfoot > */}
-                                        {/* <tr className='row' > */}
-                                            {/* <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
+                                    {/* <tr className='row' > */}
+                                    {/* <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
                                                 <ul className="pagination">
                                                     <li className="page-item">
                                                         <a className="page-link" href="#" aria-label="Previous">
@@ -305,32 +307,35 @@ const DesignationMaster = () => {
                                                     </li>
                                                 </ul>
                                             </nav> */}
-                                            {/* Your component JSX code */}
-                                           
-                                        {/* </tr> */}
+                                    {/* Your component JSX code */}
+
+                                    {/* </tr> */}
                                     {/* </tfoot> */}
                                 </table>
-                                <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
-                                                <ul className="pagination">
-                                                    <li className="page-item">
-                                                        <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
-                                                            <span aria-hidden="true">«</span>
-                                                        </a>
-                                                    </li>
-                                                    {Array.from({ length: totalPages }, (_, index) => (
-                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                            <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
-                                                                {index + 1}
-                                                            </a>
-                                                        </li>
-                                                    ))}
-                                                    <li className="page-item">
-                                                        <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
-                                                            <span aria-hidden="true">»</span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </nav>
+                                <div className="row float-right">
+                                    <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
+                                        <ul className="pagination">
+                                            <li className="page-item">
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
+                                                    <span aria-hidden="true">«</span>
+                                                </a>
+                                            </li>
+                                            {Array.from({ length: totalPages }, (_, index) => (
+                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                    <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
+                                                        {index + 1}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                            <li className="page-item">
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
+                                                    <span aria-hidden="true">»</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+
                             </div>
                         </div>
                     </div>
