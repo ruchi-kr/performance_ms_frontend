@@ -46,70 +46,80 @@ const EmployeeMaster = () => {
     }, [currentPage,search]);
 
 
-    const employeeFormSubmit = (values) => {
-        employeeForm.validateFields()
-            .then((values) => {
-                try {
-                    const requestData = { ...values, id: editingEmployee ? editingEmployee.employee_id : null };
-                    const url = editingEmployee ? `${editEmployee}/${editingEmployee.employee_id}` : `${createEmployee}`;
-                    axios.post(url, formatDates(requestData))
-                        .then((response) => {
-                            if (response.status === 200) {
-                                if (editingEmployee && editingEmployee.project_id !== null) {
-                                    toast.success('Employee Details Updated Successfully!');
-                                } else {
-                                    toast.success('Employee Added Successfully!');
-                                }
-                                employeeForm.resetFields();
-                                setModalVisible(false);
-                                getAllEmployeesHandler();
-                            }
-                        })
-                        .catch((error) => {
-                            if (error.response && error.response.data.error === "User with this email already registered") {
-                                toast.error('User with this email already exists');
-                            } else {
-                                console.log("error employee", error.response.data);
-                                // toast.error(error.response.data.error);
-                            }
-                        });
-                } catch (error) {
-                    console.log("error", error);
-                    toast.error(error);
-                }
-            })
-            .catch((errorInfo) => {
-                console.log('Validation failed:', errorInfo);
-            });
-    };
-
-    const formatDates = (data) => {
-        // Extract only the date part from the datetime string
-        const formattedData = {
-            ...data,
-            doj: data.doj.split('T')[0],
-
-        };
-        return formattedData;
-    };
-
-
-    // delete projects function
-    const deleteEmployeeHandler = async (id) => {                            //creating a function for deleting data
+  const employeeFormSubmit = (values) => {
+    employeeForm
+      .validateFields()
+      .then((values) => {
         try {
-            await axios.delete(`${deleteEmployee}` + id)          // deleting data from server
-            window.location.reload()                             //reloading the page
-        } catch (err) {
-            console.log("error deleting project", err);                                 //if error occurs then log it
+          const requestData = {
+            ...values,
+            id: editingEmployee ? editingEmployee.employee_id : null,
+          };
+          const url = editingEmployee
+            ? `${editEmployee}/${editingEmployee.employee_id}`
+            : `${createEmployee}`;
+          axios
+            .post(url, formatDates(requestData))
+            .then((response) => {
+              if (response.status === 200) {
+                if (editingEmployee && editingEmployee.project_id !== null) {
+                  toast.success("Employee Details Updated Successfully!");
+                } else {
+                  toast.success("Employee Added Successfully!");
+                }
+                employeeForm.resetFields();
+                setModalVisible(false);
+                getAllEmployeesHandler();
+              }
+            })
+            .catch((error) => {
+              if (
+                error.response &&
+                error.response.data.error ===
+                  "User with this email already registered"
+              ) {
+                toast.error("User with this email already exists");
+              } else {
+                console.log("error employee", error.response.data);
+                // toast.error(error.response.data.error);
+              }
+            });
+        } catch (error) {
+          console.log("error", error);
+          toast.error(error);
         }
-    }
-    // edit projects function
+      })
+      .catch((errorInfo) => {
+        console.log("Validation failed:", errorInfo);
+      });
+  };
 
-    const [employeeForm] = Form.useForm();
-    let [project_id, SetProjectId] = useState(null);
-    let [modalVisible, setModalVisible] = useState(false);
-    const [formDisabled, setFormDisabled] = useState(false);
-    const [editingEmployee, setEditingEmployee] = useState(null);
+  const formatDates = (data) => {
+    // Extract only the date part from the datetime string
+    const formattedData = {
+      ...data,
+      doj: data.doj.split("T")[0],
+    };
+    return formattedData;
+  };
+
+  // delete projects function
+  const deleteEmployeeHandler = async (id) => {
+    //creating a function for deleting data
+    try {
+      await axios.delete(`${deleteEmployee}` + id); // deleting data from server
+      window.location.reload(); //reloading the page
+    } catch (err) {
+      console.log("error deleting project", err); //if error occurs then log it
+    }
+  };
+  // edit projects function
+
+  const [employeeForm] = Form.useForm();
+  let [project_id, SetProjectId] = useState(null);
+  let [modalVisible, setModalVisible] = useState(false);
+  const [formDisabled, setFormDisabled] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState(null);
 
     const employeeData = {
         name: '',
@@ -211,8 +221,8 @@ const EmployeeMaster = () => {
                             <div className="col-12 mx-auto">
                                 {/* employee master detailed table */}
 
-                                <div className='d-flex justify-content-between'>
-                                    <h3 className='text-primary'>Employee Details</h3>
+                <div className="d-flex justify-content-between">
+                  <h3 className="text-primary">Employee Details</h3>
 
                                     <button className='btn btn-sm btn-info d-flex align-items-center' onClick={openEmployeeAdd} >
                                         <span className='fs-4'> + </span>&nbsp;Add Employee
@@ -506,9 +516,9 @@ const EmployeeMaster = () => {
                 </div>
             </div>
 
-            <Footer />
-        </>
-    )
-}
+      <Footer />
+    </>
+  );
+};
 
-export default EmployeeMaster
+export default EmployeeMaster;

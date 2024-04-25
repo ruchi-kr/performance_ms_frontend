@@ -3,71 +3,70 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar.jsx";
 import Header from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
-import {
-  getAllEmployees,
-  createEmployee,
-  editEmployee,
-  deleteEmployee,
-  getManagerList,
-} from "../Config.js";
+import { getAllEmployees } from "../Config.js";
 import { toast } from "react-toastify";
+import { Col, Form, Input, Modal, Row, Table, Select, Button, Tag } from "antd";
 import {
-  Col,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Table,
-  Select,
-  Button,
-  Space,
-  Popconfirm,
-  Tag,
-} from "antd";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleFilled,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import { formatDate } from "../utils/dateFormatter.js";
-const { TextArea } = Input;
 const { Option } = Select;
+const { confirm } = Modal;
 
-const AssignTask = () => {
+const AssignTeam = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [teamsData, setTeamsData] = useState(null);
   const [modifiedTeamsData, setModifiedTeamsData] = useState(null);
   const [allEmployeeData, setAllEmployeeData] = useState(null);
   const [projectData, setProjectData] = useState([]);
   const [form] = Form.useForm();
-  let [project_id, SetProjectId] = useState(null);
-  let [modalVisible, setModalVisible] = useState(false);
+  const [project_id, SetProjectId] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const [formDisabled, setFormDisabled] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  useEffect(() => {
-    fetchAll();
-  }, []);
+  const [managerList, setManagerList] = useState([]);
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const managerEmployeeId = user.employee_id;
 
   const fetchAll = async () => {
     const resp = await axios.get(
-      "http://localhost:8000/api/user/project/teams/5"
+      `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`
     );
     console.log("team data ******", resp.data.data);
     setTeamsData(resp.data.data);
   };
-
-  // get all projects function
-  const getAllEmployeesHandler = async () => {
-    try {
-      const response = await axios.get(`${getAllEmployees}`);
-      setAllEmployeeData(response.data);
-      console.log("employee details data", response.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
   useEffect(() => {
-    getAllEmployeesHandler();
+    fetchAll();
+  }, []);
+
+  useEffect(() => {
+    // get all projects function
+    const getAllEmployees = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/admin/getEmployees"
+        );
+        console.log("employee list get all employees", response.data);
+        const filteredUsers = response?.data?.filter(
+          (user) => user.manager_id != null
+        );
+        const filteredManagers = response?.data?.filter(
+          (user) => user.manager_id === null
+        );
+        setAllEmployeeData(filteredUsers);
+        setManagerList(filteredManagers);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getAllEmployees();
   }, []);
 
   useEffect(() => {
@@ -90,14 +89,11 @@ const AssignTask = () => {
       ),
     }));
     console.log("new populated teams", populatedTeams);
-    // setTeamsData(populatedTeams)
-    // setTeams(populatedTeams);
     setModifiedTeamsData(populatedTeams);
-  }, [allEmployeeData, teamsData]); // Ru
+  }, [allEmployeeData, teamsData]);
 
   const openEmployeeEdit = async (employee) => {
     setEditingEmployee(employee);
-
     setEditingId(employee.team_id);
     setModalVisible(true);
     setIsEditing(true);
@@ -110,7 +106,7 @@ const AssignTask = () => {
   };
 
   // create project
-  const employeeFormSubmit = (values) => {
+  const teamFormSubmit = (values) => {
     if (isAdding && !isEditing) {
       console.log("Adding values");
       form
@@ -119,7 +115,7 @@ const AssignTask = () => {
           try {
             console.log("form data", values);
             axios.post(
-              "http://localhost:8000/api/user/project/teams/5",
+              `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
               values
             );
             setIsAdding(false);
@@ -145,7 +141,7 @@ const AssignTask = () => {
               `http://localhost:8000/api/user/project/teams/${editingId}`,
               {
                 ...values,
-                reporting_manager_id: 5,
+                reporting_manager_id: managerEmployeeId,
               }
             );
             setIsEditing(false);
@@ -168,57 +164,34 @@ const AssignTask = () => {
 
   // delete projects function
   const deleteTeamHandler = async (id) => {
-    //creating a function for deleting data
-    try {
-      await axios.delete("http://localhost:8000/api/user/project/teams/" + id); // deleting data from server
-      fetchAll(); //reloading the page
-    } catch (err) {
-      console.log("error deleting project", err); //if error occurs then log it
-    }
+    confirm({
+      title: "Do you want to delete these items?",
+      icon: <ExclamationCircleFilled />,
+      content: "Be sure before deleting, this process is irreversible!",
+      async onOk() {
+        try {
+          await axios.delete(
+            "http://localhost:8000/api/user/project/teams/" + id
+          );
+          fetchAll();
+        } catch (err) {
+          console.log("error deleting project", err);
+        }
+      },
+      onCancel() {},
+    });
   };
-  // edit projects function
 
-  const employeeData = {
-    designation: "",
-    doj: "",
-    experience: "",
-    skills: "",
-    mobile_no: "",
-    email: "",
-  };
-
-  const openEmployeeAdd = () => {
+  const openTeamAdd = () => {
     window.scrollTo(0, 0);
     setModalVisible(true);
     setIsAdding(true);
     setIsEditing(false);
     setEditingEmployee(null);
     // SetProjectId(null);
-    form.setFieldsValue(employeeData);
     setFormDisabled(false);
   };
 
-  // reporting manager list
-  const filterOption = (input, option) =>
-    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
-  const [managerList, setManagerList] = useState([]);
-  const [manager, setManager] = useState([]);
-  const getManagers = async (value) => {
-    try {
-      const result = await axios.get(`${getManagerList}`);
-      setManagerList(result.data);
-      console.log("manager list", result.data);
-    } catch (error) {
-      console.log("Error fetching manager list data", error);
-    }
-  };
-  useEffect(() => {
-    getManagers();
-  }, []);
-  const handleManagerSearch = (value) => {
-    setManager(value);
-  };
-  console.log("lpproject data", projectData);
   return (
     <>
       <Header />
@@ -229,14 +202,12 @@ const AssignTask = () => {
             {/* 1st row */}
             <div className="row my-5">
               <div className="col-12 mx-auto">
-                {/* employee master detailed table */}
-
                 <div className="d-flex justify-content-between">
                   <h3 className="text-primary">Teams Details</h3>
 
                   <button
                     className="btn btn-sm btn-info d-flex align-items-center"
-                    onClick={openEmployeeAdd}
+                    onClick={openTeamAdd}
                   >
                     <span className="fs-4"> + </span>&nbsp;Add Team
                   </button>
@@ -244,9 +215,11 @@ const AssignTask = () => {
                 <hr className="bg-primary border-4" />
                 {/* modal */}
                 <Modal
-                  title={editingEmployee ? "Edit Employee" : "Add Employee"}
+                  title={
+                    editingEmployee ? "Edit Team Members" : "Add Team Members"
+                  }
                   visible={modalVisible}
-                  onOk={employeeFormSubmit}
+                  onOk={teamFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingEmployee(null);
@@ -260,7 +233,7 @@ const AssignTask = () => {
                 >
                   <Form
                     form={form}
-                    onFinish={employeeFormSubmit}
+                    onFinish={teamFormSubmit}
                     layout="vertical"
                     disabled={formDisabled}
                   >
@@ -280,16 +253,11 @@ const AssignTask = () => {
                           ]}
                         >
                           <Select
-                            // showSearch
                             allowClear
                             placeholder="Select"
-                            // optionFilterProp="children"
-                            // onChange={handleManagerSearch}
                             style={{ width: "100%" }}
                             className="rounded-2"
                           >
-                            {/* <Option value="">Select</Option> */}
-
                             {projectData.map((project) => (
                               <Option
                                 key={project.project_id}
@@ -319,13 +287,9 @@ const AssignTask = () => {
                             mode="multiple"
                             allowClear
                             placeholder="Select Team Members"
-                            // optionFilterProp="children"
-                            // onChange={handleManagerSearch}
                             style={{ width: "100%" }}
                             className="rounded-2"
                           >
-                            {/* <Option value="">Select</Option> */}
-
                             {allEmployeeData?.map((emp) => (
                               <Option
                                 key={emp.employee_id}
@@ -341,12 +305,11 @@ const AssignTask = () => {
                     </Row>
                   </Form>
                 </Modal>
-                {/* table */}
                 <table className="table table-striped table-hover mt-5">
                   <thead>
                     <tr>
                       <th scope="col">S.No.</th>
-                      <th scope="col">Project</th>
+                      <th scope="col">Project Name</th>
                       <th scope="col">Start Date / End Date </th>
                       <th scope="col">Team Members</th>
                       <th scope="col">Action</th>
@@ -360,19 +323,19 @@ const AssignTask = () => {
                           <th scope="row">{data?.project_name}</th>
                           <th scope="row">
                             <Tag
-                              color={"green"}
+                              color={"purple"}
                               key={data?.schedule_start_date}
                             >
                               {formatDate(data?.schedule_start_date)}
                             </Tag>
-                            <Tag color={"red"} key={data?.schedule_end_date}>
+                            <Tag color={"purple"} key={data?.schedule_end_date}>
                               {formatDate(data?.schedule_end_date)}
                             </Tag>
                           </th>
                           <td className="text-capitalize">
                             {data?.employee_details?.map((item) => (
                               <NavLink
-                                to={`/view/teammember/tasks/${item?.user_id}`}
+                                to={`/view/teammember/tasks/${item?.employee_id}`}
                               >
                                 <Tag color={"blue"} key={item?.index}>
                                   {item?.name}
@@ -412,4 +375,4 @@ const AssignTask = () => {
   );
 };
 
-export default AssignTask;
+export default AssignTeam;

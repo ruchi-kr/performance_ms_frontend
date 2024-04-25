@@ -7,7 +7,7 @@ import DesignationMaster from "./Pages/DesignationMaster";
 import Login from "./Auth/Login";
 import Forgot from "./Auth/Forgot";
 import HomePage from "./Pages/HomePage";
-import AssignTask from "./Pages/AssignTask";
+import AssignTeam from "./Pages/AssignTeam";
 import Employee from "./Pages/Employee";
 import Manager from "./Pages/Manager";
 import ManagerViewTask from "./Pages/ManagerViewTask";
@@ -28,7 +28,7 @@ function App() {
             <Route path="/employeemaster" element={<EmployeeMaster />}></Route>
             <Route path="/projectmaster" element={<ProjectMaster />}></Route>
             <Route path="/designationmaster" element={<DesignationMaster />} />
-            <Route path="/assignteam" element={<AssignTask />}></Route>
+            <Route path="/assignteam" element={<AssignTeam />}></Route>
             <Route
               path="/view/teammember/tasks/:employee_id"
               element={<ManagerViewTask />}
@@ -39,7 +39,7 @@ function App() {
             />
 
             <Route path="/employee" element={<Employee />}></Route>
-            <Route path="/manager" element={<AssignTask />}></Route>
+            <Route path="/manager" element={<AssignTeam />}></Route>
           </Routes>
         </BrowserRouter>
       </div>
