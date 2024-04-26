@@ -160,22 +160,27 @@ const AssignTeam = () => {
 
   // delete projects function
   const deleteTeamHandler = async (id) => {
-    confirm({
-      title: "Do you want to delete these items?",
-      icon: <ExclamationCircleFilled />,
-      content: "Be sure before deleting, this process is irreversible!",
-      async onOk() {
-        try {
-          await axios.delete(
-            "http://localhost:8000/api/user/project/teams/" + id
-          );
-          fetchAll();
-        } catch (err) {
-          console.log("error deleting project", err);
-        }
-      },
-      onCancel() {},
-    });
+    try {
+      await confirm({
+        title: "Do you want to delete these items?",
+        icon: <ExclamationCircleFilled />,
+        content: "Be sure before deleting, this process is irreversible!",
+        async onOk() {
+          try {
+            await axios.delete(
+              "http://localhost:8000/api/user/project/teams/" + id
+            );
+            fetchAll();
+          } catch (err) {
+            console.log("error deleting project", err);
+          }
+        },
+        onCancel() {},
+      });
+    } catch (error) {
+      console.log(error)
+    }
+   
   };
 
   const openTeamAdd = () => {

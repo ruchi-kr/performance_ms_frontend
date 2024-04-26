@@ -17,11 +17,12 @@ import {
   deleteTask,
   getAllEmployeeslist,
 } from "../Config.js";
-import { Select } from "antd";
+import { Select, Modal } from "antd";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 
 const { Option } = Select;
-
+const { confirm } = Modal;
 // Function to get the disabled state from local storage
 const getDisabledStateFromStorage = () => {
   const disabledState = localStorage.getItem("taskRecordsDisabledState");
@@ -163,16 +164,29 @@ const Employee = () => {
   // Function to delete a task
   const handleDeleteTask = async (taskId) => {
     try {
-      const response = await axios.delete(`${deleteTask}/${taskId}`);
-      setTaskRecords(taskRecords.filter((task) => task.id !== taskId));
-      if (response.status === 200) {
-        toast.success("Task Deleted Successfully");
-        // window.location.reload()
-      } else {
-        toast.error("Task Not Deleted");
-      }
+      await confirm({
+        title: "Do you want to delete these items?",
+        icon: <ExclamationCircleFilled />,
+        content: "Be sure before deleting, this process is irreversible!",
+        async onOk() {
+          try {
+            const response = await axios.delete(`${deleteTask}/${taskId}`);
+            setTaskRecords(taskRecords.filter((task) => task.id !== taskId));
+            fetchTasks();
+            if (response.status === 200) {
+              toast.success("Task Deleted Successfully");
+              // window.location.reload()
+            } else {
+              toast.error("Task Not Deleted");
+            }
+          } catch (err) {
+            console.log("error deleting project", err);
+          }
+        },
+        onCancel() {},
+      });
     } catch (error) {
-      console.error("Error deleting task:", error);
+      console.log(error);
     }
   };
 
@@ -237,8 +251,10 @@ const Employee = () => {
     const updatedTaskRecords = [...taskRecords];
     const temp = projectList.filter((project) => project.project_id === value);
     console.log("temp", temp);
-    console.log("temp manager", temp[0].reporting_manager_id);
-    setProjectManagerName(temp[0].reporting_manager_id);
+    console.log("temp manager", temp[0]?.reporting_manager_id);
+    setProjectManagerName(temp[0]?.reporting_manager_id);
+    updatedTaskRecords[index].manager_id = temp[0]?.reporting_manager_id;
+
     updatedTaskRecords[index].project_id = value;
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
@@ -377,8 +393,8 @@ const Employee = () => {
                                 handleManagerChange(index, value)
                               }
                               required
-                              // disabled
-                              disabled={record.formDisabled || formDisabled}
+                              disabled
+                              // disabled={record.formDisabled || formDisabled}
                             >
                               {managerList.map((manager) => (
                                 <Option
@@ -414,7 +430,7 @@ const Employee = () => {
                               style={{
                                 width:
                                   window.location.pathname !== "/plan"
-                                    ? "2.5rem"
+                                    ? "3rem"
                                     : "100%",
                               }}
                               className="form-control"
@@ -422,6 +438,9 @@ const Employee = () => {
                               onChange={(e) => handleInputChange(index, e)}
                               required
                               disabled={record.formDisabled || formDisabled}
+                              min="1"
+                              max="24"
+                              defaultValue="0"
                             />
                           </td>
                           {window.location.pathname !== "/plan" ? (
@@ -433,13 +452,15 @@ const Employee = () => {
                                   style={{
                                     width:
                                       window.location.pathname !== "/plan"
-                                        ? "2.5rem"
+                                        ? "3rem"
                                         : "100%",
                                   }}
+                                  defaultValue={0}
                                   className="form-control"
                                   value={record.actual_time}
                                   onChange={(e) => handleInputChange(index, e)}
                                   required
+                                  min={0}
                                   disabled={record.formDisabled || formDisabled}
                                 />
                               </td>
