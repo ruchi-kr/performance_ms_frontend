@@ -51,7 +51,7 @@ const AssignTeam = () => {
     const getAllEmployees = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/admin/getEmployees"
+          "http://localhost:8000/api/admin/getEmployeeslist"
         );
         console.log("employee list get all employees", response.data);
         const filteredUsers = response?.data?.filter(
@@ -156,10 +156,6 @@ const AssignTeam = () => {
           console.log("Validation failed:", errorInfo);
         });
     }
-  };
-
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
   };
 
   // delete projects function
@@ -318,9 +314,17 @@ const AssignTeam = () => {
                   <tbody className="table-group-divider">
                     {modifiedTeamsData?.map((data, index) => {
                       return (
-                        <tr key={data?.employee_id}>
+                        <tr key={data?.team_id}>
                           <th scope="row">{index + 1}</th>
-                          <th scope="row">{data?.project_name}</th>
+                          <th scope="row">
+                            <NavLink
+                              to={`/view/project/tasks/${data.project_id}`}
+                            >
+                              <Tag color="gray" key={data.index}>
+                                {data?.project_name}
+                              </Tag>
+                            </NavLink>
+                          </th>
                           <th scope="row">
                             <Tag
                               color={"purple"}

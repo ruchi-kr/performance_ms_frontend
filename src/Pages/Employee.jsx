@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { PlusOutlined, CloseOutlined, CheckOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  CloseOutlined,
+  CheckOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
@@ -10,7 +15,7 @@ import {
   getTask,
   editTask,
   deleteTask,
-  getAllEmployeeslist
+  getAllEmployeeslist,
 } from "../Config.js";
 import { Select } from "antd";
 import { toast } from "react-toastify";
@@ -19,16 +24,15 @@ const { Option } = Select;
 
 // Function to get the disabled state from local storage
 const getDisabledStateFromStorage = () => {
-  const disabledState = localStorage.getItem('taskRecordsDisabledState');
+  const disabledState = localStorage.getItem("taskRecordsDisabledState");
   return disabledState ? JSON.parse(disabledState) : {};
 };
 
 const Employee = () => {
-
   // for disable form
   const [formDisabled, setFormDisabled] = useState(false);
   const [taskSaved, setTaskSaved] = useState(false);
-
+  const [projectManagerName, setProjectManagerName] = useState(null);
 
   // user_id
   const user_id = sessionStorage.getItem("id");
@@ -44,7 +48,10 @@ const Employee = () => {
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
-      setProjectList(result.data);
+      const projectUnderManager = result.data.filter(
+        (project) => project.reporting_manager_id !== null
+      );
+      setProjectList(projectUnderManager);
       console.log("project list", result.data);
     } catch (error) {
       console.log("Error fetching project list data", error);
@@ -84,6 +91,7 @@ const Employee = () => {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(`${getTask}/${user_id}`);
+      console.log("task records", response.data);
       setTaskRecords(response.data);
     } catch (error) {
       console.log("Error fetching tasks:", error);
@@ -94,33 +102,13 @@ const Employee = () => {
     fetchTasks();
   }, []);
 
-  // Function to add a new task
-  // const handleAddTask = () => {
-  //   setTaskRecords([
-  //     ...taskRecords,
-  //     {
-  //       project_id: "",
-  //       user_id: user_id,
-  //       employee_id: employee_id,
-  //       manager_id: "",
-  //       task: "",
-  //       allocated_time: "",
-  //       actual_time: "",
-  //       status: "",
-  //       remarks: "",
-  //     },
-  //   ]);
-  //   setTaskSaved(false);
-  //   setFormDisabled(false);
-  // };
-
   const handleAddTask = () => {
     // Disable all existing rows
-    const updatedTaskRecords = taskRecords.map(record => ({
+    const updatedTaskRecords = taskRecords.map((record) => ({
       ...record,
-      formDisabled: true
+      formDisabled: true,
     }));
-  
+
     // Add a new row with formDisabled set to false
     const newTaskRecord = {
       project_id: "",
@@ -132,18 +120,21 @@ const Employee = () => {
       actual_time: "",
       status: "",
       remarks: "",
-      formDisabled: false // Enable the newly added row
+      formDisabled: false, // Enable the newly added row
     };
-  
+
     // Update the task records with the new row
     setTaskRecords([...updatedTaskRecords, newTaskRecord]);
     setTaskSaved(false);
     setFormDisabled(false); // Ensure the entire form is enabled
 
-     // Store the updated disabled state in local storage
-     localStorage.setItem('taskRecordsDisabledState', JSON.stringify([...updatedTaskRecords, newTaskRecord]));
+    // Store the updated disabled state in local storage
+    localStorage.setItem(
+      "taskRecordsDisabledState",
+      JSON.stringify([...updatedTaskRecords, newTaskRecord])
+    );
   };
-  
+
   // Function to edit a task
   const handleEditTask = (index) => {
     // Enable the row for editing
@@ -155,10 +146,13 @@ const Employee = () => {
     setFormDisabled(false); // Disable all other rows for editing
     setTaskSaved(false);
 
-     // Store the updated disabled state in local storage
-     localStorage.setItem('taskRecordsDisabledState', JSON.stringify(updatedTaskRecords));
+    // Store the updated disabled state in local storage
+    localStorage.setItem(
+      "taskRecordsDisabledState",
+      JSON.stringify(updatedTaskRecords)
+    );
   };
-  
+
   useEffect(() => {
     // Set the disabled state from local storage when component mounts
     const disabledState = getDisabledStateFromStorage();
@@ -223,7 +217,7 @@ const Employee = () => {
           setFormDisabled(true);
           toast.success("Task added Successfully");
           setFormDisabled(true);
-          
+
           console.log("form disabled", formDisabled);
         } else {
           toast.error("Task Not added");
@@ -235,12 +229,19 @@ const Employee = () => {
       console.error("Error saving task:", error);
     }
   };
-
+  //useEffect to populate manager automatically
+  // useEffect(()=>{},[updatedTaskRecords])
   // Function to handle changes in project selection
   const handleProjectChange = (index, value) => {
+    console.log("value**********", value);
     const updatedTaskRecords = [...taskRecords];
+    const temp = projectList.filter((project) => project.project_id === value);
+    console.log("temp", temp);
+    console.log("temp manager", temp[0].reporting_manager_id);
+    setProjectManagerName(temp[0].reporting_manager_id);
     updatedTaskRecords[index].project_id = value;
     setTaskRecords(updatedTaskRecords);
+    console.log("task records", taskRecords);
   };
   // Function to handle changes in project selection
   const handleManagerChange = (index, value) => {
@@ -268,18 +269,15 @@ const Employee = () => {
             <div className="row my-5">
               <div className="col-11 mx-auto">
                 <div className="d-flex justify-content-between">
-                  {
-                    window.location.pathname !== "/plan" ? (
-                      <>
+                  {window.location.pathname !== "/plan" ? (
+                    <>
                       <h3 className="text-primary">Daily Tracking Sheet</h3>
-                      </>
-                    ):(
-                      <>
+                    </>
+                  ) : (
+                    <>
                       <h3 className="text-primary">Plan Sheet</h3>
-                      </>
-                    )
-                  }
-                  
+                    </>
+                  )}
                 </div>
                 <hr className="bg-primary border-4" />
                 <table className="table table-bordered table-hover table-responsive-sm mt-5">
@@ -294,27 +292,26 @@ const Employee = () => {
                       <th className="form-label text-info fs-6 text-center">
                         Reporting Manager<span style={{ color: "red" }}>*</span>
                       </th>
+
                       <th className="form-label text-info fs-6 text-center">
                         Task<span style={{ color: "red" }}>*</span>
                       </th>
                       <th className="form-label text-info fs-6 text-center">
-                        Alloc.hrs<span style={{ color: "red" }}>*</span>
+                        All.hrs<span style={{ color: "red" }}>*</span>
                       </th>
-                      {
-                        window.location.pathname !== "/plan" ? (
-                          <>
-                            <th className="form-label text-info fs-6 text-center">
-                              Act.hrs<span style={{ color: "red" }}>*</span>
-                            </th>
-                            <th className="form-label text-info fs-6 text-center">
-                              Status<span style={{ color: "red" }}>*</span>
-                            </th>
-                            <th className="form-label text-info fs-6 text-center">
-                              Remarks<span style={{ color: "red" }}>*</span>
-                            </th>
-                          </>
-                        ) : null
-                      }
+                      {window.location.pathname !== "/plan" ? (
+                        <>
+                          <th className="form-label text-info fs-6 text-center">
+                            Act.hrs<span style={{ color: "red" }}>*</span>
+                          </th>
+                          <th className="form-label text-info fs-6 text-center">
+                            Status<span style={{ color: "red" }}>*</span>
+                          </th>
+                          <th className="form-label text-info fs-6 text-center">
+                            Remarks<span style={{ color: "red" }}>*</span>
+                          </th>
+                        </>
+                      ) : null}
 
                       <th>
                         <PlusOutlined onClick={handleAddTask} />
@@ -322,109 +319,128 @@ const Employee = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.isArray(taskRecords) && taskRecords.map((record, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>
-                          <Select
-                            showSearch
-                            allowClear
-                            placeholder="Select"
-                            optionFilterProp="children"
-                            filterOption={(input, option) =>
-                              option.label
-                                .toLowerCase()
-                                .includes(input.toLowerCase())
-                            }
-                            // style={{ width: "150px" }}
-                            style={{ width: window.location.pathname !== "/plan" ? "150px" : "100%" }}
+                    {Array.isArray(taskRecords) &&
+                      taskRecords.map((record, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>
+                            <Select
+                              showSearch
+                              allowClear
+                              placeholder="Select"
+                              optionFilterProp="children"
+                              filterOption={(input, option) =>
+                                option.label
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
+                              // style={{ width: "150px" }}
+                              style={{
+                                width:
+                                  window.location.pathname !== "/plan"
+                                    ? "150px"
+                                    : "100%",
+                              }}
+                              className="rounded-2"
+                              value={record.project_id}
+                              onChange={(value) =>
+                                handleProjectChange(index, value)
+                              }
+                              required
+                              disabled={record.formDisabled || formDisabled}
+                            >
+                              {projectList.map((project) => (
+                                <Option
+                                  key={project.project_id}
+                                  value={project.project_id}
+                                  label={project.project_name}
+                                >
+                                  {project.project_name}
+                                </Option>
+                              ))}
+                            </Select>
+                          </td>
+                          <td>
+                            <Select
+                              allowClear
+                              placeholder="Select Reporting Manager"
+                              style={{
+                                width:
+                                  window.location.pathname !== "/plan"
+                                    ? "150px"
+                                    : "100%",
+                              }}
+                              className="rounded-2"
+                              value={record.manager_id}
+                              // defaultValue={projectManagerName}
+                              onChange={(value) =>
+                                handleManagerChange(index, value)
+                              }
+                              required
+                              // disabled
+                              disabled={record.formDisabled || formDisabled}
+                            >
+                              {managerList.map((manager) => (
+                                <Option
+                                  key={manager.employee_id}
+                                  value={manager.employee_id}
+                                  label={manager.name}
+                                >
+                                  {manager.name}
+                                </Option>
+                              ))}
+                            </Select>
+                          </td>
 
-                            className="rounded-2"
-                            value={record.project_id}
-                            onChange={(value) =>
-                              handleProjectChange(index, value)
-                            }
-                            required
-                            disabled={record.formDisabled || formDisabled} 
-                          >
-                            {projectList.map((project) => (
-                              <Option
-                                key={project.project_id}
-                                value={project.project_id}
-                                label={project.project_name}
-                              >
-                                {project.project_name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </td>
-                        <td>
-                          <Select
-                            allowClear
-                            placeholder="Select Reporting Manager"
-                            // style={{ width: "150px" }}
-                            style={{ width: window.location.pathname !== "/plan" ? "150px" : "100%" }}
-                            className="rounded-2"
-                            value={record.manager_id}
-                            onChange={(value) =>
-                              handleManagerChange(index, value)
-                            }
-                            required
-                            disabled={record.formDisabled || formDisabled} 
-                          >
-                            {managerList.map((manager) => (
-                              <Option
-                                key={manager.employee_id}
-                                value={manager.employee_id}
-                                label={manager.name}
-                              >
-                                {manager.name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            name="task"
-                            className="form-control"
-                            value={record.task}
-                            // style={{ width: "150px" }}
-                            onChange={(e) => handleInputChange(index, e)}
-                            placeholder=""
-                            required
-                            disabled={record.formDisabled || formDisabled} 
-                            // disabled={formDisabled}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            step="0.01"
-                            name="allocated_time"
-                            // style={{ width: "70px" }}
-                            style={{ width: window.location.pathname !== "/plan" ? "150px" : "100%" }}
-                            className="form-control"
-                            value={record.allocated_time}
-                            onChange={(e) => handleInputChange(index, e)}
-                            required
-                            disabled={record.formDisabled || formDisabled} 
-                          />
-                        </td>
-                        {window.location.pathname !== "/plan" ?
-                          (
+                          <td>
+                            <input
+                              type="text"
+                              name="task"
+                              className="form-control"
+                              value={record.task}
+                              style={{ width: "6rem" }}
+                              onChange={(e) => handleInputChange(index, e)}
+                              placeholder=""
+                              required
+                              disabled={record.formDisabled || formDisabled}
+                              // disabled={formDisabled}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              name="allocated_time"
+                              // style={{ width: "70px" }}
+                              style={{
+                                width:
+                                  window.location.pathname !== "/plan"
+                                    ? "2.5rem"
+                                    : "100%",
+                              }}
+                              className="form-control"
+                              value={record.allocated_time}
+                              onChange={(e) => handleInputChange(index, e)}
+                              required
+                              disabled={record.formDisabled || formDisabled}
+                            />
+                          </td>
+                          {window.location.pathname !== "/plan" ? (
                             <>
                               <td>
                                 <input
                                   type="number"
                                   name="actual_time"
-                                  step="0.01"
-                                  style={{ width: "70px" }}
+                                  style={{
+                                    width:
+                                      window.location.pathname !== "/plan"
+                                        ? "2.5rem"
+                                        : "100%",
+                                  }}
                                   className="form-control"
                                   value={record.actual_time}
                                   onChange={(e) => handleInputChange(index, e)}
                                   required
-                                  disabled={record.formDisabled || formDisabled} 
+                                  disabled={record.formDisabled || formDisabled}
                                 />
                               </td>
                               <td>
@@ -436,8 +452,7 @@ const Employee = () => {
                                     handleStatusChange(index, e.target.value)
                                   }
                                   required
-                                  disabled={record.formDisabled || formDisabled} 
-
+                                  disabled={record.formDisabled || formDisabled}
                                 >
                                   <option value="">Select</option>
                                   <option value="inprocess">In Process</option>
@@ -453,39 +468,37 @@ const Employee = () => {
                                   onChange={(e) => handleInputChange(index, e)}
                                   placeholder=""
                                   required
-                                  disabled={record.formDisabled || formDisabled} 
+                                  disabled={record.formDisabled || formDisabled}
                                 />
                               </td>
                             </>
-                          )
-                          : null
-                        }
-                        <td className="d-flex gap-3">
-                          <CloseOutlined
-                            style={{ color: "red" }}
-                            onClick={() => handleDeleteTask(record.id)}
-                          />
-                          {/* <CheckOutlined
+                          ) : null}
+                          <td className="d-flex gap-3">
+                            <CloseOutlined
+                              style={{ color: "red" }}
+                              onClick={() => handleDeleteTask(record.id)}
+                            />
+                            {/* <CheckOutlined
                             style={{ color: "green" }}
                             onClick={() => saveTask(index)}
                             // disabled={formDisabled}
                             // display=
 
                           /> */}
-                          {!record.formDisabled && !taskSaved && (
-                            <CheckOutlined
-                              style={{ color: "green" }}
-                              onClick={() => saveTask(index)}
+                            {!record.formDisabled && !taskSaved && (
+                              <CheckOutlined
+                                style={{ color: "green" }}
+                                onClick={() => saveTask(index)}
+                              />
+                            )}
+                            <EditOutlined
+                              style={{ color: "blue" }}
+                              onClick={() => handleEditTask(index)}
+                              // disabled={formDisabled} // Disable the "Edit" button when form is disabled
                             />
-                          )}
-                          <EditOutlined
-                            style={{ color: "blue" }}
-                            onClick={() => handleEditTask(index)}
-                            // disabled={formDisabled} // Disable the "Edit" button when form is disabled
-                          />
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>

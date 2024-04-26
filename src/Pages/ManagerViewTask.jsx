@@ -22,6 +22,9 @@ const { Option } = Select;
 
 const ManagerViewTask = () => {
   const { employee_id } = useParams();
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const manager_id = user.employee_id;
+  console.log("manager id", manager_id);
   const filterOption = (input, option) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
   const [projectList, setProjectList] = useState([]);
@@ -43,11 +46,13 @@ const ManagerViewTask = () => {
   // Function to fetch tasks from the server
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${getTask}/${employee_id}`);
-      setTaskRecords(response.data);
-      console.log("task records", response.data);
+      const response = await axios.get(
+        `http://localhost:8000/api/project/employee/report/${manager_id}/${employee_id}/null`
+      );
+      setTaskRecords(response.data.data);
+      console.log("task records", response.data.data);
       // Function to add project name to tasks
-      const tasksWithProjectName = response?.data?.map((task) => {
+      const tasksWithProjectName = response?.data?.data?.map((task) => {
         const project = projectList?.find(
           (p) => p.project_id === task.project_id
         );
@@ -60,7 +65,7 @@ const ManagerViewTask = () => {
         };
       });
       console.log("modified task", tasksWithProjectName);
-      setTaskRecords(tasksWithProjectName);
+      // setTaskRecords(tasksWithProjectName);
     } catch (error) {
       console.log("Error fetching tasks:", error);
     }
@@ -148,10 +153,10 @@ const ManagerViewTask = () => {
                           Task<span style={{ color: "red" }}></span>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Allocated time<span style={{ color: "red" }}></span>
+                        Alloc.hrs<span style={{ color: "red" }}></span>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Actual time<span style={{ color: "red" }}></span>
+                        Act.hrs<span style={{ color: "red" }}></span>
                         </th>
                         <th className="form-label lightgreen fs-6">
                           Status<span style={{ color: "red" }}></span>
