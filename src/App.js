@@ -12,6 +12,7 @@ import Employee from "./Pages/Employee";
 import Manager from "./Pages/Manager";
 import ManagerViewTask from "./Pages/ManagerViewTask";
 import ManagerViewProjectTask from "./Pages/ManagerViewProjectTask";
+// import PlanSheet from "./Pages/PlanSheet";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             />
 
             <Route path="/employee" element={<Employee />}></Route>
+            <Route path="/plan" element={<Employee />}></Route>
             <Route path="/manager" element={<AssignTeam />}></Route>
           </Routes>
         </BrowserRouter>

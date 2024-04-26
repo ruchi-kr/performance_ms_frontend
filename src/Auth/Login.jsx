@@ -30,7 +30,7 @@ export default function Login() {
                 sessionStorage.setItem('username', JSON.stringify(result.data.result.user.username));
                 sessionStorage.setItem('user_type', JSON.stringify(result.data.result.user.user_type));
                 sessionStorage.setItem('role', JSON.stringify(result.data.result.user.role));
-                console.log("token set successfully", result.data.result.user);
+                console.log("token set successfully", result.data.result);
                 const role = result.data.result.user.role;
                 console.log("role", role)
                 if (role == "manager") {

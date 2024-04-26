@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import {forgotPasswordVerify, forgotPassword } from '../Config';
 import { useNavigate } from 'react-router-dom';
 
+
 export default function Forgot() {
 
   const [email, setEmail] = useState("")
@@ -73,7 +74,7 @@ export default function Forgot() {
       <div className='col-3 form-container'>
       
         <p className='text-center' style={{ fontSize: '40px', fontWeight: '700', lineHeight: '40px' }}><span className='text-info'>Recover your</span><br /><span className='text-dark'>Account</span></p>
-        <p className='textgrey text-center fst-italic text-secondary'>Upon entering the username you will receive an OTP to recover your account.</p>
+        <p className='textgrey text-center fst-italic text-secondary'>Upon entering the email you will receive an OTP to recover your account.</p>
         <div className="mb-3">
           <label htmlFor="exampleInput" className="form-label text-info">Email</label>
           <Input value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" type="email" placeholder="email" id='exampleInput' aria-label="default input example" />
@@ -156,11 +157,7 @@ export default function Forgot() {
                   >
                     <Input type="number" className='otpinput' min="0"  maxLength={4} value={otp} onChange={(e) => setOtp(e.target.value)}/>
                   </Form.Item>
-
-
-                  </Form>
-                 
-              
+                  </Form>            
           </Modal>
         
    </>

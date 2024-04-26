@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { PlusOutlined, CloseOutlined, CheckOutlined } from "@ant-design/icons";
+import { PlusOutlined, CloseOutlined, CheckOutlined, EditOutlined } from "@ant-design/icons";
 import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
@@ -10,13 +10,26 @@ import {
   getTask,
   editTask,
   deleteTask,
+  getAllEmployeeslist
 } from "../Config.js";
 import { Select } from "antd";
 import { toast } from "react-toastify";
 
 const { Option } = Select;
 
+// Function to get the disabled state from local storage
+const getDisabledStateFromStorage = () => {
+  const disabledState = localStorage.getItem('taskRecordsDisabledState');
+  return disabledState ? JSON.parse(disabledState) : {};
+};
+
 const Employee = () => {
+
+  // for disable form
+  const [formDisabled, setFormDisabled] = useState(false);
+  const [taskSaved, setTaskSaved] = useState(false);
+
+
   // user_id
   const user_id = sessionStorage.getItem("id");
   const user = JSON.parse(sessionStorage.getItem("user"));
@@ -45,9 +58,9 @@ const Employee = () => {
     // get all projects function
     const getAllEmployees = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/admin/getEmployees"
-        );
+        const response = await axios.get(`${getAllEmployeeslist}`);
+        //   "http://localhost:8000/api/admin/getEmployees"
+        // );
         console.log("employee list get all employees", response.data);
         const filteredUsers = response?.data?.filter(
           (user) => user.manager_id != null
@@ -82,22 +95,76 @@ const Employee = () => {
   }, []);
 
   // Function to add a new task
+  // const handleAddTask = () => {
+  //   setTaskRecords([
+  //     ...taskRecords,
+  //     {
+  //       project_id: "",
+  //       user_id: user_id,
+  //       employee_id: employee_id,
+  //       manager_id: "",
+  //       task: "",
+  //       allocated_time: "",
+  //       actual_time: "",
+  //       status: "",
+  //       remarks: "",
+  //     },
+  //   ]);
+  //   setTaskSaved(false);
+  //   setFormDisabled(false);
+  // };
+
   const handleAddTask = () => {
-    setTaskRecords([
-      ...taskRecords,
-      {
-        project_id: "",
-        user_id: user_id,
-        employee_id:employee_id,
-        manager_id: "",
-        task: "",
-        allocated_time: "",
-        actual_time: "",
-        status: "",
-        remarks: "",
-      },
-    ]);
+    // Disable all existing rows
+    const updatedTaskRecords = taskRecords.map(record => ({
+      ...record,
+      formDisabled: true
+    }));
+  
+    // Add a new row with formDisabled set to false
+    const newTaskRecord = {
+      project_id: "",
+      user_id: user_id,
+      employee_id: employee_id,
+      manager_id: "",
+      task: "",
+      allocated_time: "",
+      actual_time: "",
+      status: "",
+      remarks: "",
+      formDisabled: false // Enable the newly added row
+    };
+  
+    // Update the task records with the new row
+    setTaskRecords([...updatedTaskRecords, newTaskRecord]);
+    setTaskSaved(false);
+    setFormDisabled(false); // Ensure the entire form is enabled
+
+     // Store the updated disabled state in local storage
+     localStorage.setItem('taskRecordsDisabledState', JSON.stringify([...updatedTaskRecords, newTaskRecord]));
   };
+  
+  // Function to edit a task
+  const handleEditTask = (index) => {
+    // Enable the row for editing
+    const updatedTaskRecords = taskRecords.map((record, i) => ({
+      ...record,
+      formDisabled: i === index ? false : true,
+    }));
+    setTaskRecords(updatedTaskRecords);
+    setFormDisabled(false); // Disable all other rows for editing
+    setTaskSaved(false);
+
+     // Store the updated disabled state in local storage
+     localStorage.setItem('taskRecordsDisabledState', JSON.stringify(updatedTaskRecords));
+  };
+  
+  useEffect(() => {
+    // Set the disabled state from local storage when component mounts
+    const disabledState = getDisabledStateFromStorage();
+    setTaskRecords(disabledState);
+    setFormDisabled(true);
+  }, []);
 
   // Function to delete a task
   const handleDeleteTask = async (taskId) => {
@@ -138,6 +205,8 @@ const Employee = () => {
           payload
         );
         if (response1.status === 200) {
+          setTaskSaved(true);
+          setFormDisabled(true);
           toast.success("Task Updated Successfully");
         } else {
           toast.error("Task Not Updated");
@@ -150,7 +219,12 @@ const Employee = () => {
         // If the task doesn't have an ID, it's a new task, so create it
         const response2 = await axios.post(`${addTask}`, task, payload);
         if (response2.status === 200) {
+          setTaskSaved(true);
+          setFormDisabled(true);
           toast.success("Task added Successfully");
+          setFormDisabled(true);
+          
+          console.log("form disabled", formDisabled);
         } else {
           toast.error("Task Not added");
         }
@@ -194,7 +268,18 @@ const Employee = () => {
             <div className="row my-5">
               <div className="col-11 mx-auto">
                 <div className="d-flex justify-content-between">
-                  <h3 className="text-primary">Daily Tracking Sheet</h3>
+                  {
+                    window.location.pathname !== "/plan" ? (
+                      <>
+                      <h3 className="text-primary">Daily Tracking Sheet</h3>
+                      </>
+                    ):(
+                      <>
+                      <h3 className="text-primary">Plan Sheet</h3>
+                      </>
+                    )
+                  }
+                  
                 </div>
                 <hr className="bg-primary border-4" />
                 <table className="table table-bordered table-hover table-responsive-sm mt-5">
@@ -215,22 +300,29 @@ const Employee = () => {
                       <th className="form-label text-info fs-6 text-center">
                         Alloc.hrs<span style={{ color: "red" }}>*</span>
                       </th>
-                      <th className="form-label text-info fs-6 text-center">
-                        Act.hrs<span style={{ color: "red" }}>*</span>
-                      </th>
-                      <th className="form-label text-info fs-6 text-center">
-                        Status<span style={{ color: "red" }}>*</span>
-                      </th>
-                      <th className="form-label text-info fs-6 text-center">
-                        Remarks<span style={{ color: "red" }}>*</span>
-                      </th>
+                      {
+                        window.location.pathname !== "/plan" ? (
+                          <>
+                            <th className="form-label text-info fs-6 text-center">
+                              Act.hrs<span style={{ color: "red" }}>*</span>
+                            </th>
+                            <th className="form-label text-info fs-6 text-center">
+                              Status<span style={{ color: "red" }}>*</span>
+                            </th>
+                            <th className="form-label text-info fs-6 text-center">
+                              Remarks<span style={{ color: "red" }}>*</span>
+                            </th>
+                          </>
+                        ) : null
+                      }
+
                       <th>
                         <PlusOutlined onClick={handleAddTask} />
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {taskRecords.map((record, index) => (
+                    {Array.isArray(taskRecords) && taskRecords.map((record, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
                         <td>
@@ -244,13 +336,16 @@ const Employee = () => {
                                 .toLowerCase()
                                 .includes(input.toLowerCase())
                             }
-                            style={{ width: "150px" }}
+                            // style={{ width: "150px" }}
+                            style={{ width: window.location.pathname !== "/plan" ? "150px" : "100%" }}
+
                             className="rounded-2"
                             value={record.project_id}
                             onChange={(value) =>
                               handleProjectChange(index, value)
                             }
                             required
+                            disabled={record.formDisabled || formDisabled} 
                           >
                             {projectList.map((project) => (
                               <Option
@@ -267,13 +362,15 @@ const Employee = () => {
                           <Select
                             allowClear
                             placeholder="Select Reporting Manager"
-                            style={{ width: "150px" }}
+                            // style={{ width: "150px" }}
+                            style={{ width: window.location.pathname !== "/plan" ? "150px" : "100%" }}
                             className="rounded-2"
                             value={record.manager_id}
                             onChange={(value) =>
                               handleManagerChange(index, value)
                             }
                             required
+                            disabled={record.formDisabled || formDisabled} 
                           >
                             {managerList.map((manager) => (
                               <Option
@@ -296,64 +393,95 @@ const Employee = () => {
                             onChange={(e) => handleInputChange(index, e)}
                             placeholder=""
                             required
+                            disabled={record.formDisabled || formDisabled} 
+                            // disabled={formDisabled}
                           />
                         </td>
                         <td>
                           <input
                             type="number"
+                            step="0.01"
                             name="allocated_time"
-                            style={{ width: "70px" }}
+                            // style={{ width: "70px" }}
+                            style={{ width: window.location.pathname !== "/plan" ? "150px" : "100%" }}
                             className="form-control"
                             value={record.allocated_time}
                             onChange={(e) => handleInputChange(index, e)}
                             required
+                            disabled={record.formDisabled || formDisabled} 
                           />
                         </td>
-                        <td>
-                          <input
-                            type="number"
-                            name="actual_time"
-                            style={{ width: "70px" }}
-                            className="form-control"
-                            value={record.actual_time}
-                            onChange={(e) => handleInputChange(index, e)}
-                            required
-                          />
-                        </td>
-                        <td>
-                          <select
-                            name="status"
-                            className="form-control"
-                            value={record.status}
-                            onChange={(e) =>
-                              handleStatusChange(index, e.target.value)
-                            }
-                            required
-                          >
-                            <option value="">Select</option>
-                            <option value="inprocess">In Process</option>
-                            <option value="completed">Completed</option>
-                          </select>
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            name="remarks"
-                            className="form-control"
-                            value={record.remarks}
-                            onChange={(e) => handleInputChange(index, e)}
-                            placeholder=""
-                            required
-                          />
-                        </td>
+                        {window.location.pathname !== "/plan" ?
+                          (
+                            <>
+                              <td>
+                                <input
+                                  type="number"
+                                  name="actual_time"
+                                  step="0.01"
+                                  style={{ width: "70px" }}
+                                  className="form-control"
+                                  value={record.actual_time}
+                                  onChange={(e) => handleInputChange(index, e)}
+                                  required
+                                  disabled={record.formDisabled || formDisabled} 
+                                />
+                              </td>
+                              <td>
+                                <select
+                                  name="status"
+                                  className="form-control"
+                                  value={record.status}
+                                  onChange={(e) =>
+                                    handleStatusChange(index, e.target.value)
+                                  }
+                                  required
+                                  disabled={record.formDisabled || formDisabled} 
+
+                                >
+                                  <option value="">Select</option>
+                                  <option value="inprocess">In Process</option>
+                                  <option value="completed">Completed</option>
+                                </select>
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  name="remarks"
+                                  className="form-control"
+                                  value={record.remarks}
+                                  onChange={(e) => handleInputChange(index, e)}
+                                  placeholder=""
+                                  required
+                                  disabled={record.formDisabled || formDisabled} 
+                                />
+                              </td>
+                            </>
+                          )
+                          : null
+                        }
                         <td className="d-flex gap-3">
                           <CloseOutlined
                             style={{ color: "red" }}
                             onClick={() => handleDeleteTask(record.id)}
                           />
-                          <CheckOutlined
+                          {/* <CheckOutlined
                             style={{ color: "green" }}
                             onClick={() => saveTask(index)}
+                            // disabled={formDisabled}
+                            // display=
+
+                          /> */}
+                          {!record.formDisabled && !taskSaved && (
+                            <CheckOutlined
+                              style={{ color: "green" }}
+                              onClick={() => saveTask(index)}
+                            />
+                          )}
+                          <EditOutlined
+                            style={{ color: "blue" }}
+                            onClick={() => handleEditTask(index)}
+                            // disabled={formDisabled} // Disable the "Edit" button when form is disabled
                           />
                         </td>
                       </tr>

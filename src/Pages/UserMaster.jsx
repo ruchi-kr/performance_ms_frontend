@@ -9,7 +9,13 @@ import { Col, Form, Input, Modal, Row, Select } from 'antd';
 
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 const { Option } = Select;
+const { Search } = Input;
+
 const UserMaster = () => {
+
+    // for search 
+    const[search, setSearch] = useState("")
+
 
     const [allUserData, setAllUserData] = useState([])
     // for pagination
@@ -20,7 +26,7 @@ const UserMaster = () => {
     const getAllUsersHandler = async (page) => {
 
         try {
-            const response = await axios.get(`${getAllUsers}?page=${page}&pageSize=${pageSize}`);
+            const response = await axios.get(`${getAllUsers}?page=${page}&pageSize=${pageSize}&name=${search}&email=${search}&role=${search}`);
             setAllUserData(response.data)
             console.log("user details data", response.data);
             setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
@@ -30,7 +36,7 @@ const UserMaster = () => {
     }
     useEffect(() => {
         getAllUsersHandler(currentPage);
-    }, [currentPage]);
+    }, [currentPage,search]);
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
         getAllUsersHandler(pageNumber == 0 ? 1 : pageNumber);
@@ -180,6 +186,21 @@ const UserMaster = () => {
                                     </button>
                                 </div>
                                 <hr className='bg-primary border-4' />
+                                <div className=" col-2 flex-end">
+                                    <label className="text-capitalize fw-bold text-info">
+                                        Search by name or email
+                                    </label>
+                                    
+                                    <Search
+                                        placeholder="search by username, email or role"
+                                        allowClear
+                                        // onSearch={onSearch}
+                                        style={{
+                                            width: 200,
+                                        }}
+                                        value={search} onChange={(e) => setSearch(e.target.value)}
+                                    />
+                                </div>
                                 {/* modal */}
                                 <Modal title={editingUser ? 'Edit User' : 'Add User'} visible={modalVisible}
                                     onOk={userFormSubmit}

@@ -90,13 +90,23 @@ const SideNavbar = () => {
 
                                             </Link>
                                         </li>
-
-
-
-
                                     </>
                                     :
                                     <>
+                                        <li className="nav-item btnhovergrey mt-3">
+                                            <Link className={`nav-link text-white ${window.location.pathname === '/plan' ? 'bg-cyan' : ''}`} to="/plan">
+                                                <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
+                                                <p>Plan Sheet</p>
+                                            </Link>
+
+                                        </li>
+                                        <li className="nav-item btnhovergrey mt-3">
+                                            <Link className={`nav-link text-white ${window.location.pathname === '/employee' ? 'bg-cyan' : ''}`} to="/employee">
+                                                <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
+                                                <p>DTS</p>
+                                            </Link>
+
+                                        </li>
                                         <li className="nav-item fixed-bottom ">
                                             <button className="nav-link text-white text-left" onClick={() => logout()}>
                                                 <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
