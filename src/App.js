@@ -14,6 +14,8 @@ import ManagerViewTask from "./Pages/ManagerViewTask";
 import ManagerViewProjectTask from "./Pages/ManagerViewProjectTask";
 // import PlanSheet from "./Pages/PlanSheet";
 
+import EmployeeReport from "./Pages/EmployeeReport";
+
 function App() {
   return (
     <>
@@ -42,6 +44,8 @@ function App() {
             <Route path="/employee" element={<Employee />}></Route>
             <Route path="/plan" element={<Employee />}></Route>
             <Route path="/manager" element={<AssignTeam />}></Route>
+
+            <Route path="/employeereport" element={<EmployeeReport />}></Route>
           </Routes>
         </BrowserRouter>
       </div>

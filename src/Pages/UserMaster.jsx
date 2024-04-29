@@ -282,10 +282,7 @@ const UserMaster = () => {
                                             </Col> */}
                                             <Col span={12}>
                                                 <Form.Item name="role" label={<span className='text-info'>Role</span>}
-                                                    rules={[
-                                                        { required: true, message: 'Role is required' },
-
-                                                    ]}
+                                                   
                                                 >
                                                     <Select
                                                         showSearch
@@ -422,6 +419,7 @@ const UserMaster = () => {
                                         }
                                     </tbody>
                                 </table>
+                                {/* pagination */}
                                 <div className="row float-right">
                                     <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
                                         <ul className="pagination">

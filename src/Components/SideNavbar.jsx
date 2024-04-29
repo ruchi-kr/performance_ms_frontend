@@ -13,8 +13,8 @@ const SideNavbar = () => {
     const navigate = useNavigate();
 
     const user_type = sessionStorage.getItem('user_type');
-
-
+    const role = JSON.parse(sessionStorage.getItem('role'));
+  
     const logout = () => {
         sessionStorage.clear();
         navigate("/login");
@@ -93,26 +93,59 @@ const SideNavbar = () => {
                                     </>
                                     :
                                     <>
-                                        <li className="nav-item btnhovergrey mt-3">
-                                            <Link className={`nav-link text-white ${window.location.pathname === '/plan' ? 'bg-cyan' : ''}`} to="/plan">
-                                                <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
-                                                <p>Plan Sheet</p>
-                                            </Link>
+                                        {(role === "employee") ?
+                                            <>
+                                                <li className="nav-item btnhovergrey mt-3">
+                                                    <Link className={`nav-link text-white ${window.location.pathname === '/plan' ? 'bg-cyan' : ''}`} to="/plan">
+                                                        <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
+                                                        <p>Plan Sheet</p>
+                                                    </Link>
 
-                                        </li>
-                                        <li className="nav-item btnhovergrey mt-3">
-                                            <Link className={`nav-link text-white ${window.location.pathname === '/employee' ? 'bg-cyan' : ''}`} to="/employee">
-                                                <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
-                                                <p>DTS</p>
-                                            </Link>
+                                                </li>
+                                                <li className="nav-item btnhovergrey mt-3">
+                                                    <Link className={`nav-link text-white ${window.location.pathname === '/employee' ? 'bg-cyan' : ''}`} to="/employee">
+                                                        <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
+                                                        <p>DTS</p>
+                                                    </Link>
 
-                                        </li>
-                                        <li className="nav-item fixed-bottom ">
-                                            <button className="nav-link text-white text-left" onClick={() => logout()}>
-                                                <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
-                                                <p>Logout</p>
-                                            </button>
-                                        </li>
+                                                </li>
+                                                <li className="nav-item btnhovergrey mt-3">
+                                                    <Link className={`nav-link text-white ${window.location.pathname === '/employeereport' ? 'bg-cyan' : ''}`} to="/employeereport">
+                                                        <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
+                                                        <p>Reports</p>
+                                                    </Link>
+
+                                                </li>
+                                                <li className="nav-item fixed-bottom ">
+                                                    <button className="nav-link text-white text-left" onClick={() => logout()}>
+                                                        <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
+                                                        <p>Logout</p>
+                                                    </button>
+                                                </li>
+                                            </>
+                                            :
+                                            <>
+                                                <li className="nav-item btnhovergrey mt-3">
+                                                    <Link className={`nav-link text-white ${window.location.pathname === '/assignteam' ? 'bg-cyan' : ''}`} to="/assignteam">
+                                                        <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
+                                                        <p>Team</p>
+                                                    </Link>
+
+                                                </li>
+                                                <li className="nav-item btnhovergrey mt-3">
+                                                    <Link className={`nav-link text-white ${window.location.pathname === '' ? 'bg-cyan' : ''}`} to="">
+                                                        <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
+                                                        <p>Reports</p>
+                                                    </Link>
+                                                </li>
+                                                <li className="nav-item fixed-bottom ">
+                                                    <button className="nav-link text-white text-left" onClick={() => logout()}>
+                                                        <FontAwesomeIcon className='nav-icon' icon={faArrowRightFromBracket} />
+                                                        <p>Logout</p>
+                                                    </button>
+                                                </li>
+                                            </>
+                                        }
                                     </>
                             }
 
