@@ -16,7 +16,7 @@ const Header = () => {
 
     // const name = sessionStorage.getItem('username');
     const role = JSON.parse(sessionStorage.getItem('role'));
-
+const user_type = JSON.parse(sessionStorage.getItem('user_type'));
 
     const logout = () => {
         sessionStorage.clear();
@@ -48,7 +48,16 @@ const Header = () => {
                         {/* </div> */}
                         <div className="info"style={{ lineHeight: '0.2' }} >
                             <p className='text-white'>{username}</p>
-                            <p className='text-dark bg-white p-2 text-sm rounded-2 mb-0 text-capitalize'>{role}</p>
+                            {
+                                (role!=="")?
+                                <>
+                                 <p className='text-dark bg-white p-2 text-sm rounded-2 mb-0 text-capitalize'>{role}</p>
+                                </>:
+                                <>
+                                 <p className='text-dark bg-white p-2 text-sm rounded-2 mb-0 text-capitalize'>{user_type === 1 ? 'Admin' : 'General'}</p>
+                                </>
+                            }
+                           
                         </div>
                     </li>
                     <li className="nav-item ">
