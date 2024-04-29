@@ -46,6 +46,9 @@ export const addTask = `${baseURL}/api/user/addTask`;
 export const editTask =   `${baseURL}/api/user/updateTask/`;
 export const getTask = `${baseURL}/api/user/getTasks`;
 
+// for reports
+export const getEmployeeReport = `${baseURL}/api/user/getReports`;
+
 export const CONFIG_OBJ = {                                         //config object
     headers: {
       "Content-Type": "application/json",
