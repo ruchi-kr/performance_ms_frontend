@@ -4,11 +4,13 @@ import { useParams, NavLink } from "react-router-dom";
 import Header from "../Components/Header";
 import SideNavbar from "../Components/SideNavbar";
 import Footer from "../Components/Footer";
-import { Flex, Space, Table, Tag } from "antd";
+import { Flex, Space, Table, Tag, Input } from "antd";
+const { Search } = Input;
 const ManagerViewProjectTask = () => {
   const { project_id } = useParams();
-  console.log("project_id",project_id)
+  console.log("project_id", project_id);
   const [taskRecords, setTaskRecords] = useState([]);
+  const [search, setSearch] = useState("");
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user.employee_id;
   console.log("manager id", manager_id);
@@ -16,7 +18,7 @@ const ManagerViewProjectTask = () => {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/project/employee/report/${manager_id}/null/${project_id}`
+        `http://localhost:8000/api/project/employee/report/${manager_id}/null/${project_id}/?search=${search}`
       );
       setTaskRecords(response.data.data);
       console.log("task records", response.data.data);
@@ -32,6 +34,20 @@ const ManagerViewProjectTask = () => {
   }, []);
   console.log("project id", project_id);
 
+  // search functionality
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearch();
+    }, 2500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [search]);
+  const onSearch = async () => {
+    if (search === null || search === undefined) return;
+    fetchTasks();
+  };
   return (
     <>
       <Header />
@@ -51,11 +67,27 @@ const ManagerViewProjectTask = () => {
                   </NavLink>
                 </div>
                 <hr className="bg-primary border-4" />
-                <table className="table table-bordered table-hover table-responsive-sm mt-5">
+                <div className=" col-2 flex-end mt-4">
+                  {/* <label className="text-capitalize fw-bold text-info">
+                    Search by name
+                  </label> */}
+
+                  <Search
+                    placeholder="search by name"
+                    allowClear
+                    // onSearch={onSearch}
+                    style={{
+                      width: 200,
+                    }}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
+                <table className="table table-bordered table-hover table-responsive-sm mt-4">
                   <thead>
                     <tr>
                       <th className="form-label lightgreen fs-6">S.No.</th>
-                     
+
                       <th className="form-label lightgreen fs-6">
                         Employee Name<span style={{ color: "red" }}></span>
                       </th>
@@ -80,8 +112,14 @@ const ManagerViewProjectTask = () => {
                     {taskRecords.map((record, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                       
-                        <td><NavLink to={`/view/teammember/tasks/${record?.employee_id}`}><Tag color="blue">{record.name}</Tag></NavLink></td>
+
+                        <td>
+                          <NavLink
+                            to={`/view/teammember/tasks/${record?.employee_id}`}
+                          >
+                            <Tag color="blue">{record.name}</Tag>
+                          </NavLink>
+                        </td>
                         <td>
                           <input
                             type="text"
