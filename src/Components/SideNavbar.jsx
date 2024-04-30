@@ -149,7 +149,7 @@ const SideNavbar = () => {
 
                                                 </li>
                                                 <li className="nav-item btnhovergrey mt-3">
-                                                    <Link className={`nav-link text-white ${window.location.pathname === '' ? 'bg-cyan' : ''}`} to="">
+                                                    <Link className={`nav-link text-white ${window.location.pathname === '' ? 'bg-cyan' : ''}`} to="/manager/report/project">
                                                         <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
                                                         <p>Reports</p>
                                                     </Link>
