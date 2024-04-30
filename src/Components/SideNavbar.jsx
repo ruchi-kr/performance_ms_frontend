@@ -14,7 +14,7 @@ const SideNavbar = () => {
 
     const user_type = sessionStorage.getItem('user_type');
     const role = JSON.parse(sessionStorage.getItem('role'));
-  
+
     const logout = () => {
         sessionStorage.clear();
         navigate("/login");
@@ -110,11 +110,27 @@ const SideNavbar = () => {
 
                                                 </li>
                                                 <li className="nav-item btnhovergrey mt-3">
-                                                    <Link className={`nav-link text-white ${window.location.pathname === '/employeereport' ? 'bg-cyan' : ''}`} to="/employeereport">
+                                                    <a href="" className="nav-link text-white">
                                                         <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
                                                         <p>Reports</p>
-                                                    </Link>
-
+                                                        <i className="fas fa-angle-left right"></i>
+                                                    </a>
+                                                    <ul className="nav nav-treeview mt-3">
+                                                        <div>
+                                                            <li className="nav-item">
+                                                                <Link className={`nav-link text-white ${window.location.pathname === '/reportproject-wise' ? 'bg-cyan' : ''}`} to="/reportproject-wise">
+                                                                    <i className="far fa-circle nav-icon" />
+                                                                    <p>Project-wise</p>
+                                                                </Link>
+                                                            </li>
+                                                            <li className="nav-item">
+                                                                <Link to="/reportdate-wise" className={`nav-link text-white ${window.location.pathname === '/reportdate-wise' ? 'bg-cyan' : ''}`}>
+                                                                    <i className="far fa-circle nav-icon" />
+                                                                    <p>Date-wise</p>
+                                                                </Link>
+                                                            </li>
+                                                        </div>
+                                                    </ul>
                                                 </li>
                                                 <li className="nav-item fixed-bottom ">
                                                     <button className="nav-link text-white text-left" onClick={() => logout()}>
