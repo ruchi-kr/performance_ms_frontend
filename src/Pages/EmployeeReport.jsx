@@ -116,7 +116,7 @@ useEffect(() => {
                     <div className="container-fluid bg-white">
                         <div className="row mt-5">
                             <div className="col-11 mx-auto">
-                                <h3 className='text-primary'>Reports</h3>
+                                <h3 className='text-primary'>Project-wise Reports</h3>
                                 <hr className='bg-primary border-4' />
                                 <div className='d-flex justify-content-between'>
                                     <div className="col-2">
@@ -190,8 +190,9 @@ useEffect(() => {
                                             <th scope="col">Project Name</th>
                                             <th scope="col">Schd. Start Date</th>
                                             <th scope="col">Schd. End Date</th>
-                                            <th scope="col">Man hrs</th>
+                                            
                                             <th scope="col">Alloc hrs</th>
+                                            <th scope="col">Man hrs</th>
                                         </tr>
                                     </thead>
 
@@ -203,8 +204,9 @@ useEffect(() => {
                                                     <td className='text-capitalize'>{item.project_name}</td>
                                                     <td>{item.schedule_start_date.slice(8, 10)}/{item.schedule_start_date.slice(5, 7)}/{item.schedule_start_date.slice(0, 4)}</td>
                                                     <td>{item.schedule_end_date.slice(8, 10)}/{item.schedule_end_date.slice(5, 7)}/{item.schedule_end_date.slice(0, 4)}</td>
-                                                    <td>{item.total_actual_hours}</td>
+                                                    
                                                     <td>{item.total_allocated_hours}</td>
+                                                    <td>{item.total_actual_hours}</td>
                                                 </tr>
                                                 {expandedRow === index && (
 
