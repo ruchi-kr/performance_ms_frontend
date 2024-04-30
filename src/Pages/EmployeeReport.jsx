@@ -4,11 +4,38 @@ import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
 import { getEmployeeReport } from '../Config'
-import { Input } from 'antd';
+import { Input, DatePicker, Button, } from 'antd';
+import moment from "moment";
 import { toast } from 'react-toastify';
 const { Search } = Input;
 
 const EmployeeReport = () => {
+
+    // for search by date
+    const dateFormat = "DD/MM/YYYY";
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
+
+    const handleFromDateChange = (date) => {
+        setFromDate(date);
+    };
+
+    const handleToDateChange = (date) => {
+        setToDate(date);
+    };
+
+    const handleSearchByDateRange = (value) => {
+        const currentDate = moment();
+        if (fromDate && fromDate.isAfter(currentDate)) {
+            toast.error("From date cannot be a future date");
+        } else if (toDate && toDate.isAfter(currentDate)) {
+            toast.error("To date cannot be a future date");
+        } else if (fromDate && toDate && fromDate.isAfter(toDate)) {
+            toast.error("From date cannot be greater than to date");
+        }else {
+          
+          }
+    };
     const user_id = sessionStorage.getItem("id");
     // for pagination
     const pageSize = 10; // Number of items per page
@@ -17,25 +44,48 @@ const EmployeeReport = () => {
     const [search, setSearch] = useState("");
     const [reportData, setReportData] = useState([])
     // get all reports function
+    // const getEmployeeReportHandler = async (page) => {
+
+    //     try {
+    //         // const response = await axios.get(`/api/user/getReports/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}&fromDate=${fromDate}&toDate=${toDate}`);
+    //         // const response = await axios.get(`${getEmployeeReport}/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}`);
+    //         const response = await axios.get(`/api/user/getReports/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}`, {
+    //             params: {fromDate, toDate }
+    //           });
+    //         setReportData(response.data)
+    //         console.log("report data", response.data);
+    //         const tasksArray = JSON.parse(response.data[3].tasks);
+
+    //         // Now you can access individual tasks
+    //         console.log("task array", tasksArray);
+    //         setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // }
+    // useEffect(() => {
+    //     getEmployeeReportHandler(currentPage);
+    // }, [currentPage, search]);
+
     const getEmployeeReportHandler = async (page) => {
-
         try {
-            const response = await axios.get(`${getEmployeeReport}/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}`);
-            // ?page=${page}&pageSize=${pageSize}
-            setReportData(response.data)
-            console.log("report data", response.data);
-            const tasksArray = JSON.parse(response.data[3].tasks);
-
-            // Now you can access individual tasks
-            console.log("task array", tasksArray);
-            setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
+          const response = await axios.get(`${getEmployeeReport}/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}&fromDate=${fromDate}&toDate=${toDate}`);
+          
+          setReportData(response.data);
+          console.log("report data", response.data);
+          
+          const tasksArray = JSON.parse(response.data[3].tasks);
+          console.log("task array", tasksArray);
+          
+          setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
         } catch (err) {
-            console.log(err);
+          console.log(err);
         }
-    }
-    useEffect(() => {
+      }
+      
+      useEffect(() => {
         getEmployeeReportHandler(currentPage);
-    }, [currentPage, search]);
+      }, [currentPage, search, fromDate, toDate]);
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
@@ -52,6 +102,7 @@ const EmployeeReport = () => {
     };
 
 
+
     return (
         <>
             <Header />
@@ -63,7 +114,8 @@ const EmployeeReport = () => {
                             <div className="col-11 mx-auto">
                                 <h3 className='text-primary'>Reports</h3>
                                 <hr className='bg-primary border-4' />
-                                <div className="col-2 flex-end">
+                                <div className='d-flex justify-content-between'>
+                                <div className="col-2">
                                     <label className="text-capitalize fw-bold text-info">
                                         project name
                                     </label>
@@ -78,8 +130,51 @@ const EmployeeReport = () => {
                                         value={search} onChange={(e) => setSearch(e.target.value)}
                                     />
                                 </div>
-                            </div>
+                                <div className='d-flex align-items-center'>
+                                    <div className="col-sm-4 col-md-3 col-lg-4">
+                                        <div className="mb-3">
+                                            <label className="text-capitalize textcolumntitle fw-bold text-info">
+                                                From Recd. Date
+                                            </label>
+                                            <DatePicker
+                                                onChange={handleFromDateChange}
+                                                placeholder="From Date"
+                                                style={{ width: "100%", boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)" }}
+                                                className="rounded-2"
+                                                format={dateFormat}
+                                                showTime={false}
+                                            />
+                                        </div>
+                                    </div>
 
+                              
+                                  <div className="col-sm-4 col-md-3 col-lg-4">
+                                     <div className="mb-3">
+                                        <label className="text-capitalize textcolumntitle fw-bold text-info">
+                                            To Recd. Date
+                                        </label>
+                                        <DatePicker
+                                            onChange={handleToDateChange}
+                                            placeholder="To Date"
+                                            style={{ width: "100%", boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)" }}
+                                            className="rounded-2"
+                                            format={dateFormat}
+                                            showTime={false}
+                                        />
+                                     </div>
+                                   </div>
+                                  <div className="col-sm-4 col-md-1 col-lg-1 ">
+                                    <Button
+                                        className="py-1 px-2 mt-3 btn btn-info btn-sm rounded-2"
+                                        onClick={handleSearchByDateRange}
+                                    >
+                                        Search
+                                    </Button>
+                                  </div>
+                                </div>
+                                </div>
+                               
+                            </div>
                         </div>
                         <div className="row">
                             <div className="col-11 mx-auto">
@@ -95,25 +190,7 @@ const EmployeeReport = () => {
                                             <th scope="col">Alloc hrs</th>
                                         </tr>
                                     </thead>
-                                    {/* <tbody className="table-group-divider">
 
-                                        {
-                                            reportData.map((item, index) => {
-                                                return (
-                                                    <tr key={item.user_id}>
-                                                        <th scope="row">{index + 1}</th>
-                                                        <td className='text-capitalize'>{item.project_name}</td>
-                                                        <td>{item.schedule_start_date.slice(8, 10)}/{item.schedule_start_date.slice(5, 7)}/{item.schedule_start_date.slice(0, 4)}</td>
-                                                        <td>{item.schedule_end_date.slice(8, 10)}/{item.schedule_end_date.slice(5, 7)}/{item.schedule_end_date.slice(0, 4)}</td>
-
-                                                        <td>{item.total_actual_hours}</td>
-
-                                                        <td>{item.total_allocated_hours}</td>
-                                                    </tr>
-                                                )
-                                            })
-                                        }
-                                    </tbody> */}
                                     <tbody className="table-group-divider">
                                         {reportData.map((item, index) => (
                                             <React.Fragment key={item.user_id}>
@@ -129,15 +206,7 @@ const EmployeeReport = () => {
 
                                                     <tr>
                                                         <td colSpan="12">
-                                                            {/* <p>
-                                                            {JSON.parse(item.tasks).map((task, taskIndex) => (
-                                                                // <span key={taskIndex}>
-                                                                //      {task.task}, Status: {task.status}, Allocated Time: {task.allocated_time}, Actual Time: {task.actual_time}
-                                                                //     <br />
-                                                                // </span>
-                                                                // <p key={taskIndex}>Task: {task.task}, Status: {task.status}, Allocated Time: {task.allocated_time}, Actual Time: {task.actual_time}</p>
-                                                            ))}
-                                                        </p> */}
+
                                                             <table className='col-11 mx-auto'>
                                                                 <thead>
                                                                     <tr>
@@ -152,7 +221,7 @@ const EmployeeReport = () => {
                                                                     {JSON.parse(item.tasks).map((task, taskIndex) => (
                                                                         <tr key={taskIndex}>
                                                                             <td>{task.task}</td>
-                                                                            <td>{task.created_at.slice(8,10)}/{task.created_at.slice(5,7)}/{task.created_at.slice(0,4)}</td>
+                                                                            <td>{task.created_at.slice(8, 10)}/{task.created_at.slice(5, 7)}/{task.created_at.slice(0, 4)}</td>
                                                                             <td>{task.status}</td>
                                                                             <td>{task.allocated_time}</td>
                                                                             <td>{task.actual_time}</td>
