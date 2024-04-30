@@ -13,6 +13,7 @@ import Manager from "./Pages/Manager";
 import ManagerViewTask from "./Pages/ManagerViewTask";
 import ManagerViewProjectTask from "./Pages/ManagerViewProjectTask";
 import ProjectReport from "./Pages/ProjectReport";
+import ManagerEmployeeReport from "./Pages/ManagerEmployeeReport";
 // import PlanSheet from "./Pages/PlanSheet";
 
 import EmployeeReport from "./Pages/EmployeeReport";
@@ -47,10 +48,20 @@ function App() {
             <Route path="/plan" element={<Employee />}></Route>
             <Route path="/manager" element={<AssignTeam />}></Route>
 
-            <Route path="/reportproject-wise" element={<EmployeeReport />}></Route>
-            <Route path="/reportdate-wise" element={<EmployeeReportDateWise />}></Route>
+            <Route
+              path="/reportproject-wise"
+              element={<EmployeeReport />}
+            ></Route>
+            <Route
+              path="/reportdate-wise"
+              element={<EmployeeReportDateWise />}
+            ></Route>
 
             <Route path="/manager/report/project" element={<ProjectReport />} />
+            <Route
+              path="/manager/report/employee"
+              element={<ManagerEmployeeReport />}
+            />
           </Routes>
         </BrowserRouter>
       </div>

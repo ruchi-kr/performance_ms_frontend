@@ -4,51 +4,26 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { getEmployeeReport } from "../Config";
-import { Input, DatePicker, Button } from "antd";
+import { Input, DatePicker, Button, Tag } from "antd";
 import moment from "moment";
-import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import { toast } from "react-toastify";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 
-const EmployeeReport = () => {
-  // for search by date
+const ManagerEmployeeReport = () => {
   const dateFormat = "DD/MM/YYYY";
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
-
-  const handleFromDateChange = (date) => {
-    setFromDate(date);
-  };
-
-  const handleToDateChange = (date) => {
-    setToDate(date);
-  };
-
-  const handleSearchByDateRange = () => {
-    const currentDate = moment();
-    if (fromDate && fromDate.isAfter(currentDate)) {
-      toast.error("From date cannot be a future date");
-    } else if (toDate && toDate.isAfter(currentDate)) {
-      toast.error("To date cannot be a future date");
-    } else if (fromDate && toDate && fromDate.isAfter(toDate)) {
-      toast.error("From date cannot be greater than to date");
-    } else {
-      const formattedFromDate = fromDate ? fromDate.format("YYYY-MM-DD") : null;
-      const formattedToDate = toDate ? toDate.format("YYYY-MM-DD") : null;
-      //    moment(fromDate).format("YYYY-MM-DD")  moment(toDate).toISOString()
-
-      getEmployeeReportHandler(formattedFromDate, formattedToDate);
-      //    getEmployeeReportHandler(currentPage, formattedFromDate, formattedToDate);
-    }
-  };
-
+  const [search, setSearch] = useState("");
   const user_id = sessionStorage.getItem("id");
   const pageSize = 20;
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [search, setSearch] = useState("");
   const [reportData, setReportData] = useState([]);
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const manager_id = user.employee_id;
+  console.log("manager id", manager_id);
 
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
   //        try {
@@ -65,37 +40,37 @@ const EmployeeReport = () => {
   //    };
 
   // ?page=${page}&pageSize=${pageSize} page,
-  const getEmployeeReportHandler = async (
-    page,
-    formattedFromDate,
-    formattedToDate
-  ) => {
+  const getEmployeeReportHandler = async (page) => {
     try {
-      let url = `${getEmployeeReport}/${user_id}&name=${search}`;
-      if (formattedFromDate && formattedToDate) {
-        url += `&fromDate=${formattedFromDate}&toDate=${formattedToDate}`;
-      }
-
-      const response = await axios.get(url);
+      const response = await axios.get(
+        `http://localhost:8000/api/employee/report/${manager_id}`
+      );
+      console.log("response", response);
       setReportData(response.data);
-      const tasksArray = JSON.parse(response.data[3].tasks);
       // setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
       // Rest of the function...
     } catch (err) {
       console.log(err);
     }
   };
+  // search functionality
   useEffect(() => {
-    getEmployeeReportHandler();
-  }, [search]);
+    const timer = setTimeout(() => {
+      onSearch();
+    }, 2000);
 
-  //    useEffect(() => {
-  //        getEmployeeReportHandler(currentPage);
-  //    }, [currentPage, search]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [search]);
+  const onSearch = async () => {
+    if (search === null || search === undefined) return;
+    getEmployeeReportHandler();
+  };
 
   const handlePageChange = (pageNumber) => {
-    // setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
-    // getEmployeeReportHandler(pageNumber == 0 ? 1 : pageNumber);
+    setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
+    getEmployeeReportHandler(pageNumber == 0 ? 1 : pageNumber);
   };
 
   const [expandedRow, setExpandedRow] = useState(null);
@@ -133,7 +108,7 @@ const EmployeeReport = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">Project-wise Reports</h3>
+                <h3 className="text-primary">Employee-wise Report</h3>
                 <hr className="bg-primary border-4" />
                 <div className="d-flex justify-content-between">
                   <div className="col-2">
@@ -144,7 +119,7 @@ const EmployeeReport = () => {
                     <Search
                       placeholder="search by project name"
                       allowClear
-                      // onSearch={onSearch}
+                      onSearch={onSearch}
                       style={{
                         width: 200,
                       }}
@@ -153,33 +128,15 @@ const EmployeeReport = () => {
                     />
                   </div>
                   <div className="d-flex align-items-center">
-                    <div className="col-sm-4 col-md-3 col-lg-4">
+                    <div className="col-sm-4 col-md-3 col-lg-8">
                       <div className="mb-3">
                         <label className="text-capitalize textcolumntitle fw-bold text-info">
-                          From Recd. Date
+                          Select Date Range
                         </label>
                         <RangePicker
                           disabledDate={disabledDate}
                           onChange={handleDateRangeChange}
-                          style={{
-                            width: "100%",
-                            boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)",
-                          }}
-                          className="rounded-2"
-                          format={"DD/MM/YYYY"}
-                          showTime={false}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-sm-4 col-md-3 col-lg-4">
-                      <div className="mb-3">
-                        <label className="text-capitalize textcolumntitle fw-bold text-info">
-                          To Recd. Date
-                        </label>
-                        <DatePicker
-                          onChange={handleToDateChange}
-                          placeholder="To Date"
+                          placeholder="From Date"
                           style={{
                             width: "100%",
                             boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)",
@@ -190,14 +147,15 @@ const EmployeeReport = () => {
                         />
                       </div>
                     </div>
-                    <div className="col-sm-4 col-md-1 col-lg-1 ">
+
+                    {/* <div className="col-sm-4 col-md-1 col-lg-1 ">
                       <Button
                         className="py-1 px-2 mt-3 btn btn-info btn-sm rounded-2"
                         onClick={handleSearchByDateRange}
                       >
                         Search
                       </Button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -210,9 +168,6 @@ const EmployeeReport = () => {
                     <tr>
                       <th scope="col">S.No.</th>
                       <th scope="col">Project Name</th>
-                      <th scope="col">Schd. Start Date</th>
-                      <th scope="col">Schd. End Date</th>
-
                       <th scope="col">Alloc hrs</th>
                       <th scope="col">Man hrs</th>
                     </tr>
@@ -221,25 +176,12 @@ const EmployeeReport = () => {
                   <tbody className="table-group-divider">
                     {reportData &&
                       reportData.map((item, index) => (
-                        <React.Fragment key={item.user_id}>
+                        <React.Fragment key={item.employee_id}>
                           <tr onClick={() => handleRowClick(index)}>
                             <th scope="row">{index + 1}</th>
-                            <td className="text-capitalize">
-                              {item.project_name}
-                            </td>
-                            <td>
-                              {item.schedule_start_date.slice(8, 10)}/
-                              {item.schedule_start_date.slice(5, 7)}/
-                              {item.schedule_start_date.slice(0, 4)}
-                            </td>
-                            <td>
-                              {item.schedule_end_date.slice(8, 10)}/
-                              {item.schedule_end_date.slice(5, 7)}/
-                              {item.schedule_end_date.slice(0, 4)}
-                            </td>
-
-                            <td>{item.total_allocated_hours}</td>
-                            <td>{item.total_actual_hours}</td>
+                            <td className="text-capitalize">{item.name}</td>
+                            <td>{item.total_allocated_time}</td>
+                            <td>{item.total_actual_time}</td>
                           </tr>
                           {expandedRow === index && (
                             <tr>
@@ -247,6 +189,7 @@ const EmployeeReport = () => {
                                 <table className="col-11 mx-auto">
                                   <thead>
                                     <tr>
+                                      <th>Employee Name</th>
                                       <th>Task</th>
                                       <th>Date</th>
                                       <th>Status</th>
@@ -255,17 +198,30 @@ const EmployeeReport = () => {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {item.tasks &&
-                                      JSON.parse(item.tasks).map(
+                                    {item.tasks_details &&
+                                      item.tasks_details.map(
                                         (task, taskIndex) => (
                                           <tr key={taskIndex}>
+                                            <td>{task.project_name}</td>
                                             <td>{task.task}</td>
                                             <td>
-                                              {task.created_at.slice(8, 10)}/
-                                              {task.created_at.slice(5, 7)}/
-                                              {task.created_at.slice(0, 4)}
+                                              {moment
+                                                .utc(task.created_at)
+                                                .format("DD/MM/YYYY")}
                                             </td>
-                                            <td>{task.status}</td>
+                                            {task.status === "completed" ? (
+                                              <td>
+                                                <Tag color="green">
+                                                  {task.status}
+                                                </Tag>
+                                              </td>
+                                            ) : (
+                                              <td>
+                                                <Tag color="red">
+                                                  {task.status}
+                                                </Tag>
+                                              </td>
+                                            )}
                                             <td>{task.allocated_time}</td>
                                             <td>{task.actual_time}</td>
                                           </tr>
@@ -336,4 +292,4 @@ const EmployeeReport = () => {
   );
 };
 
-export default EmployeeReport;
+export default ManagerEmployeeReport;

@@ -19,7 +19,7 @@ import {
 } from "../Config.js";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { Select, Modal,Input } from "antd";
+import { Select, Modal, Input } from "antd";
 const { TextArea } = Input;
 
 const { Option } = Select;
@@ -410,13 +410,15 @@ const Employee = () => {
                           </td>
 
                           <td>
-                          
-                            <textarea
+                            <TextArea
                               type="text"
                               name="task"
                               className="form-control"
                               value={record.task}
-                              rows={5}  
+                              autoSize={{
+                                minRows: 2,
+                                maxRows: 6,
+                              }}
                               style={{ width: "12rem" }}
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
@@ -472,7 +474,6 @@ const Employee = () => {
                                   name="status"
                                   className="form-control"
                                   value={record.status}
-                                
                                   onChange={(e) =>
                                     handleStatusChange(index, e.target.value)
                                   }
