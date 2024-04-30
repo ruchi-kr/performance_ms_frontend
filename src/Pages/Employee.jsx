@@ -17,9 +17,10 @@ import {
   deleteTask,
   getAllEmployeeslist,
 } from "../Config.js";
-import { Select, Modal } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import { Select, Modal,Input } from "antd";
+const { TextArea } = Input;
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -409,12 +410,14 @@ const Employee = () => {
                           </td>
 
                           <td>
-                            <input
+                          
+                            <textarea
                               type="text"
                               name="task"
                               className="form-control"
                               value={record.task}
-                              style={{ width: "6rem" }}
+                              rows={5}  
+                              style={{ width: "12rem" }}
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
@@ -469,6 +472,7 @@ const Employee = () => {
                                   name="status"
                                   className="form-control"
                                   value={record.status}
+                                
                                   onChange={(e) =>
                                     handleStatusChange(index, e.target.value)
                                   }
@@ -481,9 +485,10 @@ const Employee = () => {
                                 </select>
                               </td>
                               <td>
-                                <input
+                                <textarea
                                   type="text"
                                   name="remarks"
+                                  rows={5}
                                   className="form-control"
                                   value={record.remarks}
                                   onChange={(e) => handleInputChange(index, e)}

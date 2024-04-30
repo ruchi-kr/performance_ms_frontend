@@ -121,9 +121,10 @@ const ManagerViewProjectTask = () => {
                           </NavLink>
                         </td>
                         <td>
-                          <input
+                          <textarea
                             type="text"
                             name="task"
+                            rows={5}
                             className="form-control"
                             value={record.task}
                             // onChange={(e) => handleInputChange(index, e)}
