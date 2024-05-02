@@ -5,6 +5,7 @@ import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import moment from "moment";
 import { getEmployeeReport } from "../Config";
+import dayjs from "dayjs";
 import { Input, Button, DatePicker, Tag } from "antd";
 import { toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
@@ -91,6 +92,10 @@ const ProjectReport = () => {
       setFromDate(formattedDates[1]);
     }
   };
+  const disabledDate = (current) => {
+    // Can not select days before today and today
+    return current && current >= dayjs().endOf("day");
+  };
   return (
     <>
       <Header />
@@ -126,6 +131,7 @@ const ProjectReport = () => {
                           Select Date Range
                         </label>
                         <RangePicker
+                          disabledDate={disabledDate}
                           onChange={handleDateRangeChange}
                           style={{
                             width: "100%",
