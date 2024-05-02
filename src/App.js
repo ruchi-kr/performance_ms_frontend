@@ -17,6 +17,7 @@ import ProjectReport from "./Pages/ProjectReport";
 
 import EmployeeReport from "./Pages/EmployeeReport";
 import EmployeeReportDateWise from "./Pages/EmployeeReportDateWise";
+import EmployeeReportDw from "./Pages/EmployeeReportDw";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
 
             <Route path="/reportproject-wise" element={<EmployeeReport />}></Route>
             <Route path="/reportdate-wise" element={<EmployeeReportDateWise />}></Route>
+            <Route path="/test" element={<EmployeeReportDw />}></Route>
 
             <Route path="/manager/report/project" element={<ProjectReport />} />
           </Routes>

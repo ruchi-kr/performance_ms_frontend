@@ -47,7 +47,9 @@ export const editTask =   `${baseURL}/api/user/updateTask/`;
 export const getTask = `${baseURL}/api/user/getTasks`;
 
 // for reports
-export const getEmployeeReport = `${baseURL}/api/user/getReports`;
+export const getEmployeeReport = `${baseURL}/api/user/getReportspw`;
+export const getEmployeeReportDW = `${baseURL}/api/user/getReportsdw`;
+export const getEmployeeReportDWtest = `${baseURL}/api/user/getReportsdwtest`;
 
 export const CONFIG_OBJ = {                                         //config object
     headers: {

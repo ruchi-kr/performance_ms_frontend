@@ -138,7 +138,7 @@ useEffect(() => {
                                         <div className="col-sm-4 col-md-3 col-lg-4">
                                             <div className="mb-3">
                                                 <label className="text-capitalize textcolumntitle fw-bold text-info">
-                                                    From Recd. Date
+                                                    From  Date
                                                 </label>
                                                 <DatePicker
                                                     onChange={handleFromDateChange}
@@ -155,7 +155,7 @@ useEffect(() => {
                                         <div className="col-sm-4 col-md-3 col-lg-4">
                                             <div className="mb-3">
                                                 <label className="text-capitalize textcolumntitle fw-bold text-info">
-                                                    To Recd. Date
+                                                    To  Date
                                                 </label>
                                                 <DatePicker
                                                     onChange={handleToDateChange}
