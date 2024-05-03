@@ -13,7 +13,6 @@ import { DatePicker, Button } from "antd";
 import moment from "moment";
 import { toast } from "react-toastify";
 
-
 const EmployeeReportDateWise = () => {
   const user_id = sessionStorage.getItem('id');
   const pageSize = 10;
@@ -53,15 +52,14 @@ const EmployeeReportDateWise = () => {
     } else {
       const formattedFromDate = fromDate ? fromDate.format("YYYY-MM-DD") : null;
       const formattedToDate = toDate ? toDate.format("YYYY-MM-DD") : null;
-      //   .toISOString(); .format("YYYY-MM-DD")
+      
       getEmployeeReportHandler(currentPage, formattedFromDate, formattedToDate);
     }
   };
   const handleDateClear = () => {
     console.log("got called on clear");
-    // setFromDate(null);
-    // setToDate(null);
-    // getEmployeeReportHandler(currentPage);
+   
+    getEmployeeReportHandler(currentPage);
   };
   const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
     try {
@@ -89,14 +87,12 @@ const EmployeeReportDateWise = () => {
     getEmployeeReportHandler(pageNumber == 0 ? 1 : pageNumber);
   };
 
-
   const exportToExcel = () => {
     const htmlTable = document.getElementById('reportTable');
     const wb = XLSX.utils.table_to_book(htmlTable);
     XLSX.writeFile(wb, 'employee_reportDW.xlsx');
   };
 
- 
   const exportToPDF = () => {
     const unit = 'pt';
     const size = 'A4'; // Use A1, A2, A3 or A4
@@ -119,18 +115,6 @@ const EmployeeReportDateWise = () => {
     const data = [];
     const rows = table.querySelectorAll('tr');
     const cells = table.querySelectorAll('th');
-
-    
-    // // Extract data
-    // rows.forEach(row => {
-    //   const rowData = [];
-    //   const cells = row.querySelectorAll('td');
-    //   cells.forEach(cell => {
-    //     const content = cell.textContent.trim();
-    //     rowData.push(content);
-    //   });
-    //   data.push(rowData);
-    // });
 
      // Extract data
   rows.forEach((row, index) => {
@@ -212,11 +196,11 @@ const EmployeeReportDateWise = () => {
                 </Button>
               </div>
             </div>
-            <div className="row">
-              <div className="col-11 d-flex justify-content-end">
+            <div className="row d-flex justify-content-end">
+              <div className="col-1 me-2">
                 <div className="mb-2 d-flex gap-3">
-                  <FontAwesomeIcon icon={faFileExcel} size="2xl" style={{ color: "#74C0FC", }} onClick={exportToExcel} />
-                  <FontAwesomeIcon icon={faFilePdf} style={{ color: "#ee445e", }} size="2xl" onClick={exportToPDF} />
+                  <FontAwesomeIcon icon={faFileExcel} size="xl" style={{ color: "#74C0FC", }} onClick={exportToExcel} />
+                  <FontAwesomeIcon icon={faFilePdf} style={{ color: "#ee445e", }} size="xl" onClick={exportToPDF} />
                 </div>
               </div>
 
@@ -279,7 +263,8 @@ const EmployeeReportDateWise = () => {
                                   <td></td>
                                   <td></td>
                                   <td>{task.task}</td>
-                                  <td>{task.status}</td>
+                                  {/* <td>{task.status}</td> */}
+                                  <td style={task.status === 'inprocess' ? { color: 'orange' } : { color: 'green' }}>{task.status}</td>
                                   <td>{task.allocated_time}</td>
                                   <td>{task.actual_time}</td>
                                 </tr>
