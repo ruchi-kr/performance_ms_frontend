@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 
-const ManagerEmployeeReport = () => {
+const ManagerProjectReport = () => {
   const dateFormat = "DD/MM/YYYY";
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -43,7 +43,7 @@ const ManagerEmployeeReport = () => {
   const getEmployeeReportHandler = async (page) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/employee/report/${manager_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`
+        `http://localhost:8000/api/employee/report/${manager_id}&search=${search}&toDate=${toDate}&fromDate=${fromDate}`
       );
       console.log("response", response);
       setReportData(response.data);
@@ -53,9 +53,6 @@ const ManagerEmployeeReport = () => {
       console.log(err);
     }
   };
-  useEffect(() => {
-    getEmployeeReportHandler(currentPage);
-  }, [toDate, fromDate, currentPage]);
   // search functionality
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -111,12 +108,12 @@ const ManagerEmployeeReport = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">Employee-wise Report</h3>
+                <h3 className="text-primary">Project-wise Report</h3>
                 <hr className="bg-primary border-4" />
                 <div className="d-flex justify-content-between">
                   <div className="col-2">
                     <label className="text-capitalize fw-bold text-info">
-                      Employee name
+                      Project name
                     </label>
 
                     <Search
@@ -168,9 +165,9 @@ const ManagerEmployeeReport = () => {
                 {/* table */}
                 <table className="table table-striped table-hover mt-5">
                   <thead>
-                    <tr className="table-info">
+                    <tr>
                       <th scope="col">S.No.</th>
-                      <th scope="col">Employee Name</th>
+                      <th scope="col">Project Name</th>
                       <th scope="col">Alloc hrs</th>
                       <th scope="col">Man hrs</th>
                     </tr>
@@ -192,7 +189,7 @@ const ManagerEmployeeReport = () => {
                                 <table className="col-11 mx-auto">
                                   <thead>
                                     <tr>
-                                      <th>Project Name</th>
+                                      <th>Employee Name</th>
                                       <th>Task</th>
                                       <th>Date</th>
                                       <th>Status</th>
@@ -295,4 +292,4 @@ const ManagerEmployeeReport = () => {
   );
 };
 
-export default ManagerEmployeeReport;
+export default ManagerProjectReport;
