@@ -96,60 +96,7 @@ const EmployeeReportDateWise = () => {
     XLSX.writeFile(wb, 'employee_reportDW.xlsx');
   };
 
-  // const exportToPDF = () => {
-  //     const unit = 'pt';
-  //     const size = 'A4'; // Use A1, A2, A3 or A4
-  //     const orientation = 'landscape'; // 'portrait' or 'landscape'
-
-  //     const marginLeft = 40;
-  //     const doc = new jsPDF(orientation, unit, size);
-
-  //     doc.setFontSize(15);
-  //     const title = 'Employee Report Date-Wise';
-  //     const headers = [['S.No.', 'Date', 'Project Name', 'Alloc hrs', 'Man hrs']];
-
-
-  //     let data = [];
-  //     reportData.forEach((report, index) => {
-  //         const row = [
-  //             index + 1,
-  //             `${report.date.slice(8, 10)}/${report.date.slice(5, 7)}/${report.date.slice(0, 4)}`,
-  //             JSON.parse(report.projects).map((project) => project.project_name).join('\n'),
-  //             report.total_allocated_hours,
-  //             report.total_actual_hours,
-  //         ];
-  //         data.push(row);
-  //         if (report.showTasks) {
-  //             JSON.parse(report.projects).forEach(project => {
-  //                 const projectRow = [
-  //                     // Empty placeholders for main row
-  //                     project.project_name, // Project Name for expanded row
-  //                 ];
-  //                 data.push(projectRow);
-  //                 if (reportData[index].showTasks) {
-  //                     JSON.parse(project.tasks).forEach(task => {
-  //                         const taskRow = [
-  //                             // project.project_name,
-  //                             task.task, // Task for expanded row                      
-  //                         ];
-  //                         data.push(taskRow);
-  //                     });
-  //                 }
-  //             });
-  //         }
-  //     });
-
-  //     let content = {
-  //         startY: 50,
-  //         head: headers,
-  //         body: data,
-  //     };
-
-  //     doc.text(title, marginLeft, 40);
-  //     doc.autoTable(content); // Ensure you're using autoTable correctly here
-  //     doc.save('employee_report.pdf');
-  // };
-
+ 
   const exportToPDF = () => {
     const unit = 'pt';
     const size = 'A4'; // Use A1, A2, A3 or A4
@@ -163,45 +110,40 @@ const EmployeeReportDateWise = () => {
 
     const table = document.getElementById('reportTable');
 
-    // Extract headers
-    const headers = [];
-    const headerRows = table.querySelectorAll('thead tr');
-    headerRows.forEach(row => {
-      const rowData = [];
-      const cells = row.querySelectorAll('th');
-      cells.forEach(cell => {
-        const colspan = parseInt(cell.getAttribute('colspan')) || 1;
-        const rowspan = parseInt(cell.getAttribute('rowspan')) || 1;
-        const content = cell.textContent.trim();
-        for (let i = 0; i < colspan; i++) {
-          rowData.push(content);
-        }
-      });
-      headers.push(rowData);
-    });
-    // Initialize a variable to track the last displayed project name
-    let lastDisplayedProject = null;
-
-
-    // // Extract data
+    // Extract headers and data from the table
+    const headers = [
+      ['S.No.', 'Date', 'Activities', '', '', ''],
+      ['', '', 'Project Name', '', '', ''],
+      ['', '', 'Task', 'Status', 'Alloc hrs', 'Act hrs'],
+    ];
     const data = [];
-    const bodyRows = table.querySelectorAll('tbody tr');
-    bodyRows.forEach(row => {
+    const rows = table.querySelectorAll('tr');
+    const cells = table.querySelectorAll('th');
+
+    
+    // // Extract data
+    // rows.forEach(row => {
+    //   const rowData = [];
+    //   const cells = row.querySelectorAll('td');
+    //   cells.forEach(cell => {
+    //     const content = cell.textContent.trim();
+    //     rowData.push(content);
+    //   });
+    //   data.push(rowData);
+    // });
+
+     // Extract data
+  rows.forEach((row, index) => {
+    if (index > 2) { // Skip the first three row (table header)
       const rowData = [];
       const cells = row.querySelectorAll('td');
-      cells.forEach(cell => {
-        const colspan = parseInt(cell.getAttribute('colspan')) || 1;
-        const rowspan = parseInt(cell.getAttribute('rowspan')) || 1;
+      cells.forEach((cell) => {
         const content = cell.textContent.trim();
-        for (let i = 0; i < colspan; i++) {
-          for (let j = 0; j < rowspan; j++) {
-            rowData.push(content);
-          }
-        }
+        rowData.push(content);
       });
       data.push(rowData);
-    });
-
+    }
+  });
     const content = {
       startY: 50,
       head: headers,
@@ -209,10 +151,9 @@ const EmployeeReportDateWise = () => {
     };
 
     doc.text(title, marginLeft, 40);
-    doc.autoTable(content); // Ensure you're using autoTable correctly here
+    doc.autoTable(content);
     doc.save('employee_reportDW.pdf');
   };
-
 
   return (
     <>
