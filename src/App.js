@@ -14,11 +14,11 @@ import ManagerViewTask from "./Pages/ManagerViewTask";
 import ManagerViewProjectTask from "./Pages/ManagerViewProjectTask";
 import ProjectReport from "./Pages/ProjectReport";
 import ManagerEmployeeReport from "./Pages/ManagerEmployeeReport";
-// import PlanSheet from "./Pages/PlanSheet";
 
 import EmployeeReport from "./Pages/EmployeeReport";
-import EmployeeReportDateWise from "./Pages/EmployeeReportDateWise";
 import EmployeeReportDw from "./Pages/EmployeeReportDw";
+import Test from './Pages/Test';
+
 
 function App() {
   return (
@@ -55,7 +55,7 @@ function App() {
             ></Route>
             <Route
               path="/reportdate-wise"
-              element={<EmployeeReportDateWise />}
+              element={<EmployeeReportDw />}
             ></Route>
 
             <Route path="/manager/report/project" element={<ProjectReport />} />
@@ -63,6 +63,8 @@ function App() {
               path="/manager/report/employee"
               element={<ManagerEmployeeReport />}
             />
+
+            <Route path ='/test' element={<Test/>} />
           </Routes>
         </BrowserRouter>
       </div>

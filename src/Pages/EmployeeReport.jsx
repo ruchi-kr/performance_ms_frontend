@@ -8,8 +8,14 @@ import { Input, DatePicker, Button } from "antd";
 import moment from "moment";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { faFilePdf, faFileExcel } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const { Search } = Input;
 const { RangePicker } = DatePicker;
+
 
 const EmployeeReport = () => {
   // for search by date
@@ -124,6 +130,74 @@ const EmployeeReport = () => {
     return current && current >= dayjs().endOf("day");
   };
 
+
+  // export to excel and pdf file function
+  const exportToExcel = () => {
+    const htmlTable = document.getElementById('reportTablepw');
+    const wb = XLSX.utils.table_to_book(htmlTable);
+    XLSX.writeFile(wb, 'employee_reportPW.xlsx');
+  };
+
+  const exportToPDF = () => {
+    const unit = 'pt';
+    const size = 'A4'; // Use A1, A2, A3 or A4
+    const orientation = 'landscape'; // 'portrait' or 'landscape'
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+    const title = 'Employee Report Project-Wise';
+    const headers = [['S.No.', 'Project Name', 'Schd. Start Date','Schd. End Date','Alloc hrs', 'Man hrs']];
+
+  //   const data = reportData.map((item, index) => [
+  //     index + 1,
+  //     item.project_name,
+  //     `${item.schedule_start_date.slice(8, 10)}/${item.schedule_start_date.slice(5, 7)}/${item.schedule_start_date.slice(0, 4)}`,
+  //     `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(5, 7)}/${item.schedule_end_date.slice(0, 4)}`,
+  //     item.total_allocated_hours,
+  //     item.total_actual_hours,
+  // ]);
+ 
+
+    let data = [];
+    reportData.forEach((item, index) => {
+        const row = [
+            index + 1,
+            item.project_name,
+            `${item.schedule_start_date.slice(8, 10)}/${item.schedule_start_date.slice(5, 7)}/${item.schedule_start_date.slice(0, 4)}`,
+            `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(5, 7)}/${item.schedule_end_date.slice(0, 4)}`,
+            item.total_allocated_hours,
+            item.total_actual_hours,
+            '', // Placeholder for tasks
+        ];
+        data.push(row);
+        if (expandedRow === index) {
+            JSON.parse(item.tasks).forEach(task => {
+                const taskRow = [
+                  // { content: task.task, styles: { color: 'blue' } },
+                    task.task, // Task
+                    `${task.created_at.slice(8, 10)}/${task.created_at.slice(5, 7)}/${task.created_at.slice(0, 4)}`,
+                    task.status,
+                    task.allocated_time,
+                    task.actual_time
+                ];
+                data.push(taskRow);
+            });
+        }
+    });
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+    };
+
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content); // Ensure you're using autoTable correctly here
+    doc.save('employee_reportPW.pdf');
+  };
+
   return (
     <>
       <Header />
@@ -141,17 +215,17 @@ const EmployeeReport = () => {
                       project name
                     </label>
 
-                                        <Search
-                                            placeholder="search by project name"
-                                            allowClear
-                                            // onSearch={onSearch}
-                                            style={{
-                                                width: 200,
-                                            }}
-                                            value={search} onChange={(e) => setSearch(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className='d-flex align-items-center'>
+                    <Search
+                      placeholder="search by project name"
+                      allowClear
+                      // onSearch={onSearch}
+                      style={{
+                        width: 200,
+                      }}
+                      value={search} onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+                  {/* <div className='d-flex align-items-center'>
                                         <div className="col-sm-4 col-md-3 col-lg-4">
                                             <div className="mb-3">
                                                 <label className="text-capitalize textcolumntitle fw-bold text-info">
@@ -192,26 +266,32 @@ const EmployeeReport = () => {
                                                 Search
                                             </Button>
                                         </div>
-                                    </div>
-                                </div>
+                                    </div> */}
+                  <div className="col-2 d-flex justify-content-end">
+                    <div className="mb-2 d-flex gap-3">
+                      <FontAwesomeIcon icon={faFileExcel} size="2xl" style={{ color: "#74C0FC", }} onClick={exportToExcel} />
+                      <FontAwesomeIcon icon={faFilePdf} style={{ color: "#ee445e", }} size="2xl" onClick={exportToPDF} />
+                    </div>
+                  </div>
+                </div>
 
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-11 mx-auto">
-                                {/* table */}
-                                <table className="table table-striped table-hover mt-5">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">S.No.</th>
-                                            <th scope="col">Project Name</th>
-                                            <th scope="col">Schd. Start Date</th>
-                                            <th scope="col">Schd. End Date</th>
-                                            
-                                            <th scope="col">Alloc hrs</th>
-                                            <th scope="col">Man hrs</th>
-                                        </tr>
-                                    </thead>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-11 mx-auto">
+                {/* table */}
+                <table  id="reportTablepw" className="table table-striped table-hover mt-5">
+                  <thead>
+                    <tr>
+                      <th scope="col">S.No.</th>
+                      <th scope="col">Project Name</th>
+                      <th scope="col">Schd. Start Date</th>
+                      <th scope="col">Schd. End Date</th>
+
+                      <th scope="col">Alloc hrs</th>
+                      <th scope="col">Man hrs</th>
+                    </tr>
+                  </thead>
 
                   <tbody className="table-group-divider">
                     {reportData &&
@@ -295,9 +375,8 @@ const EmployeeReport = () => {
                       {Array.from({ length: totalPages }, (_, index) => (
                         <li
                           key={index}
-                          className={`page-item ${
-                            currentPage === index + 1 ? "active" : ""
-                          }`}
+                          className={`page-item ${currentPage === index + 1 ? "active" : ""
+                            }`}
                         >
                           <a
                             className="page-link"
