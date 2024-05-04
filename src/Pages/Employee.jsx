@@ -363,9 +363,7 @@ const Employee = () => {
                             </th>
                           </>) :
                           <>
-                            <th>
-                              <span className="text-info">Action</span>
-                            </th>
+                          
                           </>
 
                       }
@@ -401,7 +399,7 @@ const Employee = () => {
                                 handleProjectChange(index, value)
                               }
                               required
-                              disabled={record.formDisabled || formDisabled || dayjs(currentTime).hour() > 12}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
                             >
                               {projectList.map((project) => (
                                 <Option
@@ -469,7 +467,7 @@ const Employee = () => {
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
-                              disabled={record.formDisabled || formDisabled || dayjs(currentTime).hour() > 12}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
                             // disabled={formDisabled}
                             />
                           </td>
@@ -488,7 +486,7 @@ const Employee = () => {
                               value={record.allocated_time}
                               onChange={(e) => handleInputChange(index, e)}
                               required
-                              disabled={record.formDisabled || formDisabled || dayjs(currentTime).hour() > 12}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
                               min="1"
                               max="24"
                               defaultValue="0"
@@ -585,24 +583,22 @@ const Employee = () => {
                               )
                             }
 
-                            {/* <CheckOutlined
-                            style={{ color: "green" }}
-                            onClick={() => saveTask(index)}
-                            // disabled={formDisabled}
-                            // display=
 
-                          /> */}
-                            {!record.formDisabled && !taskSaved && (
+                            {!record.formDisabled && !taskSaved && window.location.pathname !== "/plan" && (
                               <CheckOutlined
                                 style={{ color: "green" }}
                                 onClick={() => saveTask(index)}
                               />
                             )}
-                            <EditOutlined
-                              style={{ color: "blue" }}
-                              onClick={() => handleEditTask(index)}
-                            // disabled={formDisabled} // Disable the "Edit" button when form is disabled
-                            />
+                            {window.location.pathname !== "/plan" && (
+                              <EditOutlined
+                                style={{ color: "blue" }}
+                                onClick={() => handleEditTask(index)}
+                              // disabled={formDisabled} // Disable the "Edit" button when form is disabled
+                              />
+                            )
+                            }
+
                           </td>
                         </tr>
                       ))}

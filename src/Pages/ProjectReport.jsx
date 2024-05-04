@@ -109,84 +109,76 @@ const ProjectReport = () => {
   };
 
   const exportToPDF = () => {
-    const unit = "pt";
-    const size = "A4"; // Use A1, A2, A3 or A4
-    const orientation = "landscape"; // 'portrait' or 'landscape'
+  //   const unit = "pt";
+  //   const size = "A4"; // Use A1, A2, A3 or A4
+  //   const orientation = "landscape"; // 'portrait' or 'landscape'
 
-    const marginLeft = 40;
-    const doc = new jsPDF(orientation, unit, size);
+  //   const marginLeft = 40;
+  //   const doc = new jsPDF(orientation, unit, size);
 
-    doc.setFontSize(15);
-    const title = "Employee Report Project-Wise";
-    const headers = [
-      [
-        "S.No.",
-        "Project Name",
-        "Schd. Start Date",
-        "Schd. End Date",
-        "Alloc hrs",
-        "Man hrs",
-      ],
-    ];
+  //   doc.setFontSize(15);
+  //   const title = "Employee Report Project-Wise";
+  //   const headers = [
+  //     [
+  //       "S.No.",
+  //       "Project Name",
+  //       "Schd. Start Date",
+  //       "Schd. End Date",
+  //       "Alloc hrs",
+  //       "Man hrs",
+  //     ],
+  //   ];
 
-    //   const data = reportData.map((item, index) => [
-    //     index + 1,
-    //     item.project_name,
-    //     `${item.schedule_start_date.slice(8, 10)}/${item.schedule_start_date.slice(5, 7)}/${item.schedule_start_date.slice(0, 4)}`,
-    //     `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(5, 7)}/${item.schedule_end_date.slice(0, 4)}`,
-    //     item.total_allocated_hours,
-    //     item.total_actual_hours,
-    // ]);
 
-    let data = [];
-    reportData.forEach((item, index) => {
-      const row = [
-        index + 1,
-        item.project_name,
-        `${item.schedule_start_date.slice(
-          8,
-          10
-        )}/${item.schedule_start_date.slice(
-          5,
-          7
-        )}/${item.schedule_start_date.slice(0, 4)}`,
-        `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(
-          5,
-          7
-        )}/${item.schedule_end_date.slice(0, 4)}`,
-        item.total_allocated_hours,
-        item.total_actual_hours,
-        "", // Placeholder for tasks
-      ];
-      data.push(row);
-      if (expandedRow === index) {
-        JSON.parse(item.tasks).forEach((task) => {
-          const taskRow = [
-            // { content: task.task, styles: { color: 'blue' } },
-            task.task, // Task
-            `${task.created_at.slice(8, 10)}/${task.created_at.slice(
-              5,
-              7
-            )}/${task.created_at.slice(0, 4)}`,
-            task.status,
-            task.allocated_time,
-            task.actual_time,
-          ];
-          data.push(taskRow);
-        });
-      }
-    });
+  //   let data = [];
+  //   reportData.forEach((item, index) => {
+  //     const row = [
+  //       index + 1,
+  //       item.project_name,
+  //       `${item.schedule_start_date.slice(
+  //         8,
+  //         10
+  //       )}/${item.schedule_start_date.slice(
+  //         5,
+  //         7
+  //       )}/${item.schedule_start_date.slice(0, 4)}`,
+  //       `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(
+  //         5,
+  //         7
+  //       )}/${item.schedule_end_date.slice(0, 4)}`,
+  //       item.total_allocated_hours,
+  //       item.total_actual_hours,
+  //       "", // Placeholder for tasks
+  //     ];
+  //     data.push(row);
+  //     if (expandedRow === index) {
+  //       JSON.parse(item.tasks).forEach((task) => {
+  //         const taskRow = [
+  //           // { content: task.task, styles: { color: 'blue' } },
+  //           task.task, // Task
+  //           `${task.created_at.slice(8, 10)}/${task.created_at.slice(
+  //             5,
+  //             7
+  //           )}/${task.created_at.slice(0, 4)}`,
+  //           task.status,
+  //           task.allocated_time,
+  //           task.actual_time,
+  //         ];
+  //         data.push(taskRow);
+  //       });
+  //     }
+  //   });
 
-    let content = {
-      startY: 50,
-      head: headers,
-      body: data,
-    };
+  //   let content = {
+  //     startY: 50,
+  //     head: headers,
+  //     body: data,
+  //   };
 
-    doc.text(title, marginLeft, 40);
-    doc.autoTable(content); // Ensure you're using autoTable correctly here
-    doc.save("employee_reportPW.pdf");
-  };
+  //   doc.text(title, marginLeft, 40);
+  //   doc.autoTable(content); // Ensure you're using autoTable correctly here
+  //   doc.save("employee_reportPW.pdf");
+   };
   return (
     <>
       <Header />
