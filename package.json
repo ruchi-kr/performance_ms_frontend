@@ -15,6 +15,7 @@
     "antd": "^5.16.2",
     "axios": "^1.6.8",
     "bootstrap-icons": "^1.11.3",
+    "dayjs": "^1.11.11",
     "formik": "^2.4.5",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",

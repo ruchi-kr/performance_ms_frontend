@@ -196,7 +196,7 @@ const ProjectMaster = () => {
                                 </div>
                                 <div className="row d-flex justify-content-end">
               <div className="col-1 me-2">
-                <div className="mb-2 d-flex gap-3">
+                <div className="mb-2 mt-4 d-flex gap-3">
                   <FontAwesomeIcon icon={faFileExcel} size="xl" style={{ color: "#74C0FC", }} onClick={exportToExcel} />
                   <FontAwesomeIcon icon={faFilePdf} style={{ color: "#ee445e", }} size="xl" onClick={exportToPDF} />
                 </div>
@@ -249,7 +249,7 @@ const ProjectMaster = () => {
                                         </Row>
                                     </Form>
                                 </Modal>
-                                <table id='pmTable' className="table table-striped table-hover mt-5">
+                                <table id='pmTable' className="table table-striped table-hover mt-3">
                                     <thead>
                                         <tr>
                                             <th scope="col">S.No.</th>

@@ -16,10 +16,12 @@ import {
   editTask,
   deleteTask,
   getAllEmployeeslist,
+  getCurrentTime,
 } from "../Config.js";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { Select, Modal, Input } from "antd";
+import dayjs from "dayjs";
 const { TextArea } = Input;
 
 const { Option } = Select;
@@ -31,6 +33,7 @@ const getDisabledStateFromStorage = () => {
 };
 
 const Employee = () => {
+  const[showSelect, setShowSelect] = useState(false)
   // for disable form
   const [formDisabled, setFormDisabled] = useState(false);
   const [taskSaved, setTaskSaved] = useState(false);
@@ -276,6 +279,22 @@ const Employee = () => {
     setTaskRecords(updatedTaskRecords);
   };
 
+  // function to fetch current time
+
+  const [currentTime, setCurrentTime] = useState(0);
+const getCurrentTimehandle = async () => {
+  try {
+    const response = await axios.get(`${getCurrentTime}`);
+    setCurrentTime(response.data.currentTimeStamp)
+    console.log("current time", response.data.currentTimeStamp);
+  } catch (error) {
+    console.log(error);
+  }
+}
+useEffect(() => {
+  getCurrentTimehandle();
+},[])
+
   return (
     <>
       <Header />
@@ -306,9 +325,9 @@ const Employee = () => {
                       <th className="form-label text-info fs-6 text-center">
                         Project Name<span style={{ color: "red" }}>*</span>
                       </th>
-                      <th className="form-label text-info fs-6 text-center">
+                      {/* <th className="form-label text-info fs-6 text-center">
                         Reporting Manager<span style={{ color: "red" }}>*</span>
-                      </th>
+                      </th> */}
 
                       <th className="form-label text-info fs-6 text-center">
                         Task<span style={{ color: "red" }}>*</span>
@@ -316,10 +335,13 @@ const Employee = () => {
                       <th className="form-label text-info fs-6 text-center">
                         All.hrs<span style={{ color: "red" }}>*</span>
                       </th>
-                      {window.location.pathname !== "/plan" ? (
+                      {window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
                         <>
                           <th className="form-label text-info fs-6 text-center">
                             Act.hrs<span style={{ color: "red" }}>*</span>
+                          </th>
+                          <th className="form-label text-info fs-6 text-center">
+                            Percent<span style={{ color: "red" }}>*</span>
                           </th>
                           <th className="form-label text-info fs-6 text-center">
                             Status<span style={{ color: "red" }}>*</span>
@@ -377,37 +399,46 @@ const Employee = () => {
                               ))}
                             </Select>
                           </td>
-                          <td>
-                            <Select
-                              allowClear
-                              placeholder="Select Reporting Manager"
-                              style={{
-                                width:
-                                  window.location.pathname !== "/plan"
-                                    ? "150px"
-                                    : "100%",
-                              }}
-                              className="rounded-2"
-                              value={record.manager_id}
-                              // defaultValue={projectManagerName}
-                              onChange={(value) =>
-                                handleManagerChange(index, value)
-                              }
-                              required
-                              disabled
-                              // disabled={record.formDisabled || formDisabled}
-                            >
-                              {managerList.map((manager) => (
-                                <Option
-                                  key={manager.employee_id}
-                                  value={manager.employee_id}
-                                  label={manager.name}
-                                >
-                                  {manager.name}
-                                </Option>
-                              ))}
-                            </Select>
-                          </td>
+                         
+                            {
+                              showSelect && (
+                                <td>
+                                <Select
+                                allowClear
+                                placeholder="Select Reporting Manager"
+                                style={{
+                                  width:
+                                    window.location.pathname !== "/plan"
+                                      ? "150px"
+                                      : "100%",
+                                }}
+                                className="rounded-2"
+                                value={record.manager_id}
+                                // defaultValue={projectManagerName}
+                                onChange={(value) =>
+                                  handleManagerChange(index, value)
+                                }
+                                required
+                                
+                                disabled
+                                // disabled={record.formDisabled || formDisabled}
+                              >
+                                {managerList.map((manager) => (
+                                  <Option
+                                    key={manager.employee_id}
+                                    value={manager.employee_id}
+                                    label={manager.name}
+                                    
+                                  >
+                                    {manager.name}
+                                  </Option>
+                                ))}
+                              </Select>
+                              </td>
+                              )
+                            }
+                           
+                         
 
                           <td>
                             <TextArea
@@ -448,7 +479,7 @@ const Employee = () => {
                               defaultValue="0"
                             />
                           </td>
-                          {window.location.pathname !== "/plan" ? (
+                          {window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
                             <>
                               <td>
                                 <input
@@ -463,6 +494,26 @@ const Employee = () => {
                                   defaultValue={0}
                                   className="form-control"
                                   value={record.actual_time}
+                                  onChange={(e) => handleInputChange(index, e)}
+                                  required
+                                  min={0}
+                                  disabled={record.formDisabled || formDisabled}
+                                />
+                                
+                              </td>
+                              <td>
+                              <input
+                                  type="number"
+                                  name="task_percent"
+                                  style={{
+                                    width:
+                                      window.location.pathname !== "/plan"
+                                        ? "3rem"
+                                        : "100%",
+                                  }}
+                                  defaultValue={0}
+                                  className="form-control"
+                                  value={record.task_percent}
                                   onChange={(e) => handleInputChange(index, e)}
                                   required
                                   min={0}
