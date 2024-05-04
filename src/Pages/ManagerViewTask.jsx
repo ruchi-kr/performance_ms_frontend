@@ -7,7 +7,7 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import { Flex, Space, Table, Tag } from "antd";
+import { Flex, Space, Table, Tag, Input } from "antd";
 import {
   getAllProjects,
   addTask,
@@ -17,7 +17,7 @@ import {
 } from "../Config.js";
 import { Select } from "antd";
 import { toast } from "react-toastify";
-
+const { TextArea } = Input;
 const { Option } = Select;
 
 const ManagerViewTask = () => {
@@ -145,31 +145,41 @@ const ManagerViewTask = () => {
                   <table className="table table-bordered table-hover table-responsive-sm mt-5">
                     <thead>
                       <tr>
-                        <th className="form-label lightgreen fs-6">S.No.</th>
                         <th className="form-label lightgreen fs-6">
-                          Project Name<span style={{ color: "red" }}></span>
+                          <p>S.No.</p>
+                        </th>
+                        <th className="form-label lightgreen fs-6 ">
+                          <p>Project Name</p>
+                        </th>
+                        <th className="form-label lightgreen fs-6 w-4" style={{width:"80px",backgroundColor:"red"}}>
+                          <p>Task</p>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Task<span style={{ color: "red" }}></span>
+                          <div>
+                            Alloc.hrs<span style={{ color: "red" }}></span>
+                          </div>
+                          <div>
+                            Act.hrs<span style={{ color: "red" }}></span>
+                          </div>
+                          <div>
+                            Percent<span style={{ color: "red" }}></span>
+                          </div>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                        Alloc.hrs<span style={{ color: "red" }}></span>
+                          <p> Status</p>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                        Act.hrs<span style={{ color: "red" }}></span>
+                          <p>Team Member's Remarks</p>
                         </th>
                         <th className="form-label lightgreen fs-6">
-                          Status<span style={{ color: "red" }}></span>
-                        </th>
-                        <th className="form-label lightgreen fs-6">
-                          Remarks<span style={{ color: "red" }}></span>
+                          <p>Remarks</p>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {taskRecords.map((record, index) => (
                         <tr key={index}>
-                          <td>{index + 1}</td>
+                          <td className="text-center">{index + 1}.</td>
                           <td>
                             {
                               <NavLink
@@ -184,60 +194,54 @@ const ManagerViewTask = () => {
                               </NavLink>
                             }
                           </td>
-                          <td>
-                            <input
-                              type="text"
-                              name="task"
-                              className="form-control"
-                              value={record.task}
-                              onChange={(e) => handleInputChange(index, e)}
-                              placeholder=""
-                              disabled
-                            />
+                          <td className="w-4">
+                            <p className="text-justify text-wrap ">{record.task}</p>
                           </td>
                           <td>
-                            <input
-                              type="number"
-                              name="allocated_time"
-                              className="form-control"
-                              value={record.allocated_time}
-                              onChange={(e) => handleInputChange(index, e)}
-                              disabled
-                              style={{ maxWidth: "4rem" }}
-                            />
+                            <p className="font-weight-bold text-center">
+                              {record.allocated_time}
+                            </p>
+                            <p className="font-weight-bold text-center">
+                              {record.actual_time}
+                            </p>
+                            <p className="font-weight-bold text-center">
+                              {record.actual_time}%
+                            </p>
                           </td>
-                          <td>
-                            <input
-                              type="number"
-                              name="actual_time"
-                              className="form-control"
-                              value={record.actual_time}
-                              onChange={(e) => handleInputChange(index, e)}
-                              disabled
-                              style={{ maxWidth: "4rem" }}
-                            />
-                          </td>
+
                           <td>
                             {record.status === "completed" ? (
-                              <Tag color={"green"} key={"1ndwj"}>
-                                {record.status.toUpperCase()}{" "}
-                              </Tag>
+                              <p className="text-success text-capitalize">
+                                {record.status}
+                              </p>
                             ) : (
-                              <Tag color={"blue"} key={"2eece"}>
-                                {record.status.toUpperCase()}{" "}
-                              </Tag>
+                              <p className="text-warning text-capitalize">
+                                {record.status}
+                              </p>
                             )}
+                          </td>
+                          <td>
+                            <div>
+                              <p className="text-justify">{record.remarks}</p>
+                            </div>
                           </td>
                           <td style={{ display: "flex" }}>
                             <div>
-                              <input
+                              <TextArea
                                 type="text"
-                                name="remarks"
+                                name="manager_remarks"
                                 className="form-control"
-                                value={record.remarks}
+                                value={record.manager_remarks}
+                                autoSize={{
+                                  minRows: 2,
+                                  maxRows: 6,
+                                }}
+                                style={{ width: "12rem" }}
                                 onChange={(e) => handleInputChange(index, e)}
                                 placeholder=""
                                 required
+                                // disabled={record.formDisabled || formDisabled}
+                                // disabled={formDisabled}
                               />
                             </div>
                             <div style={{ display: "flex" }}>
@@ -245,10 +249,6 @@ const ManagerViewTask = () => {
                                 style={{ color: "green", marginLeft: "1rem" }}
                                 onClick={() => saveTask(index)}
                               />
-                              {/* <CloseOutlined
-                                style={{ color: "red", marginLeft: "1rem" }}
-                                onClick={() => handleDeleteTask(record.id)}
-                              /> */}
                             </div>
                           </td>
                         </tr>
