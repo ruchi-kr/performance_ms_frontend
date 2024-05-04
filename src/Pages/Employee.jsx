@@ -481,15 +481,22 @@ const Employee = () => {
                                   disabled={record.formDisabled || formDisabled}
                                 >
                                   <option value="">Select</option>
-                                  <option value="inprocess">In Process</option>
+                                  <option value="notstarted">Not Started</option>
+                                  <option value="transfer">Transfer</option>
+                                  <option value="inprocess">Work In Progress</option>
                                   <option value="completed">Completed</option>
+                                 
                                 </select>
                               </td>
                               <td>
-                                <textarea
+                                <TextArea
                                   type="text"
                                   name="remarks"
-                                  rows={5}
+                                  // rows={5}
+                                  autoSize={{
+                                    minRows: 2,
+                                    maxRows: 6,
+                                  }}
                                   className="form-control"
                                   value={record.remarks}
                                   onChange={(e) => handleInputChange(index, e)}

@@ -2,24 +2,29 @@ import React, { useEffect, useState } from 'react'
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { deleteProject, getAllProjects, createProject, editProject,CONFIG_OBJ,getAllProjectsUrlPagination } from '../Config.js';
+import { deleteProject, getAllProjects, createProject, editProject, CONFIG_OBJ, getAllProjectsUrlPagination,getExcelpdfprojects } from '../Config.js';
 import axios from 'axios';
-import { Col, Form, Input, Modal, Row} from 'antd';
+import { Col, Form, Input, Modal, Row } from 'antd';
 import { toast } from 'react-toastify'
 // import {DeleteOutlined, EditOutlined} from '@ant-design/icon'
-import { EditOutlined,DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { faFilePdf, faFileExcel } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const { Search } = Input;
 
 const ProjectMaster = () => {
-// for search by project name
-const [project, setProject] = useState("");
+    // for search by project name
+    const [project, setProject] = useState("");
 
 
     const [allProjectData, setAllProjectData] = useState([])
-   // for pagination
-   const pageSize = 10; // Number of items per page
-   const [currentPage, setCurrentPage] = useState(1);
-   const [totalPages, setTotalPages] = useState(0);
+    // for pagination
+    const pageSize = 10; // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
 
 
     // get all projects function
@@ -29,13 +34,13 @@ const [project, setProject] = useState("");
             const response = await axios.get(`${getAllProjectsUrlPagination}?page=${page}&pageSize=${pageSize}&name=${project}`);
             setAllProjectData(response.data)
             console.log("project details data", response.data);
-                  
+
             setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
         } catch (err) {
             console.log(err);
         }
     }
-  
+
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
         getAllProjectsHandler(pageNumber == 0 ? 1 : pageNumber);
@@ -46,16 +51,16 @@ const [project, setProject] = useState("");
     }, [currentPage, project]);
 
 
- 
+
     // create project
     const projectFormSubmit = (values) => {
         projectForm.validateFields()
             .then((values) => {
                 try {
-                    const requestData = { ...values,  id: editingProject ? editingProject.project_id : null };
+                    const requestData = { ...values, id: editingProject ? editingProject.project_id : null };
                     const url = editingProject ? `${editProject}/${editingProject.project_id}` : `${createProject}`;
-                    const response = axios.post(url,(requestData),CONFIG_OBJ);
-                    if (response.status===200) {
+                    const response = axios.post(url, (requestData), CONFIG_OBJ);
+                    if (response.status === 200) {
                         if (editingProject && editingProject.project_id !== null) {
                             toast.success('Project Details Updated Successfully!');
                         } else {
@@ -63,8 +68,8 @@ const [project, setProject] = useState("");
                         }
                         projectForm.resetFields();
                         setModalVisible(false);
-                      
-                         getAllProjectsHandler();
+
+                        getAllProjectsHandler();
                     } else {
                         // console.log(response.data.message);
                         // toast.error(response.data.message);
@@ -88,7 +93,7 @@ const [project, setProject] = useState("");
         return formattedData;
     };
 
-   
+
     // delete projects function
     const deleteProjectHandler = async (id) => {                            //creating a function for deleting data
         try {
@@ -120,8 +125,8 @@ const [project, setProject] = useState("");
         projectForm.setFieldsValue(projectData);
         setFormDisabled(false);
     }
-   
-    const openProjectView = async(project)=>{
+
+    const openProjectView = async (project) => {
         setModalVisible(true);
         setFormDisabled(true);
         projectForm.setFieldsValue({
@@ -130,7 +135,7 @@ const [project, setProject] = useState("");
             schedule_end_date: project.schedule_end_date.split('T')[0] // Display only the date part
         });
     }
- 
+
     const openProjectEdit = async (project) => {
         setEditingProject(project);
         setModalVisible(true);
@@ -141,13 +146,28 @@ const [project, setProject] = useState("");
             schedule_end_date: project.schedule_end_date.split('T')[0] // Display only the date part
         });
     };
+
+    // for export to excel
+    const exportToExcel = () => {
+
+        const htmlTable = document.getElementById('pmTable');
+        const wb = XLSX.utils.table_to_book(htmlTable);
+        // console.log(wb)
+        XLSX.writeFile(wb, 'employee_reportPW.xlsx');
+    };
+    // for export to pdf
+
+    const exportToPDF = () => {
+        
+    }
+
     return (
         <>
             <Header />
             <SideNavbar />
             <div className="content-wrapper bg-white">
                 <div className="content">
-                   
+
 
                     <div className="container-fluid bg-white">
                         <div className="row my-5">
@@ -163,7 +183,7 @@ const [project, setProject] = useState("");
                                     <label className="text-capitalize fw-bold text-info">
                                         project name
                                     </label>
-                                    
+
                                     <Search
                                         placeholder="search by project name"
                                         allowClear
@@ -174,7 +194,15 @@ const [project, setProject] = useState("");
                                         value={project} onChange={(e) => setProject(e.target.value)}
                                     />
                                 </div>
+                                <div className="row d-flex justify-content-end">
+              <div className="col-1 me-2">
+                <div className="mb-2 d-flex gap-3">
+                  <FontAwesomeIcon icon={faFileExcel} size="xl" style={{ color: "#74C0FC", }} onClick={exportToExcel} />
+                  <FontAwesomeIcon icon={faFilePdf} style={{ color: "#ee445e", }} size="xl" onClick={exportToPDF} />
+                </div>
+              </div>
 
+            </div>
                                 <Modal title={editingProject ? 'Edit Project' : 'Add Project'} visible={modalVisible}
                                     onOk={projectFormSubmit}
                                     onCancel={() => {
@@ -221,7 +249,7 @@ const [project, setProject] = useState("");
                                         </Row>
                                     </Form>
                                 </Modal>
-                                <table className="table table-striped table-hover mt-5">
+                                <table id='pmTable' className="table table-striped table-hover mt-5">
                                     <thead>
                                         <tr>
                                             <th scope="col">S.No.</th>
@@ -243,18 +271,18 @@ const [project, setProject] = useState("");
                                                         <td>{data.schedule_start_date.slice(8, 10)}/{data.schedule_start_date.slice(5, 7)}/{data.schedule_start_date.slice(0, 4)}</td>
                                                         <td>{data.schedule_end_date.slice(8, 10)}/{data.schedule_end_date.slice(5, 7)}/{data.schedule_end_date.slice(0, 4)}</td>
                                                         <td className=''>
-                                                        <EyeOutlined onClick={() => openProjectView(data)} style={{color:"blue", marginRight:"1rem"}}/>
+                                                            <EyeOutlined onClick={() => openProjectView(data)} style={{ color: "blue", marginRight: "1rem" }} />
                                                             {/* <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button> */}
-                                                            <EditOutlined onClick={() => openProjectEdit(data)} style={{color:"blue",marginRight:"1rem"}}/>
+                                                            <EditOutlined onClick={() => openProjectEdit(data)} style={{ color: "blue", marginRight: "1rem" }} />
                                                             {/* <button className="btn btn-danger btn-sm" onClick={() => deleteProjectHandler(data.project_id)}>Delete</button> */}
-                                                            <DeleteOutlined onClick={() => deleteProjectHandler(data.project_id)}  style={{color:"red",marginRight:"1rem"}}/>
+                                                            <DeleteOutlined onClick={() => deleteProjectHandler(data.project_id)} style={{ color: "red", marginRight: "1rem" }} />
                                                         </td>
                                                     </tr>
                                                 )
                                             })
                                         }
                                     </tbody>
-                                   
+
                                 </table>
                                 <div className="row float-right">
                                     <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
