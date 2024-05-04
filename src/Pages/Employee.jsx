@@ -204,12 +204,24 @@ const Employee = () => {
   };
 
   // Function to handle task status change
-  const handleStatusChange = (index, value) => {
-    const updatedTaskRecords = [...taskRecords];
-    updatedTaskRecords[index].status = value;
-    setTaskRecords(updatedTaskRecords);
-  };
+  // const handleStatusChange = (index, value) => {
+  //   const updatedTaskRecords = [...taskRecords];
+  //   updatedTaskRecords[index].status = value;
+  //   setTaskRecords(updatedTaskRecords);
+  // };
 
+  // Function to handle task status change
+const handleStatusChange = (index, value) => {
+  const updatedTaskRecords = [...taskRecords];
+  updatedTaskRecords[index].status = value;
+  if (value === "completed") {
+    updatedTaskRecords[index].task_percent = 100;
+  }
+  else if (value === "notstarted") {
+    updatedTaskRecords[index].task_percent = 0;
+  }
+  setTaskRecords(updatedTaskRecords);
+};
   // Function to save task changes
   const saveTask = async (index) => {
     const task = taskRecords[index];
