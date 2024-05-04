@@ -36,7 +36,7 @@ const getDisabledStateFromStorage = () => {
 const Employee = () => {
   const [showSelect, setShowSelect] = useState(false)
   // for adhoc
-  const [adhoc, setAdhoc] = useState(false);
+  const [adhoc, setAdhoc] = useState('');
   // for disable form
   const [formDisabled, setFormDisabled] = useState(false);
   const [taskSaved, setTaskSaved] = useState(false);
@@ -101,6 +101,8 @@ const Employee = () => {
       const response = await axios.get(`${getTask}/${user_id}`);
       console.log("task records", response.data);
       setTaskRecords(response.data);
+      // setAdhoc(response.data.adhoc)
+      // console.log("adhoc value",adhoc)
     } catch (error) {
       console.log("Error fetching tasks:", error);
     }
@@ -111,10 +113,12 @@ const Employee = () => {
   }, []);
 
   const handleAddTask = () => {
+    setAdhoc(true);
     // Disable all existing rows
     const updatedTaskRecords = taskRecords.map((record) => ({
       ...record,
       formDisabled: true,
+
     }));
 
     // Add a new row with formDisabled set to false
@@ -126,6 +130,7 @@ const Employee = () => {
       task: "",
       allocated_time: "",
       actual_time: "",
+      task_percent:'',
       status: "",
       remarks: "",
       formDisabled: false, // Enable the newly added row
@@ -363,7 +368,7 @@ const Employee = () => {
                             </th>
                           </>) :
                           <>
-                          
+
                           </>
 
                       }
@@ -373,6 +378,7 @@ const Employee = () => {
                   <tbody>
                     {Array.isArray(taskRecords) &&
                       taskRecords.map((record, index) => (
+
                         <tr key={index}>
                           <td>{index + 1}</td>
                           <td>
@@ -463,11 +469,11 @@ const Employee = () => {
                                 minRows: 1,
                                 maxRows: 6,
                               }}
-                              style={{ width: "12rem" }}
+                              // style={{ width: "12rem" }}
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12) || record.adhoc == 1}
                             // disabled={formDisabled}
                             />
                           </td>
@@ -486,7 +492,7 @@ const Employee = () => {
                               value={record.allocated_time}
                               onChange={(e) => handleInputChange(index, e)}
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12) || adhoc == false}
                               min="1"
                               max="24"
                               defaultValue="0"
@@ -545,10 +551,10 @@ const Employee = () => {
                                   disabled={record.formDisabled || formDisabled}
                                 >
                                   <option value="" disabled>Select</option>
-                                  <option value="notstarted">Not Started</option>
-                                  <option value="transfer">Transfer</option>
-                                  <option value="inprocess">Work In Progress</option>
-                                  <option value="completed">Completed</option>
+                                  <option value="notstarted" className="text-danger">Not Started</option>
+                                  <option value="transfer" className="text-primary">Transfer</option>
+                                  <option value="inprocess" className="text-warning">Work In Progress</option>
+                                  <option value="completed" className="text-success">Completed</option>
 
                                 </select>
                               </td>
@@ -572,6 +578,7 @@ const Employee = () => {
                             </>
                           ) : null}
 
+
                           <td className="d-flex gap-3">
                             {
                               dayjs(currentTime).hour() < 12 && (
@@ -584,21 +591,33 @@ const Employee = () => {
                             }
 
 
-                            {!record.formDisabled && !taskSaved && window.location.pathname !== "/plan" && (
+                            {!record.formDisabled && !taskSaved && (window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) && (
                               <CheckOutlined
                                 style={{ color: "green" }}
                                 onClick={() => saveTask(index)}
                               />
                             )}
-                            {window.location.pathname !== "/plan" && (
+                            {!record.formDisabled && !taskSaved && (window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12) && (
+                              <CheckOutlined
+                                style={{ color: "green" }}
+                                onClick={() => saveTask(index)}
+                              />
+                            )}
+                            {(window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) && (
                               <EditOutlined
                                 style={{ color: "blue" }}
                                 onClick={() => handleEditTask(index)}
-                              // disabled={formDisabled} // Disable the "Edit" button when form is disabled
                               />
                             )
                             }
 
+                            {(window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12) && (
+                              <EditOutlined
+                                style={{ color: "blue" }}
+                                onClick={() => handleEditTask(index)}
+                              />
+                            )
+                            }
                           </td>
                         </tr>
                       ))}
