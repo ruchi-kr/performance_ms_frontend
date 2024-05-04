@@ -14,10 +14,12 @@ import ManagerViewTask from "./Pages/ManagerViewTask";
 import ManagerViewProjectTask from "./Pages/ManagerViewProjectTask";
 import ProjectReport from "./Pages/ProjectReport";
 import ManagerEmployeeReport from "./Pages/ManagerEmployeeReport";
+import ManagerProjectReport from "./Pages/ManagerProjectReport";
 
 import EmployeeReport from "./Pages/EmployeeReport";
 import EmployeeReportDw from "./Pages/EmployeeReportDw";
 import Test from './Pages/Test';
+import ManagerParticularEmployeeReport from "./Pages/ManagerParticularEmployeeReport";
 
 
 function App() {
@@ -62,6 +64,14 @@ function App() {
             <Route
               path="/manager/report/employee"
               element={<ManagerEmployeeReport />}
+            />
+            <Route
+              path="/manager/report/employee/:employee_id"
+              element={<ManagerParticularEmployeeReport />}
+            />
+            <Route
+              path="/manager/report/project/detailed"
+              element={<ManagerProjectReport />}
             />
 
             <Route path ='/test' element={<Test/>} />

@@ -4,32 +4,34 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { getEmployeeReport } from "../Config";
-import { Input, DatePicker, Button, Tag } from "antd";
+import { Input, DatePicker, Button } from "antd";
 import moment from "moment";
-import dayjs from "dayjs";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { NavLink } from "react-router-dom";
+import { useParams } from "react-router-dom";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 
-const ManagerEmployeeReport = () => {
-  const dateFormat = "DD/MM/YYYY";
-  const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState(null);
-  const [search, setSearch] = useState("");
-  const user_id = sessionStorage.getItem("id");
-  const pageSize = 20;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [reportData, setReportData] = useState([]);
+const ManagerParticularEmployeeReport = () => {
+  const { employee_id } = useParams();
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user.employee_id;
   console.log("manager id", manager_id);
+  console.log("empoyee_id", employee_id);
+  const dateFormat = "DD/MM/YYYY";
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+  const user_id = sessionStorage.getItem("id");
+  const pageSize = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [search, setSearch] = useState("");
+  const [reportData, setReportData] = useState([]);
 
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
   //        try {
@@ -49,7 +51,7 @@ const ManagerEmployeeReport = () => {
   const getEmployeeReportHandler = async (page) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/employee/report/${manager_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`
+        `http://localhost:8000/api/employee/report/${manager_id}/${employee_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`
       );
       console.log("response", response);
       setReportData(response.data);
@@ -108,13 +110,58 @@ const ManagerEmployeeReport = () => {
     return current && current >= dayjs().endOf("day");
   };
 
-  // export to excel and pdf file function
+  // Function to handle expand all rows
+  const [expandedRows, setExpandedRows] = useState([]);
+
+  const handleExpandAll = () => {
+    if (expandedRows.length === reportData.length) {
+      setExpandedRows([]);
+    } else {
+      const newExpandedRows = reportData.map((_, index) => index);
+      setExpandedRows(newExpandedRows);
+    }
+  };
+
+  const handleExcel = () => {
+    // Call function1 first, then function2
+    // handleExpandAll();
+    exportToExcel();
+    // setTimeout(exportToExcel(), 3000);
+  };
+
+  // export to excel file function
+  // const exportToExcel = () => {
+
+  //   const htmlTable = document.getElementById('reportTablepw');
+  //   const wb = XLSX.utils.table_to_book(htmlTable);
+  //   XLSX.writeFile(wb, 'employee_reportPW.xlsx');
+  // };
+
   const exportToExcel = () => {
     const htmlTable = document.getElementById("reportTablepw");
-    const wb = XLSX.utils.table_to_book(htmlTable);
+
+    // Clone the table to avoid modifying the original
+    const clonedTable = htmlTable.cloneNode(true);
+
+    // Iterate through each row and remove the row if it contains the specified content
+    const rowsToRemove = Array.from(clonedTable.rows).filter((row) => {
+      const rowData = Array.from(row.cells).map((cell) =>
+        cell.textContent.trim()
+      );
+      const rowContent = rowData.join("");
+      return rowContent.includes("TaskDateStatusAllocated TimeActual Time");
+    });
+
+    rowsToRemove.forEach((row) => row.remove());
+
+    // Convert the modified cloned table to a workbook
+    const wb = XLSX.utils.table_to_book(clonedTable);
+
+    // Save the workbook as an Excel file
     XLSX.writeFile(wb, "employee_reportPW.xlsx");
   };
 
+  // to pdf file function
   const exportToPDF = () => {
     const unit = "pt";
     const size = "A4"; // Use A1, A2, A3 or A4
@@ -166,10 +213,14 @@ const ManagerEmployeeReport = () => {
         "", // Placeholder for tasks
       ];
       data.push(row);
-      if (expandedRow === index) {
+      if (expandedRows.includes(index) || expandedRow === index) {
+        const taskheaders = [
+          ["Task", "Date", "status", "Alloc hrs", "Man hrs"],
+        ];
+        data.push(taskheaders[0]); // Include task headers
         JSON.parse(item.tasks).forEach((task) => {
+          // const taskheaders = [['Task', 'Date', 'status', 'Alloc hrs', 'Man hrs']];
           const taskRow = [
-            // { content: task.task, styles: { color: 'blue' } },
             task.task, // Task
             `${task.created_at.slice(8, 10)}/${task.created_at.slice(
               5,
@@ -192,6 +243,20 @@ const ManagerEmployeeReport = () => {
 
     doc.text(title, marginLeft, 40);
     doc.autoTable(content); // Ensure you're using autoTable correctly here
+    //  // Iterate through each row in the data and draw background rectangles
+    // const totalPages = doc.internal.getNumberOfPages();
+    // for (let i = 1; i <= totalPages; i++) {
+    //   doc.setPage(i);
+    //   for (let j = 0; j < data.length; j++) {
+    //     if (j > 0 && j % 2 === 0) { // Change color of every second row starting from the second row
+    //       const y = 50 + j * 20;
+    //       const width = doc.internal.pageSize.width - 2 * 40;
+    //       const height = 20;
+    //       doc.setFillColor(211, 211, 211); // Gray color
+    //       doc.rect(40, y, width, height, 'F');
+    //     }
+    //   }
+    // }
     doc.save("employee_reportPW.pdf");
   };
 
@@ -204,18 +269,17 @@ const ManagerEmployeeReport = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">Employee-wise Report</h3>
+                <h3 className="text-primary">Project-wise Reports</h3>
                 <hr className="bg-primary border-4" />
                 <div className="d-flex justify-content-between">
                   <div className="col-2">
                     <label className="text-capitalize fw-bold text-info">
-                      Employee name
+                      project name
                     </label>
 
                     <Search
-                      placeholder="search by employee name"
+                      placeholder="search by project name"
                       allowClear
-                      onSearch={onSearch}
                       style={{
                         width: 200,
                       }}
@@ -223,8 +287,8 @@ const ManagerEmployeeReport = () => {
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
-                  <div className="d-flex align-items-center">
-                    <div className="col-sm-4 col-md-3 col-lg-8">
+                  <div className="d-flex align-items-center justify-content-end me-3">
+                    <div className="col-sm-4 col-md-3 col-lg-4 ">
                       <div className="mb-3">
                         <label className="text-capitalize textcolumntitle fw-bold text-info">
                           Select Date Range
@@ -243,38 +307,57 @@ const ManagerEmployeeReport = () => {
                         />
                       </div>
                     </div>
-                  </div>
-                  <div className="col-2 mt-4 d-flex justify-content-end">
-                    <div className=" d-flex gap-3">
-                      <FontAwesomeIcon
-                        icon={faFileExcel}
-                        size="2xl"
-                        style={{ color: "#74C0FC" }}
-                        onClick={exportToExcel}
-                      />
-                      <FontAwesomeIcon
-                        icon={faFilePdf}
-                        style={{ color: "#ee445e" }}
-                        size="2xl"
-                        onClick={exportToPDF}
-                      />
+
+                    <div className="col-sm-4 col-md-1 col-lg-1 ">
+                      {/* <Button
+                        className="py-1 px-2 mt-3 btn btn-info btn-sm rounded-2"
+                        onClick={handleSearchByDateRange}
+                      >
+                        Search
+                      </Button> */}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
+            <div className="row d-flex justify-content-end">
+              <div className="col-2">
+                <div className=" d-flex gap-3">
+                  <Button onClick={handleExpandAll} className="text-info">
+                    {!expandedRows || expandedRows.length < reportData.length
+                      ? "Expand"
+                      : "Collapse"}
+                  </Button>
+                  {/* <Button onClick={handleExpandAll}>{!expandedRow || expandedRow.length < reportData.length ? 'Expand All' : 'Collapse All'}</Button> */}
+                  <FontAwesomeIcon
+                    icon={faFileExcel}
+                    size="xl"
+                    style={{ color: "#74C0FC" }}
+                    onClick={handleExcel}
+                  />
+                  <FontAwesomeIcon
+                    icon={faFilePdf}
+                    style={{ color: "#ee445e" }}
+                    size="xl"
+                    onClick={exportToPDF}
+                  />
+                </div>
+              </div>
+            </div>
             <div className="row">
               <div className="col-11 mx-auto">
                 {/* table */}
                 <table
                   id="reportTablepw"
-                  className="table table-striped table-hover mt-5"
+                  className="table table-striped table-hover mt-3"
                 >
                   <thead>
-                    <tr className="table-info">
+                    <tr>
                       <th scope="col">S.No.</th>
-                      <th scope="col">Employee Name</th>
+                      <th scope="col">Project Name</th>
+                      <th scope="col">Schd. Start Date</th>
+                      <th scope="col">Schd. End Date</th>
+
                       <th scope="col">Alloc hrs</th>
                       <th scope="col">Man hrs</th>
                     </tr>
@@ -283,26 +366,30 @@ const ManagerEmployeeReport = () => {
                   <tbody className="table-group-divider">
                     {reportData &&
                       reportData.map((item, index) => (
-                        <React.Fragment key={item.employee_id}>
+                        <React.Fragment key={item.user_id}>
                           <tr onClick={() => handleRowClick(index)}>
                             <th scope="row">{index + 1}</th>
                             <td className="text-capitalize">
-                              <NavLink
-                                to={`/manager/report/employee/${item.employee_id}`}
-                              >
-                                <Tag color={"blue"}>{item.name}</Tag>
-                              </NavLink>
+                              {item.project_name}
                             </td>
-                            <td>{item.total_allocated_time}</td>
-                            <td>{item.total_actual_time}</td>
+                            <td>
+                              {moment.utc(item.created_at).format("DD/MM/YYYY")}
+                            </td>
+                            <td>
+                              {moment.utc(item.created_at).format("DD/MM/YYYY")}
+                            </td>
+
+                            <td>{item.total_allocated_hours}</td>
+                            <td>{item.total_actual_hours}</td>
                           </tr>
-                          {expandedRow === index && (
+                          {(expandedRows.includes(index) ||
+                            expandedRow === index) && (
+                            // expandedRow === index
                             <tr>
                               <td colSpan="12">
                                 <table className="col-11 mx-auto">
                                   <thead>
                                     <tr>
-                                      <th>Project Name</th>
                                       <th>Task</th>
                                       <th>Date</th>
                                       <th>Status</th>
@@ -311,30 +398,17 @@ const ManagerEmployeeReport = () => {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {item?.tasks_details &&
-                                      item?.tasks_details.map(
+                                    {item.tasks &&
+                                      JSON.parse(item.tasks).map(
                                         (task, taskIndex) => (
                                           <tr key={taskIndex}>
-                                            <td>{task.project_name}</td>
                                             <td>{task.task}</td>
                                             <td>
-                                              {moment
-                                                .utc(task.created_at)
-                                                .format("DD/MM/YYYY")}
+                                              {task.created_at.slice(8, 10)}/
+                                              {task.created_at.slice(5, 7)}/
+                                              {task.created_at.slice(0, 4)}
                                             </td>
-                                            {task.status === "completed" ? (
-                                              <td>
-                                                <Tag color="green">
-                                                  {task.status}
-                                                </Tag>
-                                              </td>
-                                            ) : (
-                                              <td>
-                                                <Tag color="red">
-                                                  {task.status}
-                                                </Tag>
-                                              </td>
-                                            )}
+                                            <td>{task.status}</td>
                                             <td>{task.allocated_time}</td>
                                             <td>{task.actual_time}</td>
                                           </tr>
@@ -405,4 +479,4 @@ const ManagerEmployeeReport = () => {
   );
 };
 
-export default ManagerEmployeeReport;
+export default ManagerParticularEmployeeReport;

@@ -7,6 +7,11 @@ import { getEmployeeReport } from "../Config";
 import { Input, DatePicker, Button, Tag } from "antd";
 import moment from "moment";
 import dayjs from "dayjs";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -24,7 +29,7 @@ const ManagerProjectReport = () => {
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user.employee_id;
   console.log("manager id", manager_id);
-
+console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
   //        try {
   //            const response = await axios.get(
@@ -43,7 +48,7 @@ const ManagerProjectReport = () => {
   const getEmployeeReportHandler = async (page) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/employee/report/${manager_id}&search=${search}&toDate=${toDate}&fromDate=${fromDate}`
+        `http://localhost:8000/api/project/report/detailed/${manager_id}/?&search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${page}&pageSize=${10}`
       );
       console.log("response", response);
       setReportData(response.data);
@@ -53,6 +58,9 @@ const ManagerProjectReport = () => {
       console.log(err);
     }
   };
+  useEffect(() => {
+    getEmployeeReportHandler(currentPage);
+  }, [toDate, fromDate, currentPage]);
   // search functionality
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -81,6 +89,17 @@ const ManagerProjectReport = () => {
       setExpandedRow(index);
     }
   };
+  // Function to handle expand all rows
+  const [expandedRows, setExpandedRows] = useState([]);
+
+  const handleExpandAll = () => {
+    if (expandedRows.length === reportData.length) {
+      setExpandedRows([]);
+    } else {
+      const newExpandedRows = reportData.map((_, index) => index);
+      setExpandedRows(newExpandedRows);
+    }
+  };
   const handleDateRangeChange = (dates, dateStrings) => {
     console.log("dates", dates);
     console.log("dateStrings", dateStrings);
@@ -98,6 +117,79 @@ const ManagerProjectReport = () => {
     // Can not select days before today and today
     return current && current >= dayjs().endOf("day");
   };
+  // export to excel and pdf file function
+  const exportToExcel = async () => {
+    window.confirm("Do you want to download record!");
+    // const response = await axios.get(
+    //   `http://localhost:8000/api/project/report/detailed/${manager_id}/?&search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=1&pageSize=10000`
+    // );
+    // console.log("excel response", response.data);
+    const htmlTable = document.getElementById("reportTablepw");
+    const wb = XLSX.utils.table_to_book(htmlTable);
+    XLSX.writeFile(wb, "employee_reportPW.xlsx");
+  };
+
+  const exportToPDF = () => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "landscape"; // 'portrait' or 'landscape'
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+    const title = "Project Detailed Report";
+    const headers = [["S.No.", "Project Name", "Alloc hrs", "Man hrs"]];
+
+    //   const data = reportData.map((item, index) => [
+    //     index + 1,
+    //     item.project_name,
+    //     `${item.schedule_start_date.slice(8, 10)}/${item.schedule_start_date.slice(5, 7)}/${item.schedule_start_date.slice(0, 4)}`,
+    //     `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(5, 7)}/${item.schedule_end_date.slice(0, 4)}`,
+    //     item.total_allocated_hours,
+    //     item.total_actual_hours,
+    // ]);
+
+    let data = [];
+    reportData.forEach((item, index) => {
+      const row = [
+        index + 1,
+        item.project_name,
+        item.total_allocated_hours,
+        item.total_actual_hours,
+        "", // Placeholder for tasks
+      ];
+      data.push(row);
+      if (expandedRows.includes(index) || expandedRow === index) {
+        item.tasks_details.forEach((task, index) => {
+          const taskRow = [
+            // { content: task.task, styles: { color: 'blue' } },
+            index,
+            task.employee_name,
+            task.task, // Task
+            `${task.created_at.slice(8, 10)}/${task.created_at.slice(
+              5,
+              7
+            )}/${task.created_at.slice(0, 4)}`,
+            task.status,
+            task.allocated_time,
+            task.actual_time,
+          ];
+          data.push(taskRow);
+        });
+      }
+    });
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+    };
+
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content); // Ensure you're using autoTable correctly here
+    doc.save("employee_reportPW.pdf");
+  };
 
   return (
     <>
@@ -108,16 +200,16 @@ const ManagerProjectReport = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">Project-wise Report</h3>
+                <h3 className="text-primary">Project Detailed Report</h3>
                 <hr className="bg-primary border-4" />
                 <div className="d-flex justify-content-between">
                   <div className="col-2">
                     <label className="text-capitalize fw-bold text-info">
-                      Project name
+                      Employee Search
                     </label>
 
                     <Search
-                      placeholder="search by employee name"
+                      placeholder="Search Employee"
                       allowClear
                       onSearch={onSearch}
                       style={{
@@ -129,13 +221,14 @@ const ManagerProjectReport = () => {
                   </div>
                   <div className="d-flex align-items-center">
                     <div className="col-sm-4 col-md-3 col-lg-8">
-                      <div className="mb-3">
+                      <div className="mb-1">
                         <label className="text-capitalize textcolumntitle fw-bold text-info">
                           Select Date Range
                         </label>
                         <RangePicker
                           disabledDate={disabledDate}
                           onChange={handleDateRangeChange}
+                          defaultValue={[dayjs().subtract(1, "D"), dayjs()]}
                           placeholder="From Date"
                           style={{
                             width: "100%",
@@ -157,13 +250,41 @@ const ManagerProjectReport = () => {
                       </Button>
                     </div> */}
                   </div>
+                  <div className="row ">
+                    <div className="col-2 mt-4 d-flex justify-content-end">
+                      <div className="d-flex gap-3">
+                        <FontAwesomeIcon
+                          icon={faFileExcel}
+                          size="2xl"
+                          style={{ color: "#74C0FC" }}
+                          onClick={exportToExcel}
+                        />
+                        <FontAwesomeIcon
+                          icon={faFilePdf}
+                          style={{ color: "#ee445e" }}
+                          size="2xl"
+                          onClick={exportToPDF}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-end mt-3 mr-4">
+                  <Button onClick={handleExpandAll} className="text-info">
+                    {!expandedRows || expandedRows.length < reportData.length
+                      ? "Expand"
+                      : "Collapse"}
+                  </Button>
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="col-11 mx-auto">
                 {/* table */}
-                <table className="table table-striped table-hover mt-5">
+                <table
+                  id="reportTablepw"
+                  className="table table-striped table-hover mt-2"
+                >
                   <thead>
                     <tr>
                       <th scope="col">S.No.</th>
@@ -179,16 +300,23 @@ const ManagerProjectReport = () => {
                         <React.Fragment key={item.employee_id}>
                           <tr onClick={() => handleRowClick(index)}>
                             <th scope="row">{index + 1}</th>
-                            <td className="text-capitalize">{item.name}</td>
-                            <td>{item.total_allocated_time}</td>
-                            <td>{item.total_actual_time}</td>
+                            <td className="text-capitalize font-weight-bold">
+                              {item.project_name}
+                            </td>
+                            <td className="font-weight-bold">
+                              {item.total_allocated_time}
+                            </td>
+                            <td className="font-weight-bold">
+                              {item.total_actual_time}
+                            </td>
                           </tr>
-                          {expandedRow === index && (
+                          {(expandedRows.includes(index) ||
+                            expandedRow === index) && (
                             <tr>
                               <td colSpan="12">
                                 <table className="col-11 mx-auto">
-                                  <thead>
-                                    <tr>
+                                  <thead className="table-info">
+                                    <tr >
                                       <th>Employee Name</th>
                                       <th>Task</th>
                                       <th>Date</th>
@@ -202,24 +330,28 @@ const ManagerProjectReport = () => {
                                       item?.tasks_details.map(
                                         (task, taskIndex) => (
                                           <tr key={taskIndex}>
-                                            <td>{task.project_name}</td>
-                                            <td>{task.task}</td>
+                                            <td>{task.name}</td>
+                                            <td>
+                                              <p className="text-justify">
+                                                {task.task}
+                                              </p>
+                                            </td>
                                             <td>
                                               {moment
                                                 .utc(task.created_at)
                                                 .format("DD/MM/YYYY")}
                                             </td>
                                             {task.status === "completed" ? (
-                                              <td>
-                                                <Tag color="green">
+                                              <td className="text-success text-capitalize">
+                                                
                                                   {task.status}
-                                                </Tag>
+                                               
                                               </td>
                                             ) : (
-                                              <td>
-                                                <Tag color="red">
+                                              <td className="text-warning text-capitalize">
+                                             
                                                   {task.status}
-                                                </Tag>
+                                             
                                               </td>
                                             )}
                                             <td>{task.allocated_time}</td>

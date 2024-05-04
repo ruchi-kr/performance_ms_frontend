@@ -480,7 +480,7 @@ const Employee = () => {
                                   required
                                   disabled={record.formDisabled || formDisabled}
                                 >
-                                  <option value="">Select</option>
+                                  <option value="" disabled>Select</option>
                                   <option value="inprocess">In Process</option>
                                   <option value="completed">Completed</option>
                                 </select>

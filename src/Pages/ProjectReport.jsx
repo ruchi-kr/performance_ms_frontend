@@ -9,6 +9,11 @@ import dayjs from "dayjs";
 import { Input, Button, DatePicker, Tag } from "antd";
 import { toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 const ProjectReport = () => {
@@ -96,6 +101,92 @@ const ProjectReport = () => {
     // Can not select days before today and today
     return current && current >= dayjs().endOf("day");
   };
+  // export to excel and pdf file function
+  const exportToExcel = () => {
+    const htmlTable = document.getElementById("reportTablepw");
+    const wb = XLSX.utils.table_to_book(htmlTable);
+    XLSX.writeFile(wb, "employee_reportPW.xlsx");
+  };
+
+  const exportToPDF = () => {
+    const unit = "pt";
+    const size = "A4"; // Use A1, A2, A3 or A4
+    const orientation = "landscape"; // 'portrait' or 'landscape'
+
+    const marginLeft = 40;
+    const doc = new jsPDF(orientation, unit, size);
+
+    doc.setFontSize(15);
+    const title = "Employee Report Project-Wise";
+    const headers = [
+      [
+        "S.No.",
+        "Project Name",
+        "Schd. Start Date",
+        "Schd. End Date",
+        "Alloc hrs",
+        "Man hrs",
+      ],
+    ];
+
+    //   const data = reportData.map((item, index) => [
+    //     index + 1,
+    //     item.project_name,
+    //     `${item.schedule_start_date.slice(8, 10)}/${item.schedule_start_date.slice(5, 7)}/${item.schedule_start_date.slice(0, 4)}`,
+    //     `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(5, 7)}/${item.schedule_end_date.slice(0, 4)}`,
+    //     item.total_allocated_hours,
+    //     item.total_actual_hours,
+    // ]);
+
+    let data = [];
+    reportData.forEach((item, index) => {
+      const row = [
+        index + 1,
+        item.project_name,
+        `${item.schedule_start_date.slice(
+          8,
+          10
+        )}/${item.schedule_start_date.slice(
+          5,
+          7
+        )}/${item.schedule_start_date.slice(0, 4)}`,
+        `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(
+          5,
+          7
+        )}/${item.schedule_end_date.slice(0, 4)}`,
+        item.total_allocated_hours,
+        item.total_actual_hours,
+        "", // Placeholder for tasks
+      ];
+      data.push(row);
+      if (expandedRow === index) {
+        JSON.parse(item.tasks).forEach((task) => {
+          const taskRow = [
+            // { content: task.task, styles: { color: 'blue' } },
+            task.task, // Task
+            `${task.created_at.slice(8, 10)}/${task.created_at.slice(
+              5,
+              7
+            )}/${task.created_at.slice(0, 4)}`,
+            task.status,
+            task.allocated_time,
+            task.actual_time,
+          ];
+          data.push(taskRow);
+        });
+      }
+    });
+
+    let content = {
+      startY: 50,
+      head: headers,
+      body: data,
+    };
+
+    doc.text(title, marginLeft, 40);
+    doc.autoTable(content); // Ensure you're using autoTable correctly here
+    doc.save("employee_reportPW.pdf");
+  };
   return (
     <>
       <Header />
@@ -119,7 +210,9 @@ const ProjectReport = () => {
                       onSearch={onSearch}
                       style={{
                         width: 200,
+                        // boxShadow: "3px 3px 3px rgba(0, 0, 0, 0.2)",
                       }}
+                     
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -135,7 +228,7 @@ const ProjectReport = () => {
                           onChange={handleDateRangeChange}
                           style={{
                             width: "100%",
-                            boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)",
+                            // boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)",
                           }}
                           className="rounded-2"
                           format={"DD/MM/YYYY"}
@@ -143,6 +236,7 @@ const ProjectReport = () => {
                         />
                       </div>
                     </div>
+                   
 
                     {/* <div className="col-sm-4 col-md-1 col-lg-1 ">
                       <Button
@@ -153,13 +247,32 @@ const ProjectReport = () => {
                       </Button>
                     </div> */}
                   </div>
+                  <div className="col-2 mt-4 d-flex justify-content-end">
+                      <div className=" d-flex gap-3">
+                        <FontAwesomeIcon
+                          icon={faFileExcel}
+                          size="2xl"
+                          style={{ color: "#74C0FC" }}
+                          onClick={exportToExcel}
+                        />
+                        <FontAwesomeIcon
+                          icon={faFilePdf}
+                          style={{ color: "#ee445e" }}
+                          size="2xl"
+                          onClick={exportToPDF}
+                        />
+                      </div>
+                    </div>
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="col-11 mx-auto">
                 {/* table */}
-                <table className="table table-striped table-hover mt-5">
+                <table
+                  id="reportTablepw"
+                  className="table table-striped table-hover mt-5"
+                >
                   <thead>
                     <tr className="table-info">
                       <th scope="col">S.No.</th>

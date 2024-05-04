@@ -259,7 +259,21 @@ const SideNavbar = () => {
                                 to="/manager/report/project"
                               >
                                 <i className="far fa-circle nav-icon" />
-                                <p>Project-wise</p>
+                                <p>Project Report</p>
+                              </Link>
+                            </li>
+                            <li className="nav-item">
+                              <Link
+                                className={`nav-link text-white ${
+                                  window.location.pathname ===
+                                  "/reportdate-wise"
+                                    ? "bg-cyan"
+                                    : ""
+                                }`}
+                                to="/manager/report/project/detailed"
+                              >
+                                <i className="far fa-circle nav-icon" />
+                                <p>Project Detailed Report</p>
                               </Link>
                             </li>
                             <li className="nav-item">
@@ -273,7 +287,7 @@ const SideNavbar = () => {
                                 to="/manager/report/employee"
                               >
                                 <i className="far fa-circle nav-icon" />
-                                <p>Employee-Wise</p>
+                                <p>Employee Detailed Report</p>
                               </Link>
                             </li>
                           </div>
