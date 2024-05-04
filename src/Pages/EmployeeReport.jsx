@@ -130,33 +130,41 @@ const handleExcel = () => {
    
   //   const htmlTable = document.getElementById('reportTablepw');
   //   const wb = XLSX.utils.table_to_book(htmlTable);
+  //   console.log(wb)
   //   XLSX.writeFile(wb, 'employee_reportPW.xlsx');
   // };
-  
+ 
   const exportToExcel = () => {
     const htmlTable = document.getElementById('reportTablepw');
-  
-    // Clone the table to avoid modifying the original
-    const clonedTable = htmlTable.cloneNode(true);
-  
-    // Iterate through each row and remove the row if it contains the specified content
-    const rowsToRemove = Array.from(clonedTable.rows).filter(row => {
-      const rowData = Array.from(row.cells).map(cell => cell.textContent.trim());
-      const rowContent = rowData.join('');
-      return rowContent.includes('TaskDateStatusAllocated TimeActual Time');
-    });
-  
-    rowsToRemove.forEach(row => row.remove());
-  
-    // Convert the modified cloned table to a workbook
-    const wb = XLSX.utils.table_to_book(clonedTable);
-  
-    // Save the workbook as an Excel file
-    XLSX.writeFile(wb, 'employee_reportPW.xlsx');
-  };
-  
-  
+    const wb = XLSX.utils.table_to_book(htmlTable);
+    const ws = wb.Sheets[wb.SheetNames[0]];
 
+    // Remove unwanted rows
+    const rows = ws['!ref'].split(':');
+    const start = XLSX.utils.decode_cell(rows[0]);
+    const end = XLSX.utils.decode_cell(rows[1]);
+    let newEnd = { ...end }; // Initialize newEnd
+
+    for (let rowNum = start.r; rowNum <= end.r; rowNum++) {
+        const cell = ws[XLSX.utils.encode_cell({ r: rowNum, c: start.c })];
+        if (cell && cell.t === 's' && cell.v.startsWith('TaskDateStatusAllocated TimeActual Timetask')) {
+            for (let i = start.c; i <= end.c; i++) {
+                delete ws[XLSX.utils.encode_cell({ r: rowNum, c: i })];
+            }
+            newEnd.r--; // Decrease row count for each removed row
+        }
+    }
+
+    // Update the range
+    ws['!ref'] = XLSX.utils.encode_range(start, newEnd);
+
+    XLSX.writeFile(wb, 'employee_reportPW.xlsx');
+};
+
+
+
+
+  
   // to pdf file function
   const exportToPDF = () => {
     const unit = 'pt';
@@ -169,16 +177,6 @@ const handleExcel = () => {
     doc.setFontSize(15);
     const title = 'Employee Report Project-Wise';
     const headers = [['S.No.', 'Project Name', 'Schd. Start Date', 'Schd. End Date', 'Alloc hrs', 'Man hrs']];
-
-    //   const data = reportData.map((item, index) => [
-    //     index + 1,
-    //     item.project_name,
-    //     `${item.schedule_start_date.slice(8, 10)}/${item.schedule_start_date.slice(5, 7)}/${item.schedule_start_date.slice(0, 4)}`,
-    //     `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(5, 7)}/${item.schedule_end_date.slice(0, 4)}`,
-    //     item.total_allocated_hours,
-    //     item.total_actual_hours,
-    // ]);
-
 
     let data = [];
     reportData.forEach((item, index) => {
@@ -218,20 +216,6 @@ const handleExcel = () => {
 
     doc.text(title, marginLeft, 40);
     doc.autoTable(content); // Ensure you're using autoTable correctly here
-  //  // Iterate through each row in the data and draw background rectangles
-  // const totalPages = doc.internal.getNumberOfPages();
-  // for (let i = 1; i <= totalPages; i++) {
-  //   doc.setPage(i);
-  //   for (let j = 0; j < data.length; j++) {
-  //     if (j > 0 && j % 2 === 0) { // Change color of every second row starting from the second row
-  //       const y = 50 + j * 20;
-  //       const width = doc.internal.pageSize.width - 2 * 40;
-  //       const height = 20;
-  //       doc.setFillColor(211, 211, 211); // Gray color
-  //       doc.rect(40, y, width, height, 'F');
-  //     }
-  //   }
-  // }
     doc.save('employee_reportPW.pdf');
   };
 
@@ -313,7 +297,6 @@ const handleExcel = () => {
               <div className="col-2">
                 <div className=" d-flex gap-3">
                 <Button onClick={handleExpandAll} className="text-info">{!expandedRows || expandedRows.length < reportData.length ? 'Expand' : 'Collapse'}</Button>
-                {/* <Button onClick={handleExpandAll}>{!expandedRow || expandedRow.length < reportData.length ? 'Expand All' : 'Collapse All'}</Button> */}
                  <FontAwesomeIcon icon={faFileExcel} size="xl" style={{ color: "#74C0FC", }} onClick={handleExcel} />
                   <FontAwesomeIcon icon={faFilePdf} style={{ color: "#ee445e", }} size="xl" onClick={exportToPDF} />
                   
@@ -360,7 +343,6 @@ const handleExcel = () => {
                             <td>{item.total_actual_hours}</td>
                           </tr>
                           {(expandedRows.includes(index) || expandedRow === index) &&   (
-                            // expandedRow === index 
                             <tr>
                               <td colSpan="12">
                                 <table className="col-11 mx-auto">
@@ -377,7 +359,7 @@ const handleExcel = () => {
                                     {item.tasks &&
                                       JSON.parse(item.tasks).map(
                                         (task, taskIndex) => (
-                                          <tr key={taskIndex}>
+                                          <tr key={taskIndex} className="task-row">
                                             <td>{task.task}</td>
                                             <td>
                                               {task.created_at.slice(8, 10)}/
@@ -413,7 +395,7 @@ const handleExcel = () => {
                           aria-label="Previous"
                           onClick={() => handlePageChange(currentPage - 1)}
                         >
-                          <span aria-hidden="true">«</span>
+                          <span aria-hidden="true">« Previous</span>
                         </a>
                       </li>
                       {Array.from({ length: totalPages }, (_, index) => (
@@ -438,7 +420,7 @@ const handleExcel = () => {
                           aria-label="Next"
                           onClick={() => handlePageChange(currentPage + 1)}
                         >
-                          <span aria-hidden="true">»</span>
+                          <span aria-hidden="true">Next »</span>
                         </a>
                       </li>
                     </ul>
