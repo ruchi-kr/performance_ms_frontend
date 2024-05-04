@@ -20,8 +20,9 @@ import {
 } from "../Config.js";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { Select, Modal, Input } from "antd";
+import { Select, Modal, Input, Button } from "antd";
 import dayjs from "dayjs";
+import { Space } from 'antd';
 const { TextArea } = Input;
 
 const { Option } = Select;
@@ -33,7 +34,9 @@ const getDisabledStateFromStorage = () => {
 };
 
 const Employee = () => {
-  const[showSelect, setShowSelect] = useState(false)
+  const [showSelect, setShowSelect] = useState(false)
+  // for adhoc
+  const [adhoc, setAdhoc] = useState(false);
   // for disable form
   const [formDisabled, setFormDisabled] = useState(false);
   const [taskSaved, setTaskSaved] = useState(false);
@@ -126,6 +129,7 @@ const Employee = () => {
       status: "",
       remarks: "",
       formDisabled: false, // Enable the newly added row
+      adhoc: true,
     };
 
     // Update the task records with the new row
@@ -187,7 +191,7 @@ const Employee = () => {
             console.log("error deleting project", err);
           }
         },
-        onCancel() {},
+        onCancel() { },
       });
     } catch (error) {
       console.log(error);
@@ -282,18 +286,18 @@ const Employee = () => {
   // function to fetch current time
 
   const [currentTime, setCurrentTime] = useState(0);
-const getCurrentTimehandle = async () => {
-  try {
-    const response = await axios.get(`${getCurrentTime}`);
-    setCurrentTime(response.data.currentTimeStamp)
-    console.log("current time", response.data.currentTimeStamp);
-  } catch (error) {
-    console.log(error);
+  const getCurrentTimehandle = async () => {
+    try {
+      const response = await axios.get(`${getCurrentTime}`);
+      setCurrentTime(response.data.currentTimeStamp)
+      console.log("current time", response.data.currentTimeStamp);
+    } catch (error) {
+      console.log(error);
+    }
   }
-}
-useEffect(() => {
-  getCurrentTimehandle();
-},[])
+  useEffect(() => {
+    getCurrentTimehandle();
+  }, [])
 
   return (
     <>
@@ -338,11 +342,11 @@ useEffect(() => {
                       {window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
                         <>
                           <th className="form-label text-info fs-6 text-center">
-                            Act.hrs<span style={{ color: "red" }}>*</span>
+                            Act.hrs<span style={{ color: "red", width: '3rem' }}>*</span>
+                            <br />
+                            Percent
                           </th>
-                          <th className="form-label text-info fs-6 text-center">
-                            Percent<span style={{ color: "red" }}>*</span>
-                          </th>
+
                           <th className="form-label text-info fs-6 text-center">
                             Status<span style={{ color: "red" }}>*</span>
                           </th>
@@ -351,10 +355,21 @@ useEffect(() => {
                           </th>
                         </>
                       ) : null}
+                      {
+                        window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
+                          <>
+                            <th>
+                              <Button onClick={handleAddTask} className="d-flex justify-content-center align-items-center text-info m-0" ><PlusOutlined />Add Task</Button>
+                            </th>
+                          </>) :
+                          <>
+                            <th>
+                              <span className="text-info">Action</span>
+                            </th>
+                          </>
 
-                      <th>
-                        <PlusOutlined onClick={handleAddTask} />
-                      </th>
+                      }
+
                     </tr>
                   </thead>
                   <tbody>
@@ -386,7 +401,7 @@ useEffect(() => {
                                 handleProjectChange(index, value)
                               }
                               required
-                              disabled={record.formDisabled || formDisabled}
+                              disabled={record.formDisabled || formDisabled || dayjs(currentTime).hour() > 12}
                             >
                               {projectList.map((project) => (
                                 <Option
@@ -399,46 +414,46 @@ useEffect(() => {
                               ))}
                             </Select>
                           </td>
-                         
-                            {
-                              showSelect && (
-                                <td>
+
+                          {
+                            showSelect && (
+                              <td>
                                 <Select
-                                allowClear
-                                placeholder="Select Reporting Manager"
-                                style={{
-                                  width:
-                                    window.location.pathname !== "/plan"
-                                      ? "150px"
-                                      : "100%",
-                                }}
-                                className="rounded-2"
-                                value={record.manager_id}
-                                // defaultValue={projectManagerName}
-                                onChange={(value) =>
-                                  handleManagerChange(index, value)
-                                }
-                                required
-                                
-                                disabled
+                                  allowClear
+                                  placeholder="Select Reporting Manager"
+                                  style={{
+                                    width:
+                                      window.location.pathname !== "/plan"
+                                        ? "150px"
+                                        : "100%",
+                                  }}
+                                  className="rounded-2"
+                                  value={record.manager_id}
+                                  // defaultValue={projectManagerName}
+                                  onChange={(value) =>
+                                    handleManagerChange(index, value)
+                                  }
+                                  required
+
+                                  disabled
                                 // disabled={record.formDisabled || formDisabled}
-                              >
-                                {managerList.map((manager) => (
-                                  <Option
-                                    key={manager.employee_id}
-                                    value={manager.employee_id}
-                                    label={manager.name}
-                                    
-                                  >
-                                    {manager.name}
-                                  </Option>
-                                ))}
-                              </Select>
+                                >
+                                  {managerList.map((manager) => (
+                                    <Option
+                                      key={manager.employee_id}
+                                      value={manager.employee_id}
+                                      label={manager.name}
+
+                                    >
+                                      {manager.name}
+                                    </Option>
+                                  ))}
+                                </Select>
                               </td>
-                              )
-                            }
-                           
-                         
+                            )
+                          }
+
+
 
                           <td>
                             <TextArea
@@ -447,15 +462,15 @@ useEffect(() => {
                               className="form-control"
                               value={record.task}
                               autoSize={{
-                                minRows: 2,
+                                minRows: 1,
                                 maxRows: 6,
                               }}
                               style={{ width: "12rem" }}
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
-                              disabled={record.formDisabled || formDisabled}
-                              // disabled={formDisabled}
+                              disabled={record.formDisabled || formDisabled || dayjs(currentTime).hour() > 12}
+                            // disabled={formDisabled}
                             />
                           </td>
                           <td>
@@ -473,7 +488,7 @@ useEffect(() => {
                               value={record.allocated_time}
                               onChange={(e) => handleInputChange(index, e)}
                               required
-                              disabled={record.formDisabled || formDisabled}
+                              disabled={record.formDisabled || formDisabled || dayjs(currentTime).hour() > 12}
                               min="1"
                               max="24"
                               defaultValue="0"
@@ -481,45 +496,45 @@ useEffect(() => {
                           </td>
                           {window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
                             <>
-                              <td>
-                                <input
-                                  type="number"
-                                  name="actual_time"
-                                  style={{
-                                    width:
-                                      window.location.pathname !== "/plan"
-                                        ? "3rem"
-                                        : "100%",
-                                  }}
-                                  defaultValue={0}
-                                  className="form-control"
-                                  value={record.actual_time}
-                                  onChange={(e) => handleInputChange(index, e)}
-                                  required
-                                  min={0}
-                                  disabled={record.formDisabled || formDisabled}
-                                />
-                                
+                              <td className="text-center">
+                                <Space direction="vertical">
+                                  <input
+                                    type="number"
+                                    name="actual_time"
+                                    style={{
+                                      width:
+                                        window.location.pathname !== "/plan"
+                                          ? "3rem"
+                                          : "100%",
+                                    }}
+                                    defaultValue={0}
+                                    className="form-control"
+                                    value={record.actual_time}
+                                    onChange={(e) => handleInputChange(index, e)}
+                                    required
+                                    min={0}
+                                    disabled={record.formDisabled || formDisabled}
+                                  />
+
+                                  {record.status === "transfer" || record.status === "inprocess" ? (
+                                    <input
+                                      type="number"
+                                      name="task_percent"
+                                      style={{
+                                        width: window.location.pathname !== "/plan" ? "3rem" : "100%",
+                                      }}
+                                      defaultValue={0}
+                                      className="form-control"
+                                      value={record.task_percent}
+                                      onChange={(e) => handleInputChange(index, e)}
+                                      required
+                                      min={0}
+                                      disabled={record.formDisabled || formDisabled}
+                                    />
+                                  ) : null}
+                                </Space>
                               </td>
-                              <td>
-                              <input
-                                  type="number"
-                                  name="task_percent"
-                                  style={{
-                                    width:
-                                      window.location.pathname !== "/plan"
-                                        ? "3rem"
-                                        : "100%",
-                                  }}
-                                  defaultValue={0}
-                                  className="form-control"
-                                  value={record.task_percent}
-                                  onChange={(e) => handleInputChange(index, e)}
-                                  required
-                                  min={0}
-                                  disabled={record.formDisabled || formDisabled}
-                                />
-                              </td>
+
                               <td>
                                 <select
                                   name="status"
@@ -536,7 +551,7 @@ useEffect(() => {
                                   <option value="transfer">Transfer</option>
                                   <option value="inprocess">Work In Progress</option>
                                   <option value="completed">Completed</option>
-                                 
+
                                 </select>
                               </td>
                               <td>
@@ -545,7 +560,7 @@ useEffect(() => {
                                   name="remarks"
                                   // rows={5}
                                   autoSize={{
-                                    minRows: 2,
+                                    minRows: 1,
                                     maxRows: 6,
                                   }}
                                   className="form-control"
@@ -558,11 +573,18 @@ useEffect(() => {
                               </td>
                             </>
                           ) : null}
+
                           <td className="d-flex gap-3">
-                            <CloseOutlined
-                              style={{ color: "red" }}
-                              onClick={() => handleDeleteTask(record.id)}
-                            />
+                            {
+                              dayjs(currentTime).hour() < 12 && (
+                                <CloseOutlined
+                                  style={{ color: "red" }}
+                                  onClick={() => handleDeleteTask(record.id)}
+
+                                />
+                              )
+                            }
+
                             {/* <CheckOutlined
                             style={{ color: "green" }}
                             onClick={() => saveTask(index)}
@@ -579,7 +601,7 @@ useEffect(() => {
                             <EditOutlined
                               style={{ color: "blue" }}
                               onClick={() => handleEditTask(index)}
-                              // disabled={formDisabled} // Disable the "Edit" button when form is disabled
+                            // disabled={formDisabled} // Disable the "Edit" button when form is disabled
                             />
                           </td>
                         </tr>
