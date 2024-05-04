@@ -52,13 +52,13 @@ const EmployeeReportDateWise = () => {
     } else {
       const formattedFromDate = fromDate ? fromDate.format("YYYY-MM-DD") : null;
       const formattedToDate = toDate ? toDate.format("YYYY-MM-DD") : null;
-      
+
       getEmployeeReportHandler(currentPage, formattedFromDate, formattedToDate);
     }
   };
   const handleDateClear = () => {
     console.log("got called on clear");
-   
+
     getEmployeeReportHandler(currentPage);
   };
   const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
@@ -73,11 +73,17 @@ const EmployeeReportDateWise = () => {
       setReportData(response.data);
       console.log('report data', response.data);
       setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
+    //   const totalCount = parseInt(response.headers['x-total-count']);
+    // const totalPages = Math.ceil(totalCount / pageSize);
+    // setTotalPages(totalPages);
+      console.log('total pages after math ceil', totalPages);
     } catch (err) {
       console.log(err);
     }
   };
-
+  useEffect(() => {
+    console.log('total pages after math', totalPages);
+  }, [totalPages]);
   useEffect(() => {
     getEmployeeReportHandler(currentPage);
   }, [currentPage]);
@@ -116,18 +122,18 @@ const EmployeeReportDateWise = () => {
     const rows = table.querySelectorAll('tr');
     const cells = table.querySelectorAll('th');
 
-     // Extract data
-  rows.forEach((row, index) => {
-    if (index > 2) { // Skip the first three row (table header)
-      const rowData = [];
-      const cells = row.querySelectorAll('td');
-      cells.forEach((cell) => {
-        const content = cell.textContent.trim();
-        rowData.push(content);
-      });
-      data.push(rowData);
-    }
-  });
+    // Extract data
+    rows.forEach((row, index) => {
+      if (index > 2) { // Skip the first three row (table header)
+        const rowData = [];
+        const cells = row.querySelectorAll('td');
+        cells.forEach((cell) => {
+          const content = cell.textContent.trim();
+          rowData.push(content);
+        });
+        data.push(rowData);
+      }
+    });
     const content = {
       startY: 50,
       head: headers,
@@ -291,7 +297,7 @@ const EmployeeReportDateWise = () => {
                           aria-label="Previous"
                           onClick={() => handlePageChange(currentPage - 1)}
                         >
-                          <span aria-hidden="true">«</span>
+                          <span aria-hidden="true">« Previous</span>
                         </a>
                       </li>
                       {Array.from({ length: totalPages }, (_, index) => (
@@ -309,6 +315,7 @@ const EmployeeReportDateWise = () => {
                           </a>
                         </li>
                       ))}
+                      {/* <div>{currentPage}/{totalPages}</div> */}
                       <li className="page-item">
                         <a
                           className="page-link"
@@ -316,11 +323,22 @@ const EmployeeReportDateWise = () => {
                           aria-label="Next"
                           onClick={() => handlePageChange(currentPage + 1)}
                         >
-                          <span aria-hidden="true">»</span>
+                          <span aria-hidden="true">Next »</span>
                         </a>
                       </li>
+                     
                     </ul>
+                   
                   </nav>
+                  {/* {totalPages <= currentPage && <p className='text-info'>No records</p>} */}
+                  {(totalPages <= currentPage) ?(
+                    <>
+                    <p className='text-info'>No records</p>
+                    </>)
+                    :<>
+                    {/* <p>{currentPage}/{totalPages}</p> */}
+                    </>
+                  }
                 </div>
 
               </div>

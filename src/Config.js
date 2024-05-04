@@ -50,6 +50,12 @@ export const getTask = `${baseURL}/api/user/getTasks`;
 export const getEmployeeReport = `${baseURL}/api/user/getReportspw`;
 export const getEmployeeReportDW = `${baseURL}/api/user/getReportsdw`;
 
+// for excel pdf 
+export const getExcelpdfprojects = `${baseURL}/api/admin/getexcelpdfprojects`;
+
+// for current time used for dts rendering
+export const getCurrentTime = `${baseURL}/api/CurrentTimeStamp`;
+
 export const CONFIG_OBJ = {                                         //config object
     headers: {
       "Content-Type": "application/json",
