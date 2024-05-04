@@ -8,6 +8,7 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { Flex, Space, Table, Tag, Input } from "antd";
+import dayjs from "dayjs";
 import {
   getAllProjects,
   addTask,
@@ -17,6 +18,7 @@ import {
 } from "../Config.js";
 import { Select } from "antd";
 import { toast } from "react-toastify";
+import moment from "moment";
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -151,7 +153,10 @@ const ManagerViewTask = () => {
                         <th className="form-label lightgreen fs-6 ">
                           <p>Project Name</p>
                         </th>
-                        <th className="form-label lightgreen fs-6 w-4" style={{width:"80px",backgroundColor:"red"}}>
+                        <th
+                          className="form-label lightgreen fs-6"
+                          style={{ width: "100px" }}
+                        >
                           <p>Task</p>
                         </th>
                         <th className="form-label lightgreen fs-6">
@@ -168,11 +173,19 @@ const ManagerViewTask = () => {
                         <th className="form-label lightgreen fs-6">
                           <p> Status</p>
                         </th>
-                        <th className="form-label lightgreen fs-6">
+                        <th
+                          className="form-label lightgreen fs-6"
+                          style={{
+                            maxWidth: "800px",
+                          }}
+                        >
                           <p>Team Member's Remarks</p>
                         </th>
-                        <th className="form-label lightgreen fs-6">
-                          <p>Remarks</p>
+                        <th
+                          className="form-label lightgreen fs-6"
+                          style={{ maxWidth: "8rem" }}
+                        >
+                          <p style={{ maxWidth: "2rem" }}>Remarks</p>
                         </th>
                       </tr>
                     </thead>
@@ -195,7 +208,9 @@ const ManagerViewTask = () => {
                             }
                           </td>
                           <td className="w-4">
-                            <p className="text-justify text-wrap ">{record.task}</p>
+                            <p className="text-justify text-wrap ">
+                              {record.task}
+                            </p>
                           </td>
                           <td>
                             <p className="font-weight-bold text-center">
@@ -211,19 +226,31 @@ const ManagerViewTask = () => {
 
                           <td>
                             {record.status === "completed" ? (
-                              <p className="text-success text-capitalize">
-                                {record.status}
-                              </p>
+                              <div>
+                                <p className="text-success text-capitalize">
+                                  {record.status}
+                                </p>
+                                <p className=" text-capitalize">
+                                  {moment
+                                    .utc(record.actual_end_date)
+                                    .format("MM/DD/YYYY")}
+                                </p>
+                              </div>
                             ) : (
                               <p className="text-warning text-capitalize">
                                 {record.status}
                               </p>
                             )}
                           </td>
-                          <td>
-                            <div>
-                              <p className="text-justify">{record.remarks}</p>
-                            </div>
+                          <td
+                            style={{ maxWidth: "5rem" }}
+                            className="text-truncate"
+                          >
+                            {/* <p className="text-wrap text-justify "> */}
+                            {/* <span className="text-truncate" style={{maxWidth:"3rem"}} > */}
+                            {record.remarks}
+                            {/* </span> */}
+                            {/* </p> */}
                           </td>
                           <td style={{ display: "flex" }}>
                             <div>
