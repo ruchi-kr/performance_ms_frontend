@@ -373,7 +373,7 @@ const handleStatusChange = (index, value) => {
                         </>
                       ) : null}
                       {
-                        window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
+                        (window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) ||(window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12)? (
                           <>
                             <th>
                               <Button onClick={handleAddTask} className="d-flex justify-content-center align-items-center text-info m-0" ><PlusOutlined />Add Task</Button>
@@ -407,7 +407,7 @@ const handleStatusChange = (index, value) => {
                               // style={{ width: "150px" }}
                               style={{
                                 width:
-                                  window.location.pathname !== "/plan"
+                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12
                                     ? "150px"
                                     : "100%",
                               }}
@@ -481,11 +481,11 @@ const handleStatusChange = (index, value) => {
                                 minRows: 1,
                                 maxRows: 6,
                               }}
-                              // style={{ width: "12rem" }}
+                           
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12) || record.adhoc == 1}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
                             // disabled={formDisabled}
                             />
                           </td>
@@ -496,7 +496,7 @@ const handleStatusChange = (index, value) => {
                               // style={{ width: "70px" }}
                               style={{
                                 width:
-                                  window.location.pathname !== "/plan"
+                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12
                                     ? "3rem"
                                     : "100%",
                               }}
@@ -563,9 +563,9 @@ const handleStatusChange = (index, value) => {
                                   disabled={record.formDisabled || formDisabled}
                                 >
                                   <option value="" disabled>Select</option>
-                                  <option value="notstarted" className="text-danger">Not Started</option>
-                                  <option value="transfer" className="text-primary">Transfer</option>
+                                  <option value="notstarted" className="text-danger">Not Started</option>                                
                                   <option value="inprocess" className="text-warning">Work In Progress</option>
+                                  <option value="transfer" className="text-primary">Transfered</option>
                                   <option value="completed" className="text-success">Completed</option>
 
                                 </select>
@@ -593,7 +593,7 @@ const handleStatusChange = (index, value) => {
 
                           <td className="d-flex gap-3">
                             {
-                              dayjs(currentTime).hour() < 12 && (
+                              dayjs(currentTime).hour() < 12 && window.location.pathname === "/plan" && (
                                 <CloseOutlined
                                   style={{ color: "red" }}
                                   onClick={() => handleDeleteTask(record.id)}
