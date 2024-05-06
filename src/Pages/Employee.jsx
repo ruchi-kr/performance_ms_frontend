@@ -411,7 +411,7 @@ const Employee = () => {
                         width:
                           window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
                             ? "150px"
-                            : "100%",
+                            : '250px',
                       }}>
                         <div>
                           Project Name<span style={{ color: "red" }}>*</span>
