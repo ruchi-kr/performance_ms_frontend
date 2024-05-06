@@ -216,7 +216,7 @@ const Employee = () => {
             console.log("error deleting project", err);
           }
         },
-        onCancel() {},
+        onCancel() { },
       });
     } catch (error) {
       console.log(error);
@@ -395,12 +395,12 @@ const Employee = () => {
       setCurrentTime(response.data.currentTimeStamp);
       console.log("current time", response.data.currentTimeStamp);
 
-    //    // Check the current time and reload the page if the desired time is reached
-    // const reloadTime = dayjs(response.data.currentTimeStamp).hour() === 15 && dayjs(response.data.currentTimeStamp).minute() === 50;
-    // console.log("reload time", reloadTime);
-    // if (reloadTime) {
-    //   reloadPage();
-    // }
+      //    // Check the current time and reload the page if the desired time is reached
+      // const reloadTime = dayjs(response.data.currentTimeStamp).hour() === 15 && dayjs(response.data.currentTimeStamp).minute() === 50;
+      // console.log("reload time", reloadTime);
+      // if (reloadTime) {
+      //   reloadPage();
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -412,7 +412,7 @@ const Employee = () => {
   const reloadPage = () => {
     window.location.reload();
   };
-  
+
   // Check the current time and reload the page if the desired time is reached
   // setInterval(() => {
   //   // const currentTime = new Date();
@@ -464,7 +464,7 @@ const Employee = () => {
                         All.hrs<span style={{ color: "red" }}>*</span>
                       </th>
                       {window.location.pathname !== "/plan" &&
-                      dayjs(currentTime).hour() > 12 ? (
+                        dayjs(currentTime).hour() > 12 ? (
                         <>
                           <th className="form-label text-info fs-6 text-center">
                             Act.hrs
@@ -505,7 +505,7 @@ const Employee = () => {
                     {Array.isArray(taskRecords) &&
                       taskRecords.map((record, index) => (
                         <tr key={index}>
-                          <td>{index + 1}</td>
+                          <td >{index + 1}{record.adhoc === 1 ? <span className="text-info fs-3">*</span> : ''}</td>
                           <td >
                             <Select
                               showSearch
@@ -551,7 +551,7 @@ const Employee = () => {
                               style={{
                                 width:
                                   window.location.pathname !== "/plan" &&
-                                  dayjs(currentTime).hour() > 12
+                                    dayjs(currentTime).hour() > 12
                                     ? "150px"
                                     : "100%",
                               }}
@@ -580,7 +580,7 @@ const Employee = () => {
                           </td>
 
                           {showSelect && (
-                            <td>
+                            <td >
                               <Select
                                 allowClear
                                 placeholder="Select Reporting Manager"
@@ -598,7 +598,7 @@ const Employee = () => {
                                 }
                                 required
                                 disabled
-                                // disabled={record.formDisabled || formDisabled}
+                              // disabled={record.formDisabled || formDisabled}
                               >
                                 {managerList.map((manager) => (
                                   <Option
@@ -679,7 +679,7 @@ const Employee = () => {
                                   />
 
                                   {record.status === "transfer" ||
-                                  record.status === "inprocess" ? (
+                                    record.status === "inprocess" ? (
                                     <input
                                       type="number"
                                       name="task_percent"
@@ -803,6 +803,12 @@ const Employee = () => {
                         </tr>
                       ))}
                   </tbody>
+                    {/* <tr>
+  <td colSpan="12" className="text-center">
+    <h5 className="text-info">Additional Tasks</h5>
+  </td>
+</tr> */}
+                  {/* Array.isArray(taskRecords) && taskRecords.filter((record) => record.adhoc===1).map((record, index) */}
                 </table>
               </div>
             </div>

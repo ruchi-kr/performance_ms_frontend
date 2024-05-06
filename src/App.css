@@ -60,6 +60,9 @@
   gap: 2px;
 }
 
+.adhoc-task {
+  border: 2px solid red; /* Change the border color to your desired color */
+}
 .form-container .form-group label {
   display: block;
   margin-bottom: 5px;
