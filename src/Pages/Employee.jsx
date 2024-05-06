@@ -57,7 +57,6 @@ const Employee = () => {
   const [allEmployeeData, setAllEmployeeData] = useState(null);
   const [managerList, setManagerList] = useState([]);
 
-
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
@@ -79,15 +78,18 @@ const Employee = () => {
   useEffect(() => {
     async function getModules(value) {
       try {
-        const result = await axios.get(`\${project_id}`);
-        setModuleList(result.data);
-        console.log("module list", result.data);
+        const result = await axios.get(
+          `http://localhost:8000/api/admin/getAllModule/`
+        );
+        console.log("modeule data", result.data);
+        setModuleList(result.data[0].module_name);
+        console.log("module list", result.data[0].module_name);
       } catch (error) {
         console.log("Error fetching project list data", error);
       }
     }
     getModules();
-  }, [project_id]);
+  }, []);
 
   useEffect(() => {
     // get all projects function
@@ -216,7 +218,7 @@ const Employee = () => {
             console.log("error deleting project", err);
           }
         },
-        onCancel() { },
+        onCancel() {},
       });
     } catch (error) {
       console.log(error);
@@ -229,8 +231,7 @@ const Employee = () => {
     updatedTaskRecords[index].status = value;
     if (value === "completed") {
       updatedTaskRecords[index].task_percent = 100;
-    }
-    else if (value === "notstarted") {
+    } else if (value === "notstarted") {
       updatedTaskRecords[index].task_percent = 0;
     }
     setTaskRecords(updatedTaskRecords);
@@ -284,7 +285,6 @@ const Employee = () => {
   //   }
   // };
 
-
   const saveTask = async (index) => {
     const task = taskRecords[index];
     try {
@@ -298,8 +298,8 @@ const Employee = () => {
           payload = {
             user_id: user_id,
             employee_id: employee_id,
-            adhoc: adhoc
-          } // Add adhoc=1 to the payload if it's after 12 PM
+            adhoc: adhoc,
+          }; // Add adhoc=1 to the payload if it's after 12 PM
         }
         const response1 = await axios.put(
           `${editTask}${task.id}`,
@@ -314,7 +314,6 @@ const Employee = () => {
         } else {
           toast.error("Task Not Updated");
         }
-
       } else {
         let payload = {
           user_id: user_id,
@@ -323,8 +322,8 @@ const Employee = () => {
           payload = {
             user_id: user_id,
             employee_id: employee_id,
-            adhoc: adhoc
-          }
+            adhoc: adhoc,
+          };
 
           // payload.adhoc = 1; // Add adhoc=1 to the payload if it's after 12 PM
         }
@@ -344,8 +343,6 @@ const Employee = () => {
       }
       // Refresh tasks after saving
       fetchTasks();
-
-
     } catch (error) {
       console.error("Error saving task:", error);
     }
@@ -359,7 +356,7 @@ const Employee = () => {
     console.log("temp manager", temp[0]?.reporting_manager_id);
     setProjectManagerName(temp[0]?.reporting_manager_id);
     updatedTaskRecords[index].manager_id = temp[0]?.reporting_manager_id;
-
+    setProject_id(value);
     updatedTaskRecords[index].project_id = value;
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
@@ -464,7 +461,7 @@ const Employee = () => {
                         All.hrs<span style={{ color: "red" }}>*</span>
                       </th>
                       {window.location.pathname !== "/plan" &&
-                        dayjs(currentTime).hour() > 12 ? (
+                      dayjs(currentTime).hour() > 12 ? (
                         <>
                           <th className="form-label text-info fs-6 text-center">
                             Act.hrs
@@ -486,27 +483,39 @@ const Employee = () => {
                           </th>
                         </>
                       ) : null}
-                      {
-                        (window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 13) || (window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12) ? (
-                          <>
-                            <th>
-                              <Button onClick={handleAddTask} className="d-flex justify-content-center align-items-center text-info m-0" ><PlusOutlined />Add Task</Button>
-                            </th>
-                          </>) :
-                          <>
-
-                          </>
-
-                      }
-
+                      {(window.location.pathname !== "/plan" &&
+                        dayjs(currentTime).hour() > 13) ||
+                      (window.location.pathname === "/plan" &&
+                        dayjs(currentTime).hour() < 12) ? (
+                        <>
+                          <th>
+                            <Button
+                              onClick={handleAddTask}
+                              className="d-flex justify-content-center align-items-center text-info m-0"
+                            >
+                              <PlusOutlined />
+                              Add Task
+                            </Button>
+                          </th>
+                        </>
+                      ) : (
+                        <></>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
                     {Array.isArray(taskRecords) &&
                       taskRecords.map((record, index) => (
                         <tr key={index}>
-                          <td >{index + 1}{record.adhoc === 1 ? <span className="text-info fs-3">*</span> : ''}</td>
-                          <td >
+                          <td>
+                            {index + 1}
+                            {record.adhoc === 1 ? (
+                              <span className="text-info fs-3">*</span>
+                            ) : (
+                              ""
+                            )}
+                          </td>
+                          <td>
                             <Select
                               showSearch
                               allowClear
@@ -519,9 +528,9 @@ const Employee = () => {
                               }
                               // style={{ width: "150px" }}
                               style={{
-
                                 width:
-                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
+                                  window.location.pathname !== "/plan" &&
+                                  dayjs(currentTime).hour() >= 12
                                     ? "150px"
                                     : "100%",
                                 marginBottom: "1rem",
@@ -532,7 +541,11 @@ const Employee = () => {
                                 handleProjectChange(index, value)
                               }
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() >= 12 && adhoc !== 1)}
+                              disabled={
+                                record.formDisabled ||
+                                formDisabled ||
+                                (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
+                              }
                             >
                               {projectList.map((project) => (
                                 <Option
@@ -551,7 +564,7 @@ const Employee = () => {
                               style={{
                                 width:
                                   window.location.pathname !== "/plan" &&
-                                    dayjs(currentTime).hour() > 12
+                                  dayjs(currentTime).hour() > 12
                                     ? "150px"
                                     : "100%",
                               }}
@@ -567,20 +580,20 @@ const Employee = () => {
                                 dayjs(currentTime).hour() > 12
                               }
                             >
-                              {moduleList.map((module) => (
+                              {moduleList?.map((module) => (
                                 <Option
                                   key={module.module_id}
                                   value={module.module_id}
-                                  label={module.module_name}
+                                  label={module.item}
                                 >
-                                  {module.module_name}
+                                  {module.item}
                                 </Option>
                               ))}
                             </Select>
                           </td>
 
                           {showSelect && (
-                            <td >
+                            <td>
                               <Select
                                 allowClear
                                 placeholder="Select Reporting Manager"
@@ -598,7 +611,7 @@ const Employee = () => {
                                 }
                                 required
                                 disabled
-                              // disabled={record.formDisabled || formDisabled}
+                                // disabled={record.formDisabled || formDisabled}
                               >
                                 {managerList.map((manager) => (
                                   <Option
@@ -623,12 +636,15 @@ const Employee = () => {
                                 minRows: 1,
                                 maxRows: 6,
                               }}
-
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() >= 12 && adhoc !== 1)}
-                            // disabled={formDisabled}
+                              disabled={
+                                record.formDisabled ||
+                                formDisabled ||
+                                (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
+                              }
+                              // disabled={formDisabled}
                             />
                           </td>
                           <td>
@@ -638,7 +654,8 @@ const Employee = () => {
                               // style={{ width: "70px" }}
                               style={{
                                 width:
-                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
+                                  window.location.pathname !== "/plan" &&
+                                  dayjs(currentTime).hour() >= 12
                                     ? "3rem"
                                     : "100%",
                               }}
@@ -646,13 +663,18 @@ const Employee = () => {
                               value={record.allocated_time}
                               onChange={(e) => handleInputChange(index, e)}
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() >= 12 && adhoc != 1)}
+                              disabled={
+                                record.formDisabled ||
+                                formDisabled ||
+                                (dayjs(currentTime).hour() >= 12 && adhoc != 1)
+                              }
                               min="1"
                               max="24"
                               defaultValue="0"
                             />
                           </td>
-                          {window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12 ? (
+                          {window.location.pathname !== "/plan" &&
+                          dayjs(currentTime).hour() >= 12 ? (
                             <>
                               <td className="text-center">
                                 <Space direction="vertical">
@@ -679,7 +701,7 @@ const Employee = () => {
                                   />
 
                                   {record.status === "transfer" ||
-                                    record.status === "inprocess" ? (
+                                  record.status === "inprocess" ? (
                                     <input
                                       type="number"
                                       name="task_percent"
@@ -716,12 +738,33 @@ const Employee = () => {
                                   required
                                   disabled={record.formDisabled || formDisabled}
                                 >
-                                  <option value="" disabled>Select</option>
-                                  <option value="notstarted" className="text-danger">Not Started</option>
-                                  <option value="inprocess" className="text-warning">Work In Progress</option>
-                                  <option value="transfer" className="text-primary">Transfered</option>
-                                  <option value="completed" className="text-success">Completed</option>
-
+                                  <option value="" disabled>
+                                    Select
+                                  </option>
+                                  <option
+                                    value="notstarted"
+                                    className="text-danger"
+                                  >
+                                    Not Started
+                                  </option>
+                                  <option
+                                    value="inprocess"
+                                    className="text-warning"
+                                  >
+                                    Work In Progress
+                                  </option>
+                                  <option
+                                    value="transfer"
+                                    className="text-primary"
+                                  >
+                                    Transfered
+                                  </option>
+                                  <option
+                                    value="completed"
+                                    className="text-success"
+                                  >
+                                    Completed
+                                  </option>
                                 </select>
                               </td>
                               <td>
@@ -768,29 +811,33 @@ const Employee = () => {
                                   style={{ color: "red" }}
                                   onClick={() => handleDeleteTask(record.id)}
                                 />
-                              )
-                            }
+                              )}
 
-
-                            {!record.formDisabled && !taskSaved && (window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12) && (
-                              <CheckOutlined
-                                style={{ color: "green" }}
-                                onClick={() => saveTask(index)}
-                              />
-                            )}
-                            {!record.formDisabled && !taskSaved && (window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12) && (
-                              <CheckOutlined
-                                style={{ color: "green" }}
-                                onClick={() => saveTask(index)}
-                              />
-                            )}
-                            {(window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12) && (
-                              <EditOutlined
-                                style={{ color: "blue" }}
-                                onClick={() => handleEditTask(index)}
-                              />
-                            )
-                            }
+                            {!record.formDisabled &&
+                              !taskSaved &&
+                              window.location.pathname !== "/plan" &&
+                              dayjs(currentTime).hour() >= 12 && (
+                                <CheckOutlined
+                                  style={{ color: "green" }}
+                                  onClick={() => saveTask(index)}
+                                />
+                              )}
+                            {!record.formDisabled &&
+                              !taskSaved &&
+                              window.location.pathname === "/plan" &&
+                              dayjs(currentTime).hour() < 12 && (
+                                <CheckOutlined
+                                  style={{ color: "green" }}
+                                  onClick={() => saveTask(index)}
+                                />
+                              )}
+                            {window.location.pathname !== "/plan" &&
+                              dayjs(currentTime).hour() >= 12 && (
+                                <EditOutlined
+                                  style={{ color: "blue" }}
+                                  onClick={() => handleEditTask(index)}
+                                />
+                              )}
 
                             {window.location.pathname === "/plan" &&
                               dayjs(currentTime).hour() < 12 && (
@@ -803,7 +850,7 @@ const Employee = () => {
                         </tr>
                       ))}
                   </tbody>
-                    {/* <tr>
+                  {/* <tr>
   <td colSpan="12" className="text-center">
     <h5 className="text-info">Additional Tasks</h5>
   </td>
