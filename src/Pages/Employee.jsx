@@ -485,7 +485,7 @@ const handleStatusChange = (index, value) => {
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
+                              disabled={record.formDisabled || formDisabled || adhoc=== false}
                             // disabled={formDisabled}
                             />
                           </td>
