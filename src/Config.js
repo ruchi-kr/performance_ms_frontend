@@ -26,6 +26,11 @@ export const createUser = `${baseURL}/api/admin/addUser`;
 export const editUser = `${baseURL}/api/admin/editUser`;
 export const deleteUser = `${baseURL}/api/admin/deleteUser/`;
 
+// for module master crud
+export const getAllModules = `${baseURL}/api/admin/getAllModule`;
+export const createModule = `${baseURL}/api/admin/addModule`;
+export const editModule = `${baseURL}/api/admin/editModule`;
+export const deleteModule = `${baseURL}/api/admin/deleteModule/`;
 
 // for login,forgot
 export const forgotPasswordVerify = `${baseURL}/api/forgotPasswordVerify`;

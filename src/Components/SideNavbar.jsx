@@ -121,6 +121,22 @@ const SideNavbar = () => {
                       <p>Designation Master</p>
                     </Link>
                   </li>
+                  <li className="nav-item btnhovergrey mt-3">
+                    <Link
+                      className={`nav-link text-white ${
+                        window.location.pathname === "/modulemaster"
+                          ? "bg-cyan"
+                          : ""
+                      }`}
+                      to="/modulemaster"
+                    >
+                      <FontAwesomeIcon
+                        className="nav-icon"
+                        icon={faFolderOpen}
+                      />
+                      <p>Module Master</p>
+                    </Link>
+                  </li>
                 </>
               ) : (
                 <>

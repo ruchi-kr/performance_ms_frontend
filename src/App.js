@@ -4,6 +4,7 @@ import UserMaster from "./Pages/UserMaster";
 import EmployeeMaster from "./Pages/EmployeeMaster";
 import ProjectMaster from "./Pages/ProjectMaster";
 import DesignationMaster from "./Pages/DesignationMaster";
+import ModuleMaster from "./Pages/ModuleMaster";
 import Login from "./Auth/Login";
 import Forgot from "./Auth/Forgot";
 import HomePage from "./Pages/HomePage";
@@ -37,6 +38,7 @@ function App() {
             <Route path="/employeemaster" element={<EmployeeMaster />}></Route>
             <Route path="/projectmaster" element={<ProjectMaster />}></Route>
             <Route path="/designationmaster" element={<DesignationMaster />} />
+            <Route path="/modulemaster" element={<ModuleMaster />} />
             <Route path="/assignteam" element={<AssignTeam />}></Route>
             <Route
               path="/view/teammember/tasks/:employee_id"
