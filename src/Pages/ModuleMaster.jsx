@@ -300,10 +300,9 @@ const ModuleMaster = () => {
                                   align="baseline"
                                 >
                                   <Form.Item
-                                  
                                     {...restField}
+                                    hidden
                                     name={[name, "module_id"]}
-                                    
                                   >
                                     <Input placeholder="Module Id" />
                                   </Form.Item>
