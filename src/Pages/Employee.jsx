@@ -22,7 +22,7 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { Select, Modal, Input, Button } from "antd";
 import dayjs from "dayjs";
-import { Space } from 'antd';
+import { Space } from "antd";
 const { TextArea } = Input;
 
 const { Option } = Select;
@@ -34,13 +34,15 @@ const getDisabledStateFromStorage = () => {
 };
 
 const Employee = () => {
-  const [showSelect, setShowSelect] = useState(false)
+  const [showSelect, setShowSelect] = useState(false);
   // for adhoc
-  const [adhoc, setAdhoc] = useState('');
+  const [adhoc, setAdhoc] = useState(false);
+  const [project_id, setProject_id] = useState(null);
   // for disable form
   const [formDisabled, setFormDisabled] = useState(false);
   const [taskSaved, setTaskSaved] = useState(false);
   const [projectManagerName, setProjectManagerName] = useState(null);
+  const [currentTime, setCurrentTime] = useState(0);
 
   // user_id
   const user_id = sessionStorage.getItem("id");
@@ -51,6 +53,7 @@ const Employee = () => {
   const filterOption = (input, option) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
   const [projectList, setProjectList] = useState([]);
+  const [moduleList, setModuleList] = useState([]);
   const [allEmployeeData, setAllEmployeeData] = useState(null);
   const [managerList, setManagerList] = useState([]);
   const getProjects = async (value) => {
@@ -65,9 +68,24 @@ const Employee = () => {
       console.log("Error fetching project list data", error);
     }
   };
+
   useEffect(() => {
     getProjects();
   }, []);
+
+  //To get modules per project
+  useEffect(() => {
+    async function getModules(value) {
+      try {
+        const result = await axios.get(`\${project_id}`);
+        setModuleList(result.data);
+        console.log("module list", result.data);
+      } catch (error) {
+        console.log("Error fetching project list data", error);
+      }
+    }
+    getModules();
+  }, [project_id]);
 
   useEffect(() => {
     // get all projects function
@@ -118,19 +136,19 @@ const Employee = () => {
     const updatedTaskRecords = taskRecords.map((record) => ({
       ...record,
       formDisabled: true,
-
     }));
 
     // Add a new row with formDisabled set to false
     const newTaskRecord = {
       project_id: "",
+      module_id: "",
       user_id: user_id,
       employee_id: employee_id,
       manager_id: "",
       task: "",
       allocated_time: "",
       actual_time: "",
-      task_percent:'',
+      task_percent: "",
       status: "",
       remarks: "",
       formDisabled: false, // Enable the newly added row
@@ -177,7 +195,7 @@ const Employee = () => {
   // Function to delete a task
   const handleDeleteTask = async (taskId) => {
     try {
-      await confirm({
+      confirm({
         title: "Do you want to delete these items?",
         icon: <ExclamationCircleFilled />,
         content: "Be sure before deleting, this process is irreversible!",
@@ -196,7 +214,7 @@ const Employee = () => {
             console.log("error deleting project", err);
           }
         },
-        onCancel() { },
+        onCancel() {},
       });
     } catch (error) {
       console.log(error);
@@ -204,24 +222,16 @@ const Employee = () => {
   };
 
   // Function to handle task status change
-  // const handleStatusChange = (index, value) => {
-  //   const updatedTaskRecords = [...taskRecords];
-  //   updatedTaskRecords[index].status = value;
-  //   setTaskRecords(updatedTaskRecords);
-  // };
-
-  // Function to handle task status change
-const handleStatusChange = (index, value) => {
-  const updatedTaskRecords = [...taskRecords];
-  updatedTaskRecords[index].status = value;
-  if (value === "completed") {
-    updatedTaskRecords[index].task_percent = 100;
-  }
-  else if (value === "notstarted") {
-    updatedTaskRecords[index].task_percent = 0;
-  }
-  setTaskRecords(updatedTaskRecords);
-};
+  const handleStatusChange = (index, value) => {
+    const updatedTaskRecords = [...taskRecords];
+    updatedTaskRecords[index].status = value;
+    if (value === "completed") {
+      updatedTaskRecords[index].task_percent = 100;
+    } else if (value === "notstarted") {
+      updatedTaskRecords[index].task_percent = 0;
+    }
+    setTaskRecords(updatedTaskRecords);
+  };
   // Function to save task changes
   const saveTask = async (index) => {
     const task = taskRecords[index];
@@ -268,9 +278,7 @@ const handleStatusChange = (index, value) => {
       console.error("Error saving task:", error);
     }
   };
-  //useEffect to populate manager automatically
-  // useEffect(()=>{},[updatedTaskRecords])
-  // Function to handle changes in project selection
+
   const handleProjectChange = (index, value) => {
     console.log("value**********", value);
     const updatedTaskRecords = [...taskRecords];
@@ -284,7 +292,15 @@ const handleStatusChange = (index, value) => {
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
   };
-  // Function to handle changes in project selection
+  // Function to handle changes in module selection
+  const handleModuleChange = (index, value) => {
+    console.log("value**********", value);
+    const updatedTaskRecords = [...taskRecords];
+    updatedTaskRecords[index].module_id = value;
+    setTaskRecords(updatedTaskRecords);
+    console.log("task records", taskRecords);
+  };
+  // Function to handle changes in manager selection
   const handleManagerChange = (index, value) => {
     const updatedTaskRecords = [...taskRecords];
     console.log("manager id selected", value);
@@ -301,20 +317,18 @@ const handleStatusChange = (index, value) => {
   };
 
   // function to fetch current time
-
-  const [currentTime, setCurrentTime] = useState(0);
   const getCurrentTimehandle = async () => {
     try {
       const response = await axios.get(`${getCurrentTime}`);
-      setCurrentTime(response.data.currentTimeStamp)
+      setCurrentTime(response.data.currentTimeStamp);
       console.log("current time", response.data.currentTimeStamp);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   useEffect(() => {
     getCurrentTimehandle();
-  }, [])
+  }, []);
 
   return (
     <>
@@ -344,22 +358,27 @@ const handleStatusChange = (index, value) => {
                         S.No.
                       </th>
                       <th className="form-label text-info fs-6 text-center">
-                        Project Name<span style={{ color: "red" }}>*</span>
+                        <div>
+                          Project Name<span style={{ color: "red" }}>*</span>
+                        </div>
+                        <div>
+                          Module Name<span style={{ color: "red" }}>*</span>
+                        </div>
                       </th>
-                      {/* <th className="form-label text-info fs-6 text-center">
-                        Reporting Manager<span style={{ color: "red" }}>*</span>
-                      </th> */}
-
                       <th className="form-label text-info fs-6 text-center">
                         Task<span style={{ color: "red" }}>*</span>
                       </th>
                       <th className="form-label text-info fs-6 text-center">
                         All.hrs<span style={{ color: "red" }}>*</span>
                       </th>
-                      {window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
+                      {window.location.pathname !== "/plan" &&
+                      dayjs(currentTime).hour() > 12 ? (
                         <>
                           <th className="form-label text-info fs-6 text-center">
-                            Act.hrs<span style={{ color: "red", width: '3rem' }}>*</span>
+                            Act.hrs
+                            <span style={{ color: "red", width: "3rem" }}>
+                              *
+                            </span>
                             <br />
                             Percent
                           </th>
@@ -370,27 +389,34 @@ const handleStatusChange = (index, value) => {
                           <th className="form-label text-info fs-6 text-center">
                             Remarks<span style={{ color: "red" }}>*</span>
                           </th>
+                          <th className="form-label text-info fs-6 text-center">
+                            Manager's Remarks
+                          </th>
                         </>
                       ) : null}
-                      {
-                        (window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) ||(window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12)? (
-                          <>
-                            <th>
-                              <Button onClick={handleAddTask} className="d-flex justify-content-center align-items-center text-info m-0" ><PlusOutlined />Add Task</Button>
-                            </th>
-                          </>) :
-                          <>
-
-                          </>
-
-                      }
-
+                      {(window.location.pathname !== "/plan" &&
+                        dayjs(currentTime).hour() > 12) ||
+                      (window.location.pathname === "/plan" &&
+                        dayjs(currentTime).hour() < 12) ? (
+                        <>
+                          <th>
+                            <Button
+                              onClick={handleAddTask}
+                              className="d-flex justify-content-center align-items-center text-info m-0"
+                            >
+                              <PlusOutlined />
+                              Add Task
+                            </Button>
+                          </th>
+                        </>
+                      ) : (
+                        <></>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
                     {Array.isArray(taskRecords) &&
                       taskRecords.map((record, index) => (
-
                         <tr key={index}>
                           <td>{index + 1}</td>
                           <td>
@@ -407,9 +433,11 @@ const handleStatusChange = (index, value) => {
                               // style={{ width: "150px" }}
                               style={{
                                 width:
-                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12
+                                  window.location.pathname !== "/plan" &&
+                                  dayjs(currentTime).hour() > 12
                                     ? "150px"
                                     : "100%",
+                                marginBottom: "1rem",
                               }}
                               className="rounded-2"
                               value={record.project_id}
@@ -417,7 +445,11 @@ const handleStatusChange = (index, value) => {
                                 handleProjectChange(index, value)
                               }
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
+                              disabled={
+                                record.formDisabled ||
+                                formDisabled ||
+                                dayjs(currentTime).hour() > 12
+                              }
                             >
                               {projectList.map((project) => (
                                 <Option
@@ -429,47 +461,74 @@ const handleStatusChange = (index, value) => {
                                 </Option>
                               ))}
                             </Select>
+                            <Select
+                              allowClear
+                              placeholder="Select Module"
+                              // style={{ width: "150px" }}
+                              style={{
+                                width:
+                                  window.location.pathname !== "/plan" &&
+                                  dayjs(currentTime).hour() > 12
+                                    ? "150px"
+                                    : "100%",
+                              }}
+                              className="rounded-2"
+                              value={record.module_id}
+                              onChange={(value) =>
+                                handleModuleChange(index, value)
+                              }
+                              required
+                              disabled={
+                                record.formDisabled ||
+                                formDisabled ||
+                                dayjs(currentTime).hour() > 12
+                              }
+                            >
+                              {moduleList.map((module) => (
+                                <Option
+                                  key={module.module_id}
+                                  value={module.module_id}
+                                  label={module.module_name}
+                                >
+                                  {module.module_name}
+                                </Option>
+                              ))}
+                            </Select>
                           </td>
 
-                          {
-                            showSelect && (
-                              <td>
-                                <Select
-                                  allowClear
-                                  placeholder="Select Reporting Manager"
-                                  style={{
-                                    width:
-                                      window.location.pathname !== "/plan"
-                                        ? "150px"
-                                        : "100%",
-                                  }}
-                                  className="rounded-2"
-                                  value={record.manager_id}
-                                  // defaultValue={projectManagerName}
-                                  onChange={(value) =>
-                                    handleManagerChange(index, value)
-                                  }
-                                  required
-
-                                  disabled
+                          {showSelect && (
+                            <td>
+                              <Select
+                                allowClear
+                                placeholder="Select Reporting Manager"
+                                style={{
+                                  width:
+                                    window.location.pathname !== "/plan"
+                                      ? "150px"
+                                      : "100%",
+                                }}
+                                className="rounded-2"
+                                value={record.manager_id}
+                                // defaultValue={projectManagerName}
+                                onChange={(value) =>
+                                  handleManagerChange(index, value)
+                                }
+                                required
+                                disabled
                                 // disabled={record.formDisabled || formDisabled}
-                                >
-                                  {managerList.map((manager) => (
-                                    <Option
-                                      key={manager.employee_id}
-                                      value={manager.employee_id}
-                                      label={manager.name}
-
-                                    >
-                                      {manager.name}
-                                    </Option>
-                                  ))}
-                                </Select>
-                              </td>
-                            )
-                          }
-
-
+                              >
+                                {managerList.map((manager) => (
+                                  <Option
+                                    key={manager.employee_id}
+                                    value={manager.employee_id}
+                                    label={manager.name}
+                                  >
+                                    {manager.name}
+                                  </Option>
+                                ))}
+                              </Select>
+                            </td>
+                          )}
 
                           <td>
                             <TextArea
@@ -481,12 +540,15 @@ const handleStatusChange = (index, value) => {
                                 minRows: 1,
                                 maxRows: 6,
                               }}
-                           
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
-                              disabled={record.formDisabled || formDisabled || adhoc=== false}
-                            // disabled={formDisabled}
+                              disabled={
+                                record.formDisabled ||
+                                formDisabled ||
+                                adhoc === false
+                              }
+                              // disabled={formDisabled}
                             />
                           </td>
                           <td>
@@ -496,7 +558,8 @@ const handleStatusChange = (index, value) => {
                               // style={{ width: "70px" }}
                               style={{
                                 width:
-                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12
+                                  window.location.pathname !== "/plan" &&
+                                  dayjs(currentTime).hour() > 12
                                     ? "3rem"
                                     : "100%",
                               }}
@@ -504,13 +567,19 @@ const handleStatusChange = (index, value) => {
                               value={record.allocated_time}
                               onChange={(e) => handleInputChange(index, e)}
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12) || adhoc == false}
+                              disabled={
+                                record.formDisabled ||
+                                formDisabled ||
+                                dayjs(currentTime).hour() > 12 ||
+                                adhoc == false
+                              }
                               min="1"
                               max="24"
                               defaultValue="0"
                             />
                           </td>
-                          {window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
+                          {window.location.pathname !== "/plan" &&
+                          dayjs(currentTime).hour() > 12 ? (
                             <>
                               <td className="text-center">
                                 <Space direction="vertical">
@@ -526,26 +595,38 @@ const handleStatusChange = (index, value) => {
                                     defaultValue={0}
                                     className="form-control"
                                     value={record.actual_time}
-                                    onChange={(e) => handleInputChange(index, e)}
+                                    onChange={(e) =>
+                                      handleInputChange(index, e)
+                                    }
                                     required
                                     min={0}
-                                    disabled={record.formDisabled || formDisabled}
+                                    disabled={
+                                      record.formDisabled || formDisabled
+                                    }
                                   />
 
-                                  {record.status === "transfer" || record.status === "inprocess" ? (
+                                  {record.status === "transfer" ||
+                                  record.status === "inprocess" ? (
                                     <input
                                       type="number"
                                       name="task_percent"
                                       style={{
-                                        width: window.location.pathname !== "/plan" ? "3rem" : "100%",
+                                        width:
+                                          window.location.pathname !== "/plan"
+                                            ? "3rem"
+                                            : "100%",
                                       }}
                                       defaultValue={0}
                                       className="form-control"
                                       value={record.task_percent}
-                                      onChange={(e) => handleInputChange(index, e)}
+                                      onChange={(e) =>
+                                        handleInputChange(index, e)
+                                      }
                                       required
                                       min={0}
-                                      disabled={record.formDisabled || formDisabled}
+                                      disabled={
+                                        record.formDisabled || formDisabled
+                                      }
                                     />
                                   ) : null}
                                 </Space>
@@ -562,12 +643,33 @@ const handleStatusChange = (index, value) => {
                                   required
                                   disabled={record.formDisabled || formDisabled}
                                 >
-                                  <option value="" disabled>Select</option>
-                                  <option value="notstarted" className="text-danger">Not Started</option>                                
-                                  <option value="inprocess" className="text-warning">Work In Progress</option>
-                                  <option value="transfer" className="text-primary">Transfered</option>
-                                  <option value="completed" className="text-success">Completed</option>
-
+                                  <option value="" disabled>
+                                    Select
+                                  </option>
+                                  <option
+                                    value="notstarted"
+                                    className="text-danger"
+                                  >
+                                    Not Started
+                                  </option>
+                                  <option
+                                    value="inprocess"
+                                    className="text-warning"
+                                  >
+                                    Work In Progress
+                                  </option>
+                                  <option
+                                    value="transfer"
+                                    className="text-primary"
+                                  >
+                                    Transfered
+                                  </option>
+                                  <option
+                                    value="completed"
+                                    className="text-success"
+                                  >
+                                    Completed
+                                  </option>
                                 </select>
                               </td>
                               <td>
@@ -587,49 +689,68 @@ const handleStatusChange = (index, value) => {
                                   disabled={record.formDisabled || formDisabled}
                                 />
                               </td>
+                              <td>
+                                <TextArea
+                                  type="text"
+                                  name="manager_remarks"
+                                  // rows={5}
+                                  autoSize={{
+                                    minRows: 1,
+                                    maxRows: 6,
+                                  }}
+                                  className="form-control"
+                                  value={record.manager_remarks}
+                                  onChange={(e) => handleInputChange(index, e)}
+                                  placeholder=""
+                                  required
+                                  disabled
+                                />
+                              </td>
                             </>
                           ) : null}
 
-
                           <td className="d-flex gap-3">
-                            {
-                              dayjs(currentTime).hour() < 12 && window.location.pathname === "/plan" && (
+                            {dayjs(currentTime).hour() < 12 &&
+                              window.location.pathname === "/plan" && (
                                 <CloseOutlined
                                   style={{ color: "red" }}
                                   onClick={() => handleDeleteTask(record.id)}
-
                                 />
-                              )
-                            }
+                              )}
 
+                            {!record.formDisabled &&
+                              !taskSaved &&
+                              window.location.pathname !== "/plan" &&
+                              dayjs(currentTime).hour() > 12 && (
+                                <CheckOutlined
+                                  style={{ color: "green" }}
+                                  onClick={() => saveTask(index)}
+                                />
+                              )}
+                            {!record.formDisabled &&
+                              !taskSaved &&
+                              window.location.pathname === "/plan" &&
+                              dayjs(currentTime).hour() < 12 && (
+                                <CheckOutlined
+                                  style={{ color: "green" }}
+                                  onClick={() => saveTask(index)}
+                                />
+                              )}
+                            {window.location.pathname !== "/plan" &&
+                              dayjs(currentTime).hour() > 12 && (
+                                <EditOutlined
+                                  style={{ color: "blue" }}
+                                  onClick={() => handleEditTask(index)}
+                                />
+                              )}
 
-                            {!record.formDisabled && !taskSaved && (window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) && (
-                              <CheckOutlined
-                                style={{ color: "green" }}
-                                onClick={() => saveTask(index)}
-                              />
-                            )}
-                            {!record.formDisabled && !taskSaved && (window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12) && (
-                              <CheckOutlined
-                                style={{ color: "green" }}
-                                onClick={() => saveTask(index)}
-                              />
-                            )}
-                            {(window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) && (
-                              <EditOutlined
-                                style={{ color: "blue" }}
-                                onClick={() => handleEditTask(index)}
-                              />
-                            )
-                            }
-
-                            {(window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12) && (
-                              <EditOutlined
-                                style={{ color: "blue" }}
-                                onClick={() => handleEditTask(index)}
-                              />
-                            )
-                            }
+                            {window.location.pathname === "/plan" &&
+                              dayjs(currentTime).hour() < 12 && (
+                                <EditOutlined
+                                  style={{ color: "blue" }}
+                                  onClick={() => handleEditTask(index)}
+                                />
+                              )}
                           </td>
                         </tr>
                       ))}
