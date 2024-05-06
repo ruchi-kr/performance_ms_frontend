@@ -61,14 +61,14 @@ const ModuleMaster = () => {
         try {
           const requestData = {
             ...values,
-            id: editingModule ? editingModule.module_id : null,
+            id: editingModule ? editingModule.project_id : null,
           };
           const url = editingModule
-            ? `${editModule}/${editingModule.module_id}`
+            ? `${editModule}/${editingModule.project_id}`
             : `${createModule}`;
           const response = axios.post(url, requestData);
           if (response.status) {
-            if (editingModule && editingModule.module_id !== null) {
+            if (editingModule && editingModule.project_id !== null) {
               toast.success("Module Updated Successfully!");
             } else {
               toast.success("Module Added Successfully!");
@@ -357,7 +357,7 @@ const ModuleMaster = () => {
                   <tbody className="table-group-divider">
                     {allModuleData?.map((data, index) => {
                       return (
-                        <tr key={data.designation_id}>
+                        <tr key={data.project_id}>
                           <th scope="row">{index + 1}</th>
                           {/* <td>{data.reporting_manager_id}</td> */}
                           {/* <td className='text-capitalize'>{data.employee_name}</td> */}
@@ -382,7 +382,7 @@ const ModuleMaster = () => {
                             />
                             <DeleteOutlined
                               onClick={() =>
-                                deleteModuleHandler(data.designation_id)
+                                deleteModuleHandler(data.project_id)
                               }
                               style={{ color: "red", marginRight: "1rem" }}
                             />

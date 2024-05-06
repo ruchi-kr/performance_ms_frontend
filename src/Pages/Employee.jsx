@@ -57,22 +57,6 @@ const Employee = () => {
   const [allEmployeeData, setAllEmployeeData] = useState(null);
   const [managerList, setManagerList] = useState([]);
 
-  // reloading page on the basis of time
-  // Get the desired time for reloading the page
-  const reloadTime = new Date("2022-01-01 12:00:00");
-
-  // Function to reload the page
-  const reloadPage = () => {
-    window.location.reload();
-  };
-
-  // Check the current time and reload the page if the desired time is reached
-  // setInterval(() => {
-  //   const currentTime = new Date();
-  //   if (currentTime >= reloadTime) {
-  //     reloadPage();
-  //   }
-  // }, 60000); // Check every second
 
   const getProjects = async (value) => {
     try {
@@ -411,6 +395,12 @@ const Employee = () => {
       setCurrentTime(response.data.currentTimeStamp);
       console.log("current time", response.data.currentTimeStamp);
 
+    //    // Check the current time and reload the page if the desired time is reached
+    // const reloadTime = dayjs(response.data.currentTimeStamp).hour() === 15 && dayjs(response.data.currentTimeStamp).minute() === 50;
+    // console.log("reload time", reloadTime);
+    // if (reloadTime) {
+    //   reloadPage();
+    // }
     } catch (error) {
       console.log(error);
     }
@@ -419,6 +409,19 @@ const Employee = () => {
     getCurrentTimehandle();
   }, []);
 
+  const reloadPage = () => {
+    window.location.reload();
+  };
+  
+  // Check the current time and reload the page if the desired time is reached
+  // setInterval(() => {
+  //   // const currentTime = new Date();
+  //   // const reloadTime = dayjs(currentTime).hour() === 12;
+  //   const reloadTime = dayjs(currentTime).hour() === 15 && dayjs(currentTime).minute() === 55;
+  //   if (reloadTime) {
+  //     reloadPage();
+  //   }
+  // }, 60000); // Check every minute
   return (
     <>
       <Header />
@@ -440,7 +443,7 @@ const Employee = () => {
                   )}
                 </div>
                 <hr className="bg-primary border-4" />
-                <table className="table table-bordered table-hover table-responsive-sm mt-5">
+                <table className="table table-bordered table-hover table-responsive-sm table-responsive-md mt-5">
                   <thead>
                     <tr>
                       <th className="form-label text-info fs-6 text-center">
@@ -503,7 +506,7 @@ const Employee = () => {
                       taskRecords.map((record, index) => (
                         <tr key={index}>
                           <td>{index + 1}</td>
-                          <td className="text-center">
+                          <td >
                             <Select
                               showSearch
                               allowClear
