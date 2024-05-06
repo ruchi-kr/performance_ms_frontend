@@ -36,7 +36,7 @@ const getDisabledStateFromStorage = () => {
 const Employee = () => {
   const [showSelect, setShowSelect] = useState(false)
   // for adhoc
-  const [adhoc, setAdhoc] = useState('');
+  const [adhoc, setAdhoc] = useState(0);
   // for disable form
   const [formDisabled, setFormDisabled] = useState(false);
   const [taskSaved, setTaskSaved] = useState(false);
@@ -53,6 +53,24 @@ const Employee = () => {
   const [projectList, setProjectList] = useState([]);
   const [allEmployeeData, setAllEmployeeData] = useState(null);
   const [managerList, setManagerList] = useState([]);
+
+  // reloading page on the basis of time
+  // Get the desired time for reloading the page
+  const reloadTime = new Date("2022-01-01 12:00:00");
+
+  // Function to reload the page
+  const reloadPage = () => {
+    window.location.reload();
+  };
+
+  // Check the current time and reload the page if the desired time is reached
+  // setInterval(() => {
+  //   const currentTime = new Date();
+  //   if (currentTime >= reloadTime) {
+  //     reloadPage();
+  //   }
+  // }, 60000); // Check every second
+
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
@@ -74,8 +92,7 @@ const Employee = () => {
     const getAllEmployees = async () => {
       try {
         const response = await axios.get(`${getAllEmployeeslist}`);
-        //   "http://localhost:8000/api/admin/getEmployees"
-        // );
+
         console.log("employee list get all employees", response.data);
         const filteredUsers = response?.data?.filter(
           (user) => user.manager_id != null
@@ -113,7 +130,7 @@ const Employee = () => {
   }, []);
 
   const handleAddTask = () => {
-    setAdhoc(true);
+    setAdhoc(1);
     // Disable all existing rows
     const updatedTaskRecords = taskRecords.map((record) => ({
       ...record,
@@ -130,11 +147,11 @@ const Employee = () => {
       task: "",
       allocated_time: "",
       actual_time: "",
-      task_percent:'',
+      task_percent: '',
       status: "",
       remarks: "",
       formDisabled: false, // Enable the newly added row
-      adhoc: true,
+      adhoc: 1,
     };
 
     // Update the task records with the new row
@@ -159,6 +176,7 @@ const Employee = () => {
     setTaskRecords(updatedTaskRecords);
     setFormDisabled(false); // Disable all other rows for editing
     setTaskSaved(false);
+    setAdhoc(0);
 
     // Store the updated disabled state in local storage
     localStorage.setItem(
@@ -211,27 +229,83 @@ const Employee = () => {
   // };
 
   // Function to handle task status change
-const handleStatusChange = (index, value) => {
-  const updatedTaskRecords = [...taskRecords];
-  updatedTaskRecords[index].status = value;
-  if (value === "completed") {
-    updatedTaskRecords[index].task_percent = 100;
-  }
-  else if (value === "notstarted") {
-    updatedTaskRecords[index].task_percent = 0;
-  }
-  setTaskRecords(updatedTaskRecords);
-};
+  const handleStatusChange = (index, value) => {
+    const updatedTaskRecords = [...taskRecords];
+    updatedTaskRecords[index].status = value;
+    if (value === "completed") {
+      updatedTaskRecords[index].task_percent = 100;
+    }
+    else if (value === "notstarted") {
+      updatedTaskRecords[index].task_percent = 0;
+    }
+    setTaskRecords(updatedTaskRecords);
+  };
   // Function to save task changes
+  // const saveTask = async (index) => {
+  //   const task = taskRecords[index];
+  //   try {
+  //     if (task.id) {
+  //       const payload = {
+  //         user_id: user_id,
+  //         employee_id: employee_id,
+  //       };
+  //       // If the task already has an ID, it's an existing task, so update it
+  //       const response1 = await axios.put(
+  //         `${editTask}${task.id}`,
+  //         task,
+  //         payload
+  //       );
+  //       if (response1.status === 200) {
+  //         setTaskSaved(true);
+  //         setFormDisabled(true);
+  //         setAdhoc(0);
+  //         toast.success("Task Updated Successfully");
+  //       } else {
+  //         toast.error("Task Not Updated");
+  //       }
+  //     } else {
+  //       const payload = {
+  //         user_id: user_id,
+  //       };
+
+  //       // If the task doesn't have an ID, it's a new task, so create it
+  //       const response2 = await axios.post(`${addTask}`, task, payload);
+  //       if (response2.status === 200) {
+  //         setTaskSaved(true);
+  //         setFormDisabled(true);
+  //         setAdhoc(1);
+  //         toast.success("Task added Successfully");
+  //         setFormDisabled(true);
+
+  //         console.log("form disabled", formDisabled);
+  //       } else {
+  //         toast.error("Task Not added");
+  //       }
+  //     }
+  //     // Refresh tasks after saving
+  //     fetchTasks();
+  //   } catch (error) {
+  //     console.error("Error saving task:", error);
+  //   }
+  // };
+
+
   const saveTask = async (index) => {
     const task = taskRecords[index];
     try {
       if (task.id) {
-        const payload = {
+        // If the task already has an ID, it's an existing task, so update it
+        let payload = {
           user_id: user_id,
           employee_id: employee_id,
         };
-        // If the task already has an ID, it's an existing task, so update it
+        if (dayjs(currentTime).hour() >= 12) {
+          payload = {
+            user_id: user_id,
+            employee_id: employee_id,
+            adhoc: adhoc
+          } // Add adhoc=1 to the payload if it's after 12 PM
+        }
         const response1 = await axios.put(
           `${editTask}${task.id}`,
           task,
@@ -240,20 +314,31 @@ const handleStatusChange = (index, value) => {
         if (response1.status === 200) {
           setTaskSaved(true);
           setFormDisabled(true);
+          setAdhoc(0);
           toast.success("Task Updated Successfully");
         } else {
           toast.error("Task Not Updated");
         }
+
       } else {
-        const payload = {
+        let payload = {
           user_id: user_id,
         };
+        if (dayjs(currentTime).hour() >= 12) {
+          payload = {
+            user_id: user_id,
+            employee_id: employee_id,
+            adhoc: adhoc
+          }
 
+          // payload.adhoc = 1; // Add adhoc=1 to the payload if it's after 12 PM
+        }
         // If the task doesn't have an ID, it's a new task, so create it
         const response2 = await axios.post(`${addTask}`, task, payload);
         if (response2.status === 200) {
           setTaskSaved(true);
           setFormDisabled(true);
+          setAdhoc(1);
           toast.success("Task added Successfully");
           setFormDisabled(true);
 
@@ -264,10 +349,13 @@ const handleStatusChange = (index, value) => {
       }
       // Refresh tasks after saving
       fetchTasks();
+
+
     } catch (error) {
       console.error("Error saving task:", error);
     }
   };
+
   //useEffect to populate manager automatically
   // useEffect(()=>{},[updatedTaskRecords])
   // Function to handle changes in project selection
@@ -308,6 +396,7 @@ const handleStatusChange = (index, value) => {
       const response = await axios.get(`${getCurrentTime}`);
       setCurrentTime(response.data.currentTimeStamp)
       console.log("current time", response.data.currentTimeStamp);
+
     } catch (error) {
       console.log(error);
     }
@@ -373,7 +462,7 @@ const handleStatusChange = (index, value) => {
                         </>
                       ) : null}
                       {
-                        (window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) ||(window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12)? (
+                        (window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 13) || (window.location.pathname === "/plan" && dayjs(currentTime).hour() < 12) ? (
                           <>
                             <th>
                               <Button onClick={handleAddTask} className="d-flex justify-content-center align-items-center text-info m-0" ><PlusOutlined />Add Task</Button>
@@ -393,7 +482,7 @@ const handleStatusChange = (index, value) => {
 
                         <tr key={index}>
                           <td>{index + 1}</td>
-                          <td>
+                          <td className="text-center">
                             <Select
                               showSearch
                               allowClear
@@ -406,8 +495,9 @@ const handleStatusChange = (index, value) => {
                               }
                               // style={{ width: "150px" }}
                               style={{
+
                                 width:
-                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12
+                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
                                     ? "150px"
                                     : "100%",
                               }}
@@ -417,7 +507,7 @@ const handleStatusChange = (index, value) => {
                                 handleProjectChange(index, value)
                               }
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12)}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() >= 12 && adhoc !== 1)}
                             >
                               {projectList.map((project) => (
                                 <Option
@@ -481,11 +571,11 @@ const handleStatusChange = (index, value) => {
                                 minRows: 1,
                                 maxRows: 6,
                               }}
-                           
+
                               onChange={(e) => handleInputChange(index, e)}
                               placeholder=""
                               required
-                              disabled={record.formDisabled || formDisabled || adhoc=== false}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() >= 12 && adhoc !== 1)}
                             // disabled={formDisabled}
                             />
                           </td>
@@ -496,7 +586,7 @@ const handleStatusChange = (index, value) => {
                               // style={{ width: "70px" }}
                               style={{
                                 width:
-                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12
+                                  window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
                                     ? "3rem"
                                     : "100%",
                               }}
@@ -504,13 +594,13 @@ const handleStatusChange = (index, value) => {
                               value={record.allocated_time}
                               onChange={(e) => handleInputChange(index, e)}
                               required
-                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() > 12) || adhoc == false}
+                              disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() >= 12 && adhoc != 1)}
                               min="1"
                               max="24"
                               defaultValue="0"
                             />
                           </td>
-                          {window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12 ? (
+                          {window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12 ? (
                             <>
                               <td className="text-center">
                                 <Space direction="vertical">
@@ -563,7 +653,7 @@ const handleStatusChange = (index, value) => {
                                   disabled={record.formDisabled || formDisabled}
                                 >
                                   <option value="" disabled>Select</option>
-                                  <option value="notstarted" className="text-danger">Not Started</option>                                
+                                  <option value="notstarted" className="text-danger">Not Started</option>
                                   <option value="inprocess" className="text-warning">Work In Progress</option>
                                   <option value="transfer" className="text-primary">Transfered</option>
                                   <option value="completed" className="text-success">Completed</option>
@@ -603,7 +693,7 @@ const handleStatusChange = (index, value) => {
                             }
 
 
-                            {!record.formDisabled && !taskSaved && (window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) && (
+                            {!record.formDisabled && !taskSaved && (window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12) && (
                               <CheckOutlined
                                 style={{ color: "green" }}
                                 onClick={() => saveTask(index)}
@@ -615,7 +705,7 @@ const handleStatusChange = (index, value) => {
                                 onClick={() => saveTask(index)}
                               />
                             )}
-                            {(window.location.pathname !== "/plan" && dayjs(currentTime).hour() > 12) && (
+                            {(window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12) && (
                               <EditOutlined
                                 style={{ color: "blue" }}
                                 onClick={() => handleEditTask(index)}
