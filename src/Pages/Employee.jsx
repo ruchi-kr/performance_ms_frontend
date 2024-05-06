@@ -235,59 +235,15 @@ const Employee = () => {
     }
     setTaskRecords(updatedTaskRecords);
   };
+
   // Function to save task changes
-  // const saveTask = async (index) => {
-  //   const task = taskRecords[index];
-  //   try {
-  //     if (task.id) {
-  //       const payload = {
-  //         user_id: user_id,
-  //         employee_id: employee_id,
-  //       };
-  //       // If the task already has an ID, it's an existing task, so update it
-  //       const response1 = await axios.put(
-  //         `${editTask}${task.id}`,
-  //         task,
-  //         payload
-  //       );
-  //       if (response1.status === 200) {
-  //         setTaskSaved(true);
-  //         setFormDisabled(true);
-  //         setAdhoc(0);
-  //         toast.success("Task Updated Successfully");
-  //       } else {
-  //         toast.error("Task Not Updated");
-  //       }
-  //     } else {
-  //       const payload = {
-  //         user_id: user_id,
-  //       };
-
-  //       // If the task doesn't have an ID, it's a new task, so create it
-  //       const response2 = await axios.post(`${addTask}`, task, payload);
-  //       if (response2.status === 200) {
-  //         setTaskSaved(true);
-  //         setFormDisabled(true);
-  //         setAdhoc(1);
-  //         toast.success("Task added Successfully");
-  //         setFormDisabled(true);
-
-  //         console.log("form disabled", formDisabled);
-  //       } else {
-  //         toast.error("Task Not added");
-  //       }
-  //     }
-  //     // Refresh tasks after saving
-  //     fetchTasks();
-  //   } catch (error) {
-  //     console.error("Error saving task:", error);
-  //   }
-  // };
-
-
   const saveTask = async (index) => {
     const task = taskRecords[index];
     try {
+      if (!task.project_id || !task.module_id || !task.task || !task.allocated_time || !task.status) {
+        toast.error("Please fill required the fields");
+        // return false
+      }
       if (task.id) {
         // If the task already has an ID, it's an existing task, so update it
         let payload = {
@@ -315,7 +271,8 @@ const Employee = () => {
           toast.error("Task Not Updated");
         }
 
-      } else {
+      }
+      else {
         let payload = {
           user_id: user_id,
         };
@@ -449,7 +406,13 @@ const Employee = () => {
                       <th className="form-label text-info fs-6 text-center">
                         S.No.
                       </th>
-                      <th className="form-label text-info fs-6 text-center">
+                      <th className="form-label text-info fs-6 text-center" style={{
+
+                        width:
+                          window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
+                            ? "150px"
+                            : "100%",
+                      }}>
                         <div>
                           Project Name<span style={{ color: "red" }}>*</span>
                         </div>
@@ -524,7 +487,7 @@ const Employee = () => {
                                   window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
                                     ? "150px"
                                     : "100%",
-                                marginBottom: "1rem",
+                                marginBottom: "0.5rem",
                               }}
                               className="rounded-2"
                               value={record.project_id}
@@ -809,7 +772,7 @@ const Employee = () => {
                         </tr>
                       ))}
                   </tbody>
-                    {/* <tr>
+                  {/* <tr>
   <td colSpan="12" className="text-center">
     <h5 className="text-info">Additional Tasks</h5>
   </td>
