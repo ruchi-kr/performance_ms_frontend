@@ -577,6 +577,7 @@ const Employee = () => {
                                 </Option>
                               ))}
                             </Select>
+                            {!record.project_id || !record.module_id && <span className="text-danger">*Required</span>}
                           </td>
 
                           {showSelect && (
@@ -630,6 +631,7 @@ const Employee = () => {
                               disabled={record.formDisabled || formDisabled || (dayjs(currentTime).hour() >= 12 && adhoc !== 1)}
                             // disabled={formDisabled}
                             />
+                            {!record.task && <span className="text-danger">*Required</span>}
                           </td>
                           <td>
                             <input
@@ -651,6 +653,7 @@ const Employee = () => {
                               max="24"
                               defaultValue="0"
                             />
+                            {!record.allocated_time && <span className="text-danger">*Required</span>}
                           </td>
                           {window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12 ? (
                             <>
@@ -703,6 +706,7 @@ const Employee = () => {
                                     />
                                   ) : null}
                                 </Space>
+                                {!record.actual_time && <span className="text-danger">*Required</span>}
                               </td>
 
                               <td>
@@ -723,6 +727,7 @@ const Employee = () => {
                                   <option value="completed" className="text-success">Completed</option>
 
                                 </select>
+                                {!record.status && <span className="text-danger">*Required</span>}
                               </td>
                               <td>
                                 <TextArea
@@ -740,6 +745,7 @@ const Employee = () => {
                                   required
                                   disabled={record.formDisabled || formDisabled}
                                 />
+                                {!record.remarks && <span className="text-danger">*Required</span>}
                               </td>
                               <td>
                                 <TextArea
