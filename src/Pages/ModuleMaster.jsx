@@ -11,7 +11,7 @@ import {
 } from "../Config.js";
 import axios from "axios";
 import { toast } from "react-toastify";
-import {Tag, Col, Form, Input, Modal, Row, Select } from "antd";
+import { Tag, Col, Form, Input, Modal, Row, Select } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Space } from "antd";
@@ -300,6 +300,15 @@ const ModuleMaster = () => {
                                   align="baseline"
                                 >
                                   <Form.Item
+                                  
+                                    {...restField}
+                                    name={[name, "module_id"]}
+                                    
+                                  >
+                                    <Input placeholder="Module Id" />
+                                  </Form.Item>
+
+                                  <Form.Item
                                     {...restField}
                                     name={[name, "item"]}
                                     rules={[
@@ -346,7 +355,7 @@ const ModuleMaster = () => {
                     </tr>
                   </thead>
                   <tbody className="table-group-divider">
-                    {allModuleData.map((data, index) => {
+                    {allModuleData?.map((data, index) => {
                       return (
                         <tr key={data.designation_id}>
                           <th scope="row">{index + 1}</th>
@@ -356,7 +365,9 @@ const ModuleMaster = () => {
                             {data.project_name}
                           </td>
                           <td className="text-capitalize">
-                            {data.module_name.map((item)=>(<Tag>{item.item}</Tag>))}
+                            {data.module_name.map((item) => (
+                              <Tag>{item.item}</Tag>
+                            ))}
                           </td>
                           {/* <td className='text-capitalize'>{data.department}</td> */}
 
