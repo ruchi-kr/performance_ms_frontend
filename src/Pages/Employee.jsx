@@ -236,6 +236,7 @@ const Employee = () => {
     }
     setTaskRecords(updatedTaskRecords);
   };
+
   // Function to save task changes
   // const saveTask = async (index) => {
   //   const task = taskRecords[index];
@@ -288,6 +289,10 @@ const Employee = () => {
   const saveTask = async (index) => {
     const task = taskRecords[index];
     try {
+      if (!task.project_id || !task.module_id || !task.task || !task.allocated_time || !task.status) {
+        toast.error("Please fill required the fields");
+        // return false
+      }
       if (task.id) {
         // If the task already has an ID, it's an existing task, so update it
         let payload = {
@@ -446,7 +451,13 @@ const Employee = () => {
                       <th className="form-label text-info fs-6 text-center">
                         S.No.
                       </th>
-                      <th className="form-label text-info fs-6 text-center">
+                      <th className="form-label text-info fs-6 text-center" style={{
+
+                        width:
+                          window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
+                            ? "150px"
+                            : '250px',
+                      }}>
                         <div>
                           Project Name<span style={{ color: "red" }}>*</span>
                         </div>
@@ -533,7 +544,7 @@ const Employee = () => {
                                   dayjs(currentTime).hour() >= 12
                                     ? "150px"
                                     : "100%",
-                                marginBottom: "1rem",
+                                marginBottom: "0.5rem",
                               }}
                               className="rounded-2"
                               value={record.project_id}
@@ -590,6 +601,7 @@ const Employee = () => {
                                 </Option>
                               ))}
                             </Select>
+                            {!record.project_id || !record.module_id && <span className="text-danger">*Required</span>}
                           </td>
 
                           {showSelect && (
@@ -646,6 +658,7 @@ const Employee = () => {
                               }
                               // disabled={formDisabled}
                             />
+                            {!record.task && <span className="text-danger">*Required</span>}
                           </td>
                           <td>
                             <input
@@ -672,6 +685,7 @@ const Employee = () => {
                               max="24"
                               defaultValue="0"
                             />
+                            {!record.allocated_time && <span className="text-danger">*Required</span>}
                           </td>
                           {window.location.pathname !== "/plan" &&
                           dayjs(currentTime).hour() >= 12 ? (
@@ -725,6 +739,7 @@ const Employee = () => {
                                     />
                                   ) : null}
                                 </Space>
+                                {!record.actual_time && <span className="text-danger">*Required</span>}
                               </td>
 
                               <td>
@@ -766,6 +781,7 @@ const Employee = () => {
                                     Completed
                                   </option>
                                 </select>
+                                {!record.status && <span className="text-danger">*Required</span>}
                               </td>
                               <td>
                                 <TextArea
@@ -783,6 +799,7 @@ const Employee = () => {
                                   required
                                   disabled={record.formDisabled || formDisabled}
                                 />
+                                {!record.remarks && <span className="text-danger">*Required</span>}
                               </td>
                               <td>
                                 <TextArea
