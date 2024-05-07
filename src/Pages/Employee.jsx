@@ -588,7 +588,7 @@ const Employee = () => {
                               disabled={
                                 record.formDisabled ||
                                 formDisabled ||
-                                dayjs(currentTime).hour() > 12
+                                (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
                               }
                             >
                               {moduleList?.map((module) => (
