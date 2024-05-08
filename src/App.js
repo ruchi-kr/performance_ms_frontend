@@ -4,6 +4,7 @@ import UserMaster from "./Pages/UserMaster";
 import EmployeeMaster from "./Pages/EmployeeMaster";
 import ProjectMaster from "./Pages/ProjectMaster";
 import DesignationMaster from "./Pages/DesignationMaster";
+import JobRoleMaster from "./Pages/JobRoleMaster";
 import ModuleMaster from "./Pages/ModuleMaster";
 import Login from "./Auth/Login";
 import Forgot from "./Auth/Forgot";
@@ -38,6 +39,8 @@ function App() {
             <Route path="/employeemaster" element={<EmployeeMaster />}></Route>
             <Route path="/projectmaster" element={<ProjectMaster />}></Route>
             <Route path="/designationmaster" element={<DesignationMaster />} />
+            <Route path="/jobrolemaster" element={<JobRoleMaster />} />
+
             <Route path="/modulemaster" element={<ModuleMaster />} />
             <Route path="/assignteam" element={<AssignTeam />}></Route>
             <Route

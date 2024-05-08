@@ -124,6 +124,19 @@ const SideNavbar = () => {
                   <li className="nav-item btnhovergrey mt-3">
                     <Link
                       className={`nav-link text-white ${
+                        window.location.pathname === "/jobrolemaster"
+                          ? "bg-cyan"
+                          : ""
+                      }`}
+                      to="/jobrolemaster"
+                    >
+                      <FontAwesomeIcon className="nav-icon" icon={faUsers} />
+                      <p>Job Role Master</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item btnhovergrey mt-3">
+                    <Link
+                      className={`nav-link text-white ${
                         window.location.pathname === "/modulemaster"
                           ? "bg-cyan"
                           : ""

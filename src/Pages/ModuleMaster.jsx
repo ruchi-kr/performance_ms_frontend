@@ -579,7 +579,7 @@ const ModuleMaster = () => {
                           </Form.Item> */}
                       </Col>
                     </Row>
-                    <p>Module Name</p>
+                    {/* <p>Module Name</p> */}
                     <Row gutter={[8, 4]}>
                       <Col span={24}>
                         <Form.List name="module_name">

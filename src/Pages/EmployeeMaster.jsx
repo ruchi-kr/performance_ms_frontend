@@ -11,6 +11,7 @@ import {
   deleteEmployee,
   getManagerList,
   getDesignationList,
+  getJobRoleList,
 } from "../Config.js";
 import { toast } from "react-toastify";
 import { Col, Form, Input, Modal, Row, Select } from "antd";
@@ -57,7 +58,7 @@ const EmployeeMaster = () => {
   const employeeFormSubmit = (values) => {
     employeeForm
       .validateFields()
-      .then((values) => {
+      .then(async(values) => {
         try {
           const requestData = {
             ...values,
@@ -66,7 +67,7 @@ const EmployeeMaster = () => {
           const url = editingEmployee
             ? `${editEmployee}/${editingEmployee.employee_id}`
             : `${createEmployee}`;
-          axios
+          await axios
             .post(url, requestData)
             .then((response) => {
               if (response.status === 200) {
@@ -77,7 +78,7 @@ const EmployeeMaster = () => {
                 }
                 employeeForm.resetFields();
                 setModalVisible(false);
-                getAllEmployeesHandler();
+                getAllEmployeesHandler(currentPage);
               }
             })
             .catch((error) => {
@@ -134,6 +135,8 @@ const EmployeeMaster = () => {
     name: "",
     designation_id: "",
     doj: "",
+    dob:"",
+    job_id:"",
     experience: "",
     skills: "",
     mobile_no: "",
@@ -155,7 +158,9 @@ const EmployeeMaster = () => {
     employeeForm.setFieldsValue({
       name: employee.name,
       designation_id: employee.designation_id,
-      doj: employee.doj,
+      doj: employee.doj.slice(0,10),
+      dob: employee.dob.slice(0, 10),
+      job_id: employee.job_id,
       experience: employee.experience,
       skills: employee.skills,
       mobile_no: employee.mobile_no,
@@ -171,12 +176,14 @@ const EmployeeMaster = () => {
     employeeForm.setFieldsValue({
       name: employee.name,
       designation_id: employee.designation_id,
-      doj: employee.doj,
+      doj: employee.doj.slice(0, 10),
+      dob: employee.dob.slice(0, 10),
+      job_id: employee.job_id,
       experience: employee.experience,
       skills: employee.skills,
       mobile_no: employee.mobile_no,
       email: employee.email,
-      manager_id: employee.manager_name,
+      manager_id: employee.manager_id,
       // employee_id: employee.employee_id
     });
   };
@@ -203,6 +210,7 @@ const EmployeeMaster = () => {
   const handleManagerSearch = (value) => {
     setManager(value);
   };
+  // for designation ist
   const [designationList, setDesignationList] = useState([]);
   const getDesignation = async (value) => {
     try {
@@ -216,6 +224,23 @@ const EmployeeMaster = () => {
   useEffect(() => {
     getDesignation();
   }, []);
+
+  // for job role list
+  const [jobroleList, setJobroleList] = useState([]);
+  const getJobRole = async (value) => {
+    try {
+      const result = await axios.get(`${getJobRoleList}`);
+      setJobroleList(result.data);
+      console.log("Job Role list", result.data);
+    } catch (error) {
+      console.log("Error fetching Job Role list data", error);
+    }
+  };
+  useEffect(() => {
+    getJobRole();
+  }, []);
+
+
   return (
     <>
       <Header />
@@ -360,10 +385,11 @@ const EmployeeMaster = () => {
                           <Input type="date" />
                         </Form.Item>
                       </Col>
+                      
                       <Col span={12}>
                         <Form.Item
                           name="experience"
-                          label={<span className="text-info">Experience</span>}
+                          label={<span className="text-info">Experience(in years)</span>}
                           rules={[
                             {
                               required: true,
@@ -379,6 +405,17 @@ const EmployeeMaster = () => {
                       </Col>
                     </Row>
                     <Row gutter={[8, 4]}>
+                    <Col span={12}>
+                        <Form.Item
+                          name="dob"
+                          label={<span className="text-info">D.O.B</span>}
+                          rules={[
+                            { required: true, message: "D.O.B is required" },
+                          ]}
+                        >
+                          <Input type="date" />
+                        </Form.Item>
+                      </Col>
                       <Col span={12}>
                         <Form.Item
                           name="mobile_no"
@@ -414,9 +451,51 @@ const EmployeeMaster = () => {
                           <Input type="email" placeholder="you@example.com" />
                         </Form.Item>
                       </Col>
+                      
 
                       {!hideManager ? (
                         <>
+                        <Col span={12}>
+                      <Form.Item
+                          name="job_id"
+                          label={<span className="text-info">Job Role</span>}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Job Role is required",
+                            },
+                            {
+                              pattern: /^[&,.\-_\w\s]{1,50}$/,
+                              message:
+                                "Please enter a valid job role Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
+                            },
+                          ]}
+                        >
+                          {/* <Input placeholder='designation' /> */}
+                          <Select
+                            showSearch
+                            allowClear
+                            placeholder="Select"
+                            optionFilterProp="children"
+                            filterOption={filterOption}
+                            
+                            style={{ width: "100%" }}
+                            className="rounded-2"
+                          >
+                            <Option value="">Select</Option>
+
+                            {jobroleList.map((item, index) => (
+                              <Option
+                                key={index}
+                                value={item.job_id}
+                                label={item.job_role_name}
+                              >
+                                {item.job_role_name}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                        </Col>
                           <Col span={12}>
                             <Form.Item
                               name="manager_id"
@@ -504,7 +583,9 @@ const EmployeeMaster = () => {
                       <th scope="col">Name</th>
                       {/* <th scope="col">Designation</th> */}
                       <th scope="col">D.O.J</th>
+                      <th scope="col">D.O.B</th>
                       <th scope="col">Experience(in years)</th>
+                      {/* <th scope="col">Job Role</th> */}
                       <th scope="col">Skills</th>
                       <th scope="col">Email</th>
                       <th scope="col">Contact No.</th>
@@ -524,7 +605,12 @@ const EmployeeMaster = () => {
                             {data.doj.slice(8, 10)}/{data.doj.slice(5, 7)}/
                             {data.doj.slice(0, 4)}
                           </td>
+                          {/* <td></td> */}
+                           <td>
+                            {data.dob.slice(8, 10)}/{data.dob.slice(5, 7)}/{data.dob.slice(0,4)}
+                          </td> 
                           <td>{data.experience}</td>
+                          {/* <td>{data.job_id}</td> */}
                           <td className="text-wrap">{data.skills}</td>
                           <td>{data.email}</td>
                           <td>{data.mobile_no}</td>
