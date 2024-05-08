@@ -14,12 +14,15 @@ import { toast } from "react-toastify";
 import { Tag, Col, Form, Input, Modal, Row, Select } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Space } from "antd";
+import { Button, Space, DatePicker } from "antd";
+import moment from 'moment';
+
 const { Option } = Select;
 const { Search } = Input;
 
 const ModuleMaster = () => {
-  // search by designation
+
+  // search by project name
   const filterOption = (input, option) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
   // const [designationList, setDesignationList] = useState([]);
@@ -54,43 +57,208 @@ const ModuleMaster = () => {
   }, [currentPage, projectName]);
 
   // create module function
+  // const moduleFormSubmit = (values) => {
+  //   moduleForm
+  //     .validateFields()
+  //     .then((values) => {
+  //       try {
+  //         console.log("values",values);
+  //         const project = projectList.find(
+  //           (project) => project.project_id === values.project_id);
+
+  //         if (project) {
+  //           setProjectStartDate(project.schedule_start_date.slice(0,10));
+  //           setProjectEndDate(project.schedule_end_date.slice(0,10));
+  //           console.log("project start date", project.schedule_start_date);
+  //           console.log("project end date", projectEndDate);
+  //         }
+  //         if((values.to_date >= values.from_date)&&(values.to_date!=null) &&(values.from_date!=null) 
+  //           && (values.from_date >= projectStartDate && values.from_date < projectEndDate)&&
+  //         (values.to_date <= projectEndDate && values.to_date > projectStartDate)
+  //       )
+  //         {
+
+  //         const requestData = {
+  //           ...values,
+  //           id: editingModule ? editingModule.project_id : null,
+  //         };
+  //         const url = editingModule
+  //           ? `${editModule}/${editingModule.project_id}`
+  //           : `${createModule}`;
+  //         const response = axios.post(url, requestData);
+  //         if (response.status) {
+  //           if (editingModule && editingModule.project_id !== null) {
+  //             toast.success("Module Updated Successfully!");
+  //           } else {
+  //             toast.success("Module Added Successfully!");
+  //           }
+  //           console.log("response added", response.data);
+  //           moduleForm.resetFields();
+  //           setModalVisible(false);
+  //           getAllModulesHandler();
+
+  //           getAllModulesHandler();
+  //         } else {
+  //           console.log(response.data.message);
+  //           // toast.error(response.data.message);
+  //         }
+  //       }else{
+  //         toast.error("Select valid date range");
+  //       }
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     })
+  //     .catch((errorInfo) => {
+  //       console.log("Validation failed:", errorInfo);
+  //     });
+  // };
+
+  // const moduleFormSubmit = (values) => {
+  //   moduleForm
+  //     .validateFields()
+  //     .then((values) => {
+  //       try {
+  //         console.log("values", values);
+  //         const project = projectList.find(
+  //           (project) => project.project_id === values.project_id
+  //         );
+  
+  //         if (project) {
+  //           const projectStartDate = (project.schedule_start_date.toString()).slice(0, 10);
+  //           const projectEndDate = (project.schedule_end_date.toString().slice(0, 10));
+  //           console.log("project start date", projectStartDate);
+  //           console.log("project end date", projectEndDate);
+  //           console.log("values.from_date", values.from_date);
+  //         console.log("values.to_date", values.to_date);
+  
+  //           if (
+  //             values.to_date >= values.from_date &&
+  //             values.to_date !== null &&
+  //             values.from_date !== null &&
+  //             values.from_date >= projectStartDate &&
+  //             values.from_date < projectEndDate &&
+  //             values.to_date <= projectEndDate &&
+  //             values.to_date > projectStartDate
+  //           ) {
+  //             const requestData = {
+  //               ...values,
+  //               id: editingModule ? editingModule.project_id : null,
+  //             };
+  //             const url = editingModule
+  //               ? `${editModule}/${editingModule.project_id}`
+  //               : `${createModule}`;
+  //             axios
+  //               .post(url, requestData)
+  //               .then((response) => {
+  //                 if (response.status) {
+  //                   if (editingModule && editingModule.project_id !== null) {
+  //                     toast.success("Module Updated Successfully!");
+  //                   } else {
+  //                     toast.success("Module Added Successfully!");
+  //                   }
+  //                   console.log("response added", response.data);
+  //                   moduleForm.resetFields();
+  //                   setModalVisible(false);
+  //                   getAllModulesHandler();
+  //                 } else {
+  //                   console.log(response.data.message);
+  //                   // toast.error(response.data.message);
+  //                 }
+  //               })
+  //               .catch((error) => {
+  //                 console.log("Error in post request:", error);
+  //               });
+  //           } else {
+  //             toast.error("Select valid date range");
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     })
+  //     .catch((errorInfo) => {
+  //       console.log("Validation failed:", errorInfo);
+  //     });
+  // };
+  
   const moduleFormSubmit = (values) => {
     moduleForm
       .validateFields()
       .then((values) => {
         try {
-          const requestData = {
-            ...values,
-            id: editingModule ? editingModule.project_id : null,
-          };
-          const url = editingModule
-            ? `${editModule}/${editingModule.project_id}`
-            : `${createModule}`;
-          const response = axios.post(url, requestData);
-          if (response.status) {
-            if (editingModule && editingModule.project_id !== null) {
-              toast.success("Module Updated Successfully!");
+          // Iterate through each module in the values array
+          values.module_name.forEach((module) => {
+            const project = projectList.find(
+              (project) => project.project_id === values.project_id
+            );
+  
+            if (project) {
+              const projectStartDate = project.schedule_start_date.toString().slice(0, 10);
+              const projectEndDate = project.schedule_end_date.toString().slice(0, 10);
+              console.log("project start date", projectStartDate);
+              console.log("project end date", projectEndDate);
+              console.log("values.from_date", module.from_date);
+              console.log("values.to_date", module.to_date);
+  
+              if (
+                module.to_date >= module.from_date &&
+                module.to_date !== null &&
+                module.from_date !== null &&
+                module.from_date >= projectStartDate &&
+                module.from_date < projectEndDate &&
+                module.to_date <= projectEndDate &&
+                module.to_date > projectStartDate
+              ) {
+                // Your existing code for submitting the form
+                const requestData = {
+                  ...values,
+                  id: editingModule ? editingModule.project_id : null,
+                };
+                const url = editingModule
+                  ? `${editModule}/${editingModule.project_id}`
+                  : `${createModule}`;
+                axios
+                  .post(url, requestData)
+                  .then((response) => {
+                    if (response.status) {
+                      if (editingModule && editingModule.project_id !== null) {
+                        toast.success("Module Updated Successfully!");
+                      } else {
+                        toast.success("Module Added Successfully!");
+                      }
+                      console.log("response added", response.data);
+                      moduleForm.resetFields();
+                      setModalVisible(false);
+                      getAllModulesHandler(currentPage);
+                    } else {
+                      console.log(response.data.message);
+                      // toast.error(response.data.message);
+                    }
+                  })
+                  .catch((error) => {
+                    console.log("Error in post request:", error);
+                  });
+              } else {
+                console.log("Invalid date range:", module.from_date, module.to_date);
+                toast.error("Select valid date range");
+              }
             } else {
-              toast.success("Module Added Successfully!");
+              console.log("Project not found:", module.project_id);
+              toast.error("Project not found");
             }
-            console.log("response added", response.data);
-            moduleForm.resetFields();
-            setModalVisible(false);
-            getAllModulesHandler();
-
-            getAllModulesHandler();
-          } else {
-            console.log(response.data.message);
-            // toast.error(response.data.message);
-          }
+          });
         } catch (error) {
-          console.log(error);
+          console.log("Error:", error);
+          toast.error("An error occurred");
         }
       })
       .catch((errorInfo) => {
         console.log("Validation failed:", errorInfo);
+        toast.error("Validation failed");
       });
   };
+  
 
   const deleteModuleHandler = async (id) => {
     try {
@@ -124,6 +292,8 @@ const ModuleMaster = () => {
     module_id: "",
     module_name: "",
     project_id: "",
+    to_date: "",
+    from_date: "",
   };
 
   const openModuleAdd = () => {
@@ -138,33 +308,49 @@ const ModuleMaster = () => {
   const openModuleView = async (module) => {
     setModalVisible(true);
     setFormDisabled(true);
+    console.log("view module", module);
     moduleForm.setFieldsValue({
-      module_id: module.module_id,
-      module_name: module.module_name,
       project_id: module.project_id,
+      module_id: module.module_id,
+     
+      module_name: module.module_name.map(item => ({
+        ...item,
+        to_date: item.to_date ? item.to_date.slice(0,10) : "",
+        from_date: item.from_date ? item.from_date.slice(0,10) : ""
+      }))
     });
-  };
 
+  };
+ 
   const openModuleEdit = async (module) => {
     setEditingModule(module);
     setFormDisabled(false);
-    console.log("editing designation", module);
+    console.log("editing module", module);
     setModalVisible(true);
     moduleForm.setFieldsValue({
       module_id: module.module_id,
       module_name: module.module_name,
+
       project_id: module.project_id,
+      module_name: module.module_name.map(item => ({
+        ...item,
+        to_date: item.to_date ? item.to_date.slice(0,10) : "",
+        from_date: item.from_date ? item.from_date.slice(0,10) : ""
+      }))
     });
   };
 
   // GET PROJECT LIST
   const [projectList, setProjectList] = useState([]);
+  const [projectStartDate, setProjectStartDate] = useState("");
+  const [projectEndDate, setProjectEndDate] = useState("");
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
 
       setProjectList(result.data);
       console.log("project list", result.data);
+    
     } catch (error) {
       console.log("Error fetching project list data", error);
     }
@@ -237,7 +423,7 @@ const ModuleMaster = () => {
                     disabled={formDisabled}
                   >
                     <Row gutter={[8, 4]}>
-                      <Col span={12}>
+                      <Col span={24}>
                         <Form.Item
                           name="project_id"
                           label={
@@ -255,6 +441,7 @@ const ModuleMaster = () => {
                             },
                           ]}
                         >
+                          
                           {/* <Input /> */}
 
                           <Select
@@ -283,11 +470,26 @@ const ModuleMaster = () => {
                             ))}
                           </Select>
                         </Form.Item>
+                        {/* <Form.Item
+                        hidden
+                        name="schedule_start_date"
+                        >
+                            <Input/>
+                          </Form.Item>
+                          <Form.Item
+                        hidden
+                        name="schedule_end_date"
+                        >
+                            <Input/>
+                          </Form.Item> */}
                       </Col>
                     </Row>
                     <Row gutter={[8, 4]}>
-                      <Col span={12}>
-                        <Form.List name="module_name">
+                      <Col span={24}>
+
+                        <Form.List name="module_name"
+
+                        >
                           {(fields, { add, remove }) => (
                             <>
                               {fields.map(({ key, name, ...restField }) => (
@@ -316,8 +518,45 @@ const ModuleMaster = () => {
                                         message: "Missing module name",
                                       },
                                     ]}
+                                    label={name === 0 ? <span className="text-info">Module Name</span> : ''}
+
                                   >
-                                    <Input placeholder="Module Name" />
+                                    <Input placeholder="Module Name" style={{width: '100%'}}/>
+                                  </Form.Item>
+
+                                  {/* New input field for "to_date" */}
+                                  <Form.Item
+                                    {...restField}
+                                    name={[name, "from_date"]}
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: "Missing from date",
+                                      },]}
+                                    label={name === 0 ? <span className="text-info">From Date</span> : ''}
+                                  >
+                                    <Input type="date"
+                                    //  allowClear 
+                                    style={{width: '88%'}}/>
+                                    
+                                  </Form.Item>
+
+                                  <Form.Item
+                                    {...restField}
+                                    name={[name, "to_date"]}
+                                    rules={[
+                                      {
+                                        required: true,
+                                        message: "Missing to date",
+                                      },
+                                      
+                                    ]}
+                                    label={name === 0 ? <span className="text-info">To Date</span> : ''}
+                                  >
+                                    <Input type="date" 
+                                    // allowClear 
+                                    style={{width: '88%'}}/>
+                                    
                                   </Form.Item>
 
                                   <MinusCircleOutlined
@@ -410,9 +649,8 @@ const ModuleMaster = () => {
                       {Array.from({ length: totalPages }, (_, index) => (
                         <li
                           key={index}
-                          className={`page-item ${
-                            currentPage === index + 1 ? "active" : ""
-                          }`}
+                          className={`page-item ${currentPage === index + 1 ? "active" : ""
+                            }`}
                         >
                           <a
                             className="page-link"
