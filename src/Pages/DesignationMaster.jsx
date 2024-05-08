@@ -81,11 +81,11 @@ const DesignationMaster = () => {
     // create manager
     const managerFormSubmit = (values) => {
         managerForm.validateFields()
-            .then((values) => {
+            .then(async(values) => {
                 try {
                     const requestData = { ...values, id: editingManager ? editingManager.designation_id : null };
                     const url = editingManager ? `${editDesignation}/${editingManager.designation_id}` : `${createDesignation}`;
-                    const response = axios.post(url, requestData);
+                    const response = await axios.post(url, requestData);
                     if (response.status) {
                         if (editingManager && editingManager.designation_id !== null) {
                             toast.success('Designation Updated Successfully!');

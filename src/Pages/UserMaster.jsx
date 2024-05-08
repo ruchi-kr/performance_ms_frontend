@@ -47,11 +47,11 @@ const UserMaster = () => {
     // create project
     const userFormSubmit = (values) => {
         userForm.validateFields()
-            .then((values) => {
+            .then(async(values) => {
                 try {
                     const requestData = { ...values, id: editingUser ? editingUser.user_id : null };
                     const url = editingUser ? `${editUser}/${editingUser.user_id}` : `${createUser}`;
-                    const response = axios.post(url, requestData);
+                    const response = await axios.post(url, requestData);
                     if (response.status) {
                         if (editingUser && editingUser.user_id !== null) {
                             toast.success('User Details Updated Successfully!');
@@ -214,7 +214,7 @@ const UserMaster = () => {
                                     centered
                                 >
                                     <Form form={userForm} onFinish={userFormSubmit} layout="vertical" disabled={formDisabled}>
-                                        <p className='text-info text-decoration-underline'>User Details</p>
+                                        {/* <p className='text-info text-decoration-underline'>User Details</p> */}
                                         <Row gutter={[8, 4]}>
                                             <Col span={12}>
                                                 <Form.Item name="employee_id" label={<span className='text-info'>Employer Name</span>}

@@ -349,7 +349,7 @@ const EmployeeMaster = () => {
                             optionFilterProp="children"
                             filterOption={filterOption}
                             onChange={(value) => {
-                              if (value == "1") {
+                              if (value == "1" || value == "2") {
                                 setHideManager(true);
                               } else {
                                 setHideManager(false);

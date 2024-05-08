@@ -30,17 +30,23 @@ export default function Login() {
                 sessionStorage.setItem('username', JSON.stringify(result.data.result.user.username));
                 sessionStorage.setItem('user_type', JSON.stringify(result.data.result.user.user_type));
                 sessionStorage.setItem('role', JSON.stringify(result.data.result.user.role));
+                sessionStorage.setItem('status', JSON.stringify(result.data.result.user.status));
+
                 console.log("token set successfully", result.data.result);
                 const role = result.data.result.user.role;
+                const status = result.data.result.user.status
                 console.log("role", role)
-                if (role == "manager") {
+                if (role === "manager" && status === "active") {
                     navigate('/manager');
                 }
-                else if (role == "employee") {
+                else if (role === "employee" && status === "active") {
                     navigate('/employee');
                 }
-                else if (role == "management") {
+                else if (role == "management" && status === "active") {
                     navigate('/manager');
+                }
+                else if (status !== "active") {
+                    navigate('/accessdenied');
                 }
                 else {
                     navigate('/homepage');

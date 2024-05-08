@@ -1,5 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ErrorPage from "./Pages/ErrorPage";
+import AccessDenied from "./Pages/AccessDenied";
 import UserMaster from "./Pages/UserMaster";
 import EmployeeMaster from "./Pages/EmployeeMaster";
 import ProjectMaster from "./Pages/ProjectMaster";
@@ -25,11 +27,14 @@ import ManagerParticularEmployeeReport from "./Pages/ManagerParticularEmployeeRe
 
 
 function App() {
+  const status = sessionStorage.getItem("status");
+
   return (
     <>
       <div className="wrapper">
         <BrowserRouter>
           <Routes>
+
             <Route path="/" element={<Login />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/forgot" element={<Forgot />}></Route>
@@ -79,7 +84,9 @@ function App() {
               element={<ManagerProjectReport />}
             />
 
-            <Route path ='/test' element={<Test/>} />
+            <Route path="*" element={<ErrorPage />}></Route>
+            <Route path='/accessdenied' element={<AccessDenied />} />
+            <Route path='/test' element={<Test />} />
           </Routes>
         </BrowserRouter>
       </div>

@@ -55,11 +55,11 @@ const ProjectMaster = () => {
     // create project
     const projectFormSubmit = (values) => {
         projectForm.validateFields()
-            .then((values) => {
+            .then(async(values) => {
                 try {
                     const requestData = { ...values, id: editingProject ? editingProject.project_id : null };
                     const url = editingProject ? `${editProject}/${editingProject.project_id}` : `${createProject}`;
-                    const response = axios.post(url, (requestData), CONFIG_OBJ);
+                    const response = await axios.post(url, (requestData), CONFIG_OBJ);
                     if (response.status === 200) {
                         if (editingProject && editingProject.project_id !== null) {
                             toast.success('Project Details Updated Successfully!');
