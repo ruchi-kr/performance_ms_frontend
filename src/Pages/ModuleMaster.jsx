@@ -301,6 +301,8 @@ const ModuleMaster = () => {
               console.log("values.from_date", module.from_date);
               console.log("values.to_date", module.to_date);
 
+              if(module.to_date >= module.from_date)
+                {               
               // Your existing code for submitting the form
               const requestData = {
                 ...values,
@@ -330,6 +332,9 @@ const ModuleMaster = () => {
                 .catch((error) => {
                   console.log("Error in post request:", error);
                 });
+              }else{
+                toast.error("To date should be greater than from date");
+              }
             } else {
               console.log("Project not found:", module.project_id);
               toast.error("Project not found");
