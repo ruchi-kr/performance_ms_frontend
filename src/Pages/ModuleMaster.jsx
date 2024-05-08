@@ -242,6 +242,7 @@ const ModuleMaster = () => {
               } else {
                 console.log("Invalid date range:", module.from_date, module.to_date);
                 toast.error("Select valid date range");
+                return
               }
             } else {
               console.log("Project not found:", module.project_id);
