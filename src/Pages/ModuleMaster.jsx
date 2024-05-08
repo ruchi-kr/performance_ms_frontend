@@ -16,6 +16,7 @@ import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Space, DatePicker } from "antd";
 import moment from "moment";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 const { Search } = Input;
@@ -32,7 +33,11 @@ const ModuleMaster = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [allModuleData, setAllModuleData] = useState([]);
-
+  const [projectCheckDates, setProjectCheckDates] = useState({
+    schedule_start_date: null,
+    schedule_end_date: null,
+  });
+  const [selectedFromDate, setSelectedFromDate] = useState(null);
   const getAllModulesHandler = async (page) => {
     try {
       const response = await axios.get(
@@ -180,6 +185,98 @@ const ModuleMaster = () => {
   //       console.log("Validation failed:", errorInfo);
   //     });
   // };
+  const getProjectStartEndDate = (value) => {
+    const project = projectList?.find(
+      (project) => project.project_id === value
+    );
+    console.log("project selected", project);
+    setProjectCheckDates({
+      schedule_start_date: project?.schedule_start_date,
+      schedule_end_date: project?.schedule_end_date,
+    });
+    // console.log("dates object", projectCheckDates);
+  };
+  const disabledStartDate = (current) => {
+    const startDate = projectCheckDates.schedule_start_date
+      ? moment(projectCheckDates.schedule_start_date)
+      : null;
+    const endDate = projectCheckDates.schedule_end_date
+      ? moment(projectCheckDates.schedule_end_date)
+      : null;
+    // Disable dates that are before the start date or after the end date
+
+    return (
+      current &&
+      ((startDate && current < startDate.startOf("day")) ||
+        (endDate && current > endDate.endOf("day")))
+    );
+  };
+  // const disabledEndDate = (current, from_dateValue) => {
+  //   if (!from_dateValue) {
+  //     // If from_date is not selected yet, disable all dates
+  //     return true;
+  //   }
+  //   console.log("delecteddate", moment(from_dateValue, "DD/MM/YYYY"));
+  //   // Convert the from_dateValue and endDate to moment objects
+  //   const from_dateMoment = moment(from_dateValue, "DD/MM/YYYY");
+  //   const startDate = projectCheckDates.schedule_start_date
+  //     ? moment(projectCheckDates.schedule_start_date)
+  //     : null;
+  //   const endDate = projectCheckDates.schedule_end_date
+  //     ? moment(projectCheckDates.schedule_end_date)
+  //     : null;
+  //   // Disable dates that are before the start date or after the end date
+
+  //   return (
+  //     current &&
+  //     ((startDate && current < startDate.startOf("day")) ||
+  //       (endDate && current > endDate.endOf("day")))
+  //   );
+  // };
+  // const disabledEndDate = (current, from_dateValue) => {
+  //   if (!from_dateValue) {
+  //     // If from_date is not selected yet, disable all dates
+  //     return true;
+  //   }
+
+  //   const startDate = projectCheckDates.schedule_start_date
+  //     ? moment(projectCheckDates.schedule_start_date)
+  //     : null;
+  //   const endDate = projectCheckDates.schedule_end_date
+  //     ? moment(projectCheckDates.schedule_end_date)
+  //     : null;
+  //   const from_dateMoment = moment(from_dateValue, "DD/MM/YYYY");
+  //   // Disable dates that are before the start date or after the end date
+
+  //   return (
+  //     current &&
+  //     ((from_dateMoment && current < from_dateMoment.startOf("day")) ||
+  //       (startDate && current < startDate.startOf("day")) ||
+  //       (endDate && current > endDate.endOf("day")))
+  //   );
+  // };
+  const disabledEndDate = (current, from_dateValue) => {
+    if (!from_dateValue) {
+      // If from_date is not selected yet, disable all dates
+      return true;
+    }
+
+    const startDate = projectCheckDates.schedule_start_date
+      ? moment(projectCheckDates.schedule_start_date)
+      : null;
+    const endDate = projectCheckDates.schedule_end_date
+      ? moment(projectCheckDates.schedule_end_date)
+      : null;
+    const from_dateMoment = moment(from_dateValue, "DD/MM/YYYY");
+    // Disable dates that are before the selected from_dateMoment,
+
+    return (
+      current &&
+      ((from_dateMoment && current <= from_dateMoment.startOf("day")) ||
+        (startDate && current < startDate.startOf("day")) ||
+        (endDate && current > endDate.endOf("day")))
+    );
+  };
 
   const moduleFormSubmit = (values) => {
     moduleForm
@@ -204,53 +301,35 @@ const ModuleMaster = () => {
               console.log("values.from_date", module.from_date);
               console.log("values.to_date", module.to_date);
 
-              if (
-                module.to_date >= module.from_date &&
-                module.to_date !== null &&
-                module.from_date !== null &&
-                module.from_date >= projectStartDate &&
-                module.from_date < projectEndDate &&
-                module.to_date <= projectEndDate &&
-                module.to_date > projectStartDate
-              ) {
-                // Your existing code for submitting the form
-                const requestData = {
-                  ...values,
-                  id: editingModule ? editingModule.project_id : null,
-                };
-                const url = editingModule
-                  ? `${editModule}/${editingModule.project_id}`
-                  : `${createModule}`;
-                axios
-                  .post(url, requestData)
-                  .then((response) => {
-                    if (response.status) {
-                      if (editingModule && editingModule.project_id !== null) {
-                        toast.success("Module Updated Successfully!");
-                      } else {
-                        toast.success("Module Added Successfully!");
-                      }
-                      console.log("response added", response.data);
-                      moduleForm.resetFields();
-                      setModalVisible(false);
-                      getAllModulesHandler(currentPage);
+              // Your existing code for submitting the form
+              const requestData = {
+                ...values,
+                id: editingModule ? editingModule.project_id : null,
+              };
+              const url = editingModule
+                ? `${editModule}/${editingModule.project_id}`
+                : `${createModule}`;
+              axios
+                .post(url, requestData)
+                .then((response) => {
+                  if (response.status) {
+                    if (editingModule && editingModule.project_id !== null) {
+                      toast.success("Module Updated Successfully!");
                     } else {
-                      console.log(response.data.message);
-                      // toast.error(response.data.message);
+                      toast.success("Module Added Successfully!");
                     }
-                  })
-                  .catch((error) => {
-                    console.log("Error in post request:", error);
-                  });
-              } else {
-                console.log(
-                  "Invalid date range:",
-                  module.from_date,
-                  module.to_date
-                );
-                toast.error("Select valid date range");
-                return
-              }
+                    console.log("response added", response.data);
+                    moduleForm.resetFields();
+                    setModalVisible(false);
+                    getAllModulesHandler(currentPage);
+                  } else {
+                    console.log(response.data.message);
+                    // toast.error(response.data.message);
+                  }
+                })
+                .catch((error) => {
+                  console.log("Error in post request:", error);
+                });
             } else {
               console.log("Project not found:", module.project_id);
               toast.error("Project not found");
@@ -333,15 +412,23 @@ const ModuleMaster = () => {
     setFormDisabled(false);
     console.log("editing module", module);
     setModalVisible(true);
+    getProjectStartEndDate(module.project_id);
+    console.log("from date", module.module_name[0].from_date);
+    console.log(dayjs(module.module_name[0].from_date).format("DD/MM/YYYY"));
     moduleForm.setFieldsValue({
       module_id: module.module_id,
-      module_name: module.module_name,
+      // module_name: module.module_name,
 
       project_id: module.project_id,
       module_name: module.module_name.map((item) => ({
         ...item,
-        to_date: item.to_date ? item.to_date.slice(0, 10) : "",
-        from_date: item.from_date ? item.from_date.slice(0, 10) : "",
+
+        // from_date: moment(item.from_date).format("DD/MM/YYYY"),
+        // to_date: dayjs(item.to_date).format("DD/MM/YYYY"),
+        from_date: dayjs(item.from_date),
+        to_date: dayjs(item.to_date),
+        // to_date: item.to_date ? item.to_date.slice(0, 10) : "",
+        // from_date: item.from_date ? item.from_date.slice(0, 10) : "",
       })),
     });
   };
@@ -413,6 +500,10 @@ const ModuleMaster = () => {
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingModule(null);
+                    setProjectCheckDates({
+                      schedule_start_date: null,
+                      schedule_end_date: null,
+                    });
                   }}
                   okText="Submit"
                   okButtonProps={{
@@ -460,7 +551,7 @@ const ModuleMaster = () => {
                             }
                             className="rounded-2"
                             // value={project_id}
-
+                            onChange={getProjectStartEndDate}
                             required
                           >
                             {projectList.map((project) => (
@@ -556,10 +647,14 @@ const ModuleMaster = () => {
                                       )
                                     }
                                   >
-                                    <Input
+                                    {/* <Input
                                       type="date"
                                       //  allowClear
                                       style={{ width: "88%" }}
+                                    /> */}
+                                    <DatePicker
+                                      disabledDate={disabledStartDate}
+                                      format={"DD/MM/YYYY"}
                                     />
                                   </Form.Item>
 
@@ -582,10 +677,24 @@ const ModuleMaster = () => {
                                       )
                                     }
                                   >
-                                    <Input
+                                    {/* <Input
                                       type="date"
                                       // allowClear
                                       style={{ width: "88%" }}
+                                    /> */}
+                                    <DatePicker
+                                      // disabledDate={disabledEndDate}
+                                      disabledDate={(current) =>
+                                        disabledEndDate(
+                                          current,
+                                          moduleForm.getFieldValue([
+                                            "module_name",
+                                            name,
+                                            "from_date",
+                                          ])
+                                        )
+                                      }
+                                      format={"DD/MM/YYYY"}
                                     />
                                   </Form.Item>
 
