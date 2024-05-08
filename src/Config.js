@@ -32,6 +32,14 @@ export const createModule = `${baseURL}/api/admin/addModule`;
 export const editModule = `${baseURL}/api/admin/editModule`;
 export const deleteModule = `${baseURL}/api/admin/deleteModule/`;
 
+// for job role master crud
+export const getAllJobRoles = `${baseURL}/api/admin/getAllJobRole`;
+export const createJobRole = `${baseURL}/api/admin/addJobRole`;
+export const editJobRole = `${baseURL}/api/admin/editJobRole`;
+export const deleteJobRole = `${baseURL}/api/admin/deleteJobRole/`;
+export const getJobRoleList = `${baseURL}/api/admin/getJobRoleList`;
+
+
 // for login,forgot
 export const forgotPasswordVerify = `${baseURL}/api/forgotPasswordVerify`;
 export const forgotPassword = `${baseURL}/api/forgotPassword`;
