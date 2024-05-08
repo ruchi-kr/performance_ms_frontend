@@ -15,13 +15,12 @@ import { Tag, Col, Form, Input, Modal, Row, Select } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Space, DatePicker } from "antd";
-import moment from 'moment';
+import moment from "moment";
 
 const { Option } = Select;
 const { Search } = Input;
 
 const ModuleMaster = () => {
-
   // search by project name
   const filterOption = (input, option) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
@@ -72,7 +71,7 @@ const ModuleMaster = () => {
   //           console.log("project start date", project.schedule_start_date);
   //           console.log("project end date", projectEndDate);
   //         }
-  //         if((values.to_date >= values.from_date)&&(values.to_date!=null) &&(values.from_date!=null) 
+  //         if((values.to_date >= values.from_date)&&(values.to_date!=null) &&(values.from_date!=null)
   //           && (values.from_date >= projectStartDate && values.from_date < projectEndDate)&&
   //         (values.to_date <= projectEndDate && values.to_date > projectStartDate)
   //       )
@@ -123,7 +122,7 @@ const ModuleMaster = () => {
   //         const project = projectList.find(
   //           (project) => project.project_id === values.project_id
   //         );
-  
+
   //         if (project) {
   //           const projectStartDate = (project.schedule_start_date.toString()).slice(0, 10);
   //           const projectEndDate = (project.schedule_end_date.toString().slice(0, 10));
@@ -131,7 +130,7 @@ const ModuleMaster = () => {
   //           console.log("project end date", projectEndDate);
   //           console.log("values.from_date", values.from_date);
   //         console.log("values.to_date", values.to_date);
-  
+
   //           if (
   //             values.to_date >= values.from_date &&
   //             values.to_date !== null &&
@@ -181,7 +180,7 @@ const ModuleMaster = () => {
   //       console.log("Validation failed:", errorInfo);
   //     });
   // };
-  
+
   const moduleFormSubmit = (values) => {
     moduleForm
       .validateFields()
@@ -192,15 +191,19 @@ const ModuleMaster = () => {
             const project = projectList.find(
               (project) => project.project_id === values.project_id
             );
-  
+
             if (project) {
-              const projectStartDate = project.schedule_start_date.toString().slice(0, 10);
-              const projectEndDate = project.schedule_end_date.toString().slice(0, 10);
+              const projectStartDate = project.schedule_start_date
+                .toString()
+                .slice(0, 10);
+              const projectEndDate = project.schedule_end_date
+                .toString()
+                .slice(0, 10);
               console.log("project start date", projectStartDate);
               console.log("project end date", projectEndDate);
               console.log("values.from_date", module.from_date);
               console.log("values.to_date", module.to_date);
-  
+
               if (
                 module.to_date >= module.from_date &&
                 module.to_date !== null &&
@@ -240,7 +243,11 @@ const ModuleMaster = () => {
                     console.log("Error in post request:", error);
                   });
               } else {
-                console.log("Invalid date range:", module.from_date, module.to_date);
+                console.log(
+                  "Invalid date range:",
+                  module.from_date,
+                  module.to_date
+                );
                 toast.error("Select valid date range");
               }
             } else {
@@ -258,7 +265,6 @@ const ModuleMaster = () => {
         toast.error("Validation failed");
       });
   };
-  
 
   const deleteModuleHandler = async (id) => {
     try {
@@ -312,16 +318,15 @@ const ModuleMaster = () => {
     moduleForm.setFieldsValue({
       project_id: module.project_id,
       module_id: module.module_id,
-     
-      module_name: module.module_name.map(item => ({
-        ...item,
-        to_date: item.to_date ? item.to_date.slice(0,10) : "",
-        from_date: item.from_date ? item.from_date.slice(0,10) : ""
-      }))
-    });
 
+      module_name: module.module_name.map((item) => ({
+        ...item,
+        to_date: item.to_date ? item.to_date.slice(0, 10) : "",
+        from_date: item.from_date ? item.from_date.slice(0, 10) : "",
+      })),
+    });
   };
- 
+
   const openModuleEdit = async (module) => {
     setEditingModule(module);
     setFormDisabled(false);
@@ -332,11 +337,11 @@ const ModuleMaster = () => {
       module_name: module.module_name,
 
       project_id: module.project_id,
-      module_name: module.module_name.map(item => ({
+      module_name: module.module_name.map((item) => ({
         ...item,
-        to_date: item.to_date ? item.to_date.slice(0,10) : "",
-        from_date: item.from_date ? item.from_date.slice(0,10) : ""
-      }))
+        to_date: item.to_date ? item.to_date.slice(0, 10) : "",
+        from_date: item.from_date ? item.from_date.slice(0, 10) : "",
+      })),
     });
   };
 
@@ -350,7 +355,6 @@ const ModuleMaster = () => {
 
       setProjectList(result.data);
       console.log("project list", result.data);
-    
     } catch (error) {
       console.log("Error fetching project list data", error);
     }
@@ -441,7 +445,6 @@ const ModuleMaster = () => {
                             },
                           ]}
                         >
-                          
                           {/* <Input /> */}
 
                           <Select
@@ -487,10 +490,7 @@ const ModuleMaster = () => {
                     <p>Module Name</p>
                     <Row gutter={[8, 4]}>
                       <Col span={24}>
-
-                        <Form.List name="module_name"
-
-                        >
+                        <Form.List name="module_name">
                           {(fields, { add, remove }) => (
                             <>
                               {fields.map(({ key, name, ...restField }) => (
@@ -519,10 +519,20 @@ const ModuleMaster = () => {
                                         message: "Missing module name",
                                       },
                                     ]}
-                                    label={name === 0 ? <span className="text-info">Module Name</span> : ''}
-
+                                    label={
+                                      name === 0 ? (
+                                        <span className="text-info">
+                                          Module Name
+                                        </span>
+                                      ) : (
+                                        ""
+                                      )
+                                    }
                                   >
-                                    <Input placeholder="Module Name" style={{width: '100%'}}/>
+                                    <Input
+                                      placeholder="Module Name"
+                                      style={{ width: "100%" }}
+                                    />
                                   </Form.Item>
 
                                   {/* New input field for "to_date" */}
@@ -533,13 +543,23 @@ const ModuleMaster = () => {
                                       {
                                         required: true,
                                         message: "Missing from date",
-                                      },]}
-                                    label={name === 0 ? <span className="text-info">From Date</span> : ''}
+                                      },
+                                    ]}
+                                    label={
+                                      name === 0 ? (
+                                        <span className="text-info">
+                                          From Date
+                                        </span>
+                                      ) : (
+                                        ""
+                                      )
+                                    }
                                   >
-                                    <Input type="date"
-                                    //  allowClear 
-                                    style={{width: '88%'}}/>
-                                    
+                                    <Input
+                                      type="date"
+                                      //  allowClear
+                                      style={{ width: "88%" }}
+                                    />
                                   </Form.Item>
 
                                   <Form.Item
@@ -550,23 +570,26 @@ const ModuleMaster = () => {
                                         required: true,
                                         message: "Missing to date",
                                       },
-                                      
                                     ]}
-                                    label={name === 0 ? <span className="text-info">To Date</span> : ''}
+                                    label={
+                                      name === 0 ? (
+                                        <span className="text-info">
+                                          To Date
+                                        </span>
+                                      ) : (
+                                        ""
+                                      )
+                                    }
                                   >
-                                    <Input type="date" 
-                                    // allowClear 
-                                    style={{width: '88%'}}/>
-                                    
+                                    <Input
+                                      type="date"
+                                      // allowClear
+                                      style={{ width: "88%" }}
+                                    />
                                   </Form.Item>
 
                                   <MinusCircleOutlined
                                     onClick={() => remove(name)}
-                                  />
-                                  <DeleteOutlined
-                                    onClick={() => {
-                                      console.log("deleted");
-                                    }}
                                   />
                                 </Space>
                               ))}
@@ -655,8 +678,9 @@ const ModuleMaster = () => {
                       {Array.from({ length: totalPages }, (_, index) => (
                         <li
                           key={index}
-                          className={`page-item ${currentPage === index + 1 ? "active" : ""
-                            }`}
+                          className={`page-item ${
+                            currentPage === index + 1 ? "active" : ""
+                          }`}
                         >
                           <a
                             className="page-link"
