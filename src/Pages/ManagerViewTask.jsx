@@ -205,6 +205,7 @@ const ManagerViewTask = () => {
                                   {record.project_name}
                                 </Tag>
                               </NavLink>
+                              
                             }
                           </td>
                           <td className="w-4">

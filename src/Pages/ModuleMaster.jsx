@@ -484,6 +484,7 @@ const ModuleMaster = () => {
                           </Form.Item> */}
                       </Col>
                     </Row>
+                    <p>Module Name</p>
                     <Row gutter={[8, 4]}>
                       <Col span={24}>
 
@@ -561,6 +562,11 @@ const ModuleMaster = () => {
 
                                   <MinusCircleOutlined
                                     onClick={() => remove(name)}
+                                  />
+                                  <DeleteOutlined
+                                    onClick={() => {
+                                      console.log("deleted");
+                                    }}
                                   />
                                 </Space>
                               ))}

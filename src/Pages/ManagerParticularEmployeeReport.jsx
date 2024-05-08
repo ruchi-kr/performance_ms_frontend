@@ -4,7 +4,17 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { getEmployeeReport } from "../Config";
-import { Input, DatePicker, Button } from "antd";
+import {
+  Input,
+  DatePicker,
+  Button,
+  Modal,
+  Form,
+  Col,
+  Row,
+  Select,
+  Rate,
+} from "antd";
 import moment from "moment";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
@@ -16,6 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "react-router-dom";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
+const { TextArea } = Input;
 
 const ManagerParticularEmployeeReport = () => {
   const { employee_id } = useParams();
@@ -32,28 +43,38 @@ const ManagerParticularEmployeeReport = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState("");
   const [reportData, setReportData] = useState([]);
+  const [open, setOpen] = useState(true);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState("Content of the modal");
+  const [remarkType, setRemarkType] = useState("week");
+  const [employeeRemarkData, setEmployeeRemarkData] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingRemarkId, setIsEditingRemarkId] = useState(false);
+  const [form] = Form.useForm();
 
-  //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
-  //        try {
-  //            const response = await axios.get(
-  //                `${getEmployeeReport}/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}&fromDate=${formattedFromDate}&toDate=${formattedToDate}`
-  //            );
+  const getEmployeeReview = async (page) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/employee/remark/${manager_id}/${employee_id}`
+      );
+      console.log("employee review", response?.data[0]);
+      setEmployeeRemarkData(response?.data[0]);
+      // setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
+      // Rest of the function...
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    getEmployeeReview(currentPage);
+  }, []);
 
-  //            setReportData(response.data);
-  //            const tasksArray = JSON.parse(response.data[3].tasks);
-  //            setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
-  //        } catch (err) {
-  //            console.log(err);
-  //        }
-  //    };
-
-  // ?page=${page}&pageSize=${pageSize} page,
   const getEmployeeReportHandler = async (page) => {
     try {
       const response = await axios.get(
         `http://localhost:8000/api/employee/report/${manager_id}/${employee_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`
       );
-      console.log("response", response);
+      console.log("response", response.data);
       setReportData(response.data);
       // setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
       // Rest of the function...
@@ -122,6 +143,53 @@ const ManagerParticularEmployeeReport = () => {
     }
   };
 
+  //remark form
+  const onFinish = async (values) => {
+    console.log("Success:", values);
+    console.log("dates", values.date);
+    // console.log("dateStrings", dateStrings);
+
+    const formattedDates = moment(values.date, "DD/MM/YYYY").format(
+      "YYYY-MM-DD"
+    );
+
+    console.log("new date format", formattedDates);
+    const selectedDate = values.date;
+    const monday = selectedDate
+      .clone()
+      .startOf("week")
+      .add(1, "day")
+      .format("YYYY-MM-DD");
+    const saturday = selectedDate
+      .clone()
+      .endOf("week")
+      .subtract(0, "day")
+      .format("YYYY-MM-DD");
+    console.log("monday", monday);
+    console.log("satarday", saturday);
+
+    if (isEditing) {
+      console.log("editing record", values);
+    } else {
+      try {
+        const resp = await axios.post(
+          `http://localhost:8000/api/employee/remark/${manager_id}/${employee_id}`,
+          { ...values, from_date: monday, to_date: saturday }
+        );
+        console.log(resp);
+
+        toast.success("Remark Added Successfully!");
+      } catch (error) {
+        console.log("error occured", error);
+
+        // console.log("error employee", error.response.data);
+        toast.error(error.response.data.error);
+      }
+    }
+  };
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
   const handleExcel = () => {
     // Call function1 first, then function2
     // handleExpandAll();
@@ -259,6 +327,57 @@ const ManagerParticularEmployeeReport = () => {
     // }
     doc.save("employee_reportPW.pdf");
   };
+  //Modal logic
+  const showModal = () => {
+    setOpen(true);
+  };
+  const handleOk = () => {
+    setModalText("The modal will be closed after two seconds");
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+    }, 2000);
+  };
+  const handleCancel = () => {
+    console.log("Clicked cancel button");
+    setIsEditing(false);
+    form.resetFields();
+    setOpen(false);
+  };
+
+  const onChangeRemarkType = (value) => {
+    console.log(`selected ${value}`);
+  };
+  // const disabledDateModal = (current) => {
+  //   // Can not select days before today and today
+  //   console.log("report type----", remarkType);
+  //   const disabledDateModal = (current) => {
+  //     // Disable dates based on the selected remark type
+  //     if (remarkType === "week") {
+  //       // Example: Disable dates before today for weekly remark type
+  //       return current && current < moment().startOf('day');
+  //     }
+  //     // Add more conditions for other remark types as needed
+  //     return false; // Default behavior: no dates disabled
+  //   };
+  // };
+
+  // const disabledDateModal = (current, { from, to }) => {
+  //   return current && current >= dayjs().endOf("day");
+  // };
+
+  const disabledDateModal = (current) => {
+    const today = moment().startOf("day");
+    const startOfCurrentWeek = today.clone().startOf("week"); // Start of current week (Sunday)
+
+    // Disable dates from the current week onwards
+    if (current >= startOfCurrentWeek) {
+      return true;
+    }
+
+    return false; // Enable all dates before the current week
+  };
 
   return (
     <>
@@ -269,7 +388,7 @@ const ManagerParticularEmployeeReport = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">Project-wise Reports</h3>
+                <h3 className="text-primary">Particular Employee Report</h3>
                 <hr className="bg-primary border-4" />
                 <div className="d-flex justify-content-between">
                   <div className="col-2">
@@ -278,7 +397,7 @@ const ManagerParticularEmployeeReport = () => {
                     </label>
 
                     <Search
-                      placeholder="search by project name"
+                      placeholder="search project"
                       allowClear
                       style={{
                         width: 200,
@@ -347,6 +466,159 @@ const ManagerParticularEmployeeReport = () => {
             <div className="row">
               <div className="col-11 mx-auto">
                 {/* table */}
+                <Button onClick={showModal} className="text-info">
+                  Add Remark
+                </Button>
+                <Button
+                  onClick={() => {
+                    showModal();
+                    setIsEditing(true);
+                    console.log("editing remark--->", employeeRemarkData);
+                    form.setFieldsValue({
+                      rating: employeeRemarkData.rating,
+                      remark: employeeRemarkData.remark,
+                      date: dayjs(employeeRemarkData.created_at),
+                    });
+                  }}
+                  className="text-info"
+                >
+                  Edit Last Remark
+                </Button>
+                <Modal
+                  title={isEditing ? "Edit Last Remark" : "Add Remarks"}
+                  open={open}
+                  onOk={() => {
+                    form
+                      .validateFields()
+                      .then((values) => {
+                        form.resetFields();
+                        handleOk();
+                        onFinish(values);
+                      })
+                      .catch((errorInfo) => {
+                        console.log("Validation failed:", errorInfo);
+                      });
+                  }}
+                  confirmLoading={confirmLoading}
+                  onCancel={handleCancel}
+                >
+                  <Form
+                    form={form}
+                    layout="vertical"
+                    name="basic"
+                    initialValues={isEditing && employeeRemarkData[0]}
+                    labelCol={{
+                      span: 8,
+                    }}
+                    wrapperCol={{
+                      span: 16,
+                    }}
+                    style={{
+                      maxWidth: 800,
+                    }}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="on"
+                  >
+                    {/* <Form.Item
+                      label="Remark type"
+                      name="remark_type"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select remark!",
+                        },
+                      ]}
+                    >
+                      <Select
+                        placeholder="Select Remark Type"
+                        onChange={onChangeRemarkType}
+                        defaultValue={"week"}
+                        options={[
+                          {
+                            value: "week",
+                            label: "Weekly",
+                          },
+                          {
+                            value: "month",
+                            label: "Monthly",
+                          },
+                          {
+                            value: "quater",
+                            label: "Quaterly",
+                          },
+                          {
+                            value: "half",
+                            label: "Half Yearly",
+                          },
+                          {
+                            value: "year",
+                            label: "Yearly",
+                          },
+                        ]}
+                      />
+                    </Form.Item> */}
+
+                    <Form.Item
+                      label="Date"
+                      name="date"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please choose date!",
+                        },
+                      ]}
+                    >
+                      <DatePicker
+                        picker="week"
+                        disabledDate={disabledDateModal}
+                        format={"DD/MM/YYYY"}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Rating"
+                      name="rating"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select employee rating!",
+                        },
+                      ]}
+                    >
+                      <Rate allowHalf />
+                    </Form.Item>
+                    <Form.Item
+                      label="Remarks"
+                      name="remark"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input your remarks!",
+                        },
+                      ]}
+                    >
+                      <TextArea
+                        placeholder="Add employee performance remarks."
+                        autoSize={{
+                          minRows: 4,
+                          maxRows: 6,
+                        }}
+                      />
+                    </Form.Item>
+
+                    {/* <Form.Item
+                      wrapperCol={{
+                        offset: 8,
+                        span: 16,
+                      }}
+                    >
+                      <Button type="primary" htmlType="submit">
+                        Submit
+                      </Button>
+                    </Form.Item> */}
+                  </Form>
+                </Modal>
                 <table
                   id="reportTablepw"
                   className="table table-striped table-hover mt-3"
@@ -355,9 +627,10 @@ const ManagerParticularEmployeeReport = () => {
                     <tr>
                       <th scope="col">S.No.</th>
                       <th scope="col">Project Name</th>
-                      <th scope="col">Schd. Start Date</th>
-                      <th scope="col">Schd. End Date</th>
-
+                      <th scope="col">
+                        <div>Schd. Start Date</div>
+                        <div>Schd. End Date</div>
+                      </th>
                       <th scope="col">Alloc hrs</th>
                       <th scope="col">Man hrs</th>
                     </tr>
