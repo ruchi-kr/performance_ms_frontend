@@ -24,7 +24,8 @@ import EmployeeReport from "./Pages/EmployeeReport";
 import EmployeeReportDw from "./Pages/EmployeeReportDw";
 import Test from "./Pages/Test";
 import ManagerParticularEmployeeReport from "./Pages/ManagerParticularEmployeeReport";
-import AddProjectPlan from "./Pages/AddProjectPlan";import ProjectPlan from "./PlanPages/ProjectPlan";
+import AddProjectPlan from "./Pages/AddProjectPlan";
+import ProjectPlan from "./PlanPages/ProjectPlan";
 
 function App() {
   const status = sessionStorage.getItem("status");

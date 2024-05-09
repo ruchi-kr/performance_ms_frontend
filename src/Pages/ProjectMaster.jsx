@@ -4,7 +4,7 @@ import Header from '../Components/Header'
 import Footer from '../Components/Footer'
 import { deleteProject, getAllProjects, createProject, editProject, CONFIG_OBJ, getAllProjectsUrlPagination,getExcelpdfprojects } from '../Config.js';
 import axios from 'axios';
-import { Col, Form, Input, Modal, Row } from 'antd';
+import { Col, Form, Input, Modal, Row, Select } from 'antd';
 import { toast } from 'react-toastify'
 // import {DeleteOutlined, EditOutlined} from '@ant-design/icon'
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
@@ -14,6 +14,7 @@ import 'jspdf-autotable';
 import { faFilePdf, faFileExcel } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const { Search } = Input;
+const { Option } = Select;
 
 const ProjectMaster = () => {
     // for search by project name
@@ -69,13 +70,14 @@ const ProjectMaster = () => {
                         projectForm.resetFields();
                         setModalVisible(false);
 
-                        getAllProjectsHandler();
+                        getAllProjectsHandler(currentPage);
                     } else {
                         // console.log(response.data.message);
                         // toast.error(response.data.message);
                     }
                 } catch (error) {
                     console.log(error);
+                    toast.error(error.response.data.error);
                 }
             })
             .catch((errorInfo) => {
@@ -113,6 +115,7 @@ const ProjectMaster = () => {
 
     const projectData = {
         project_name: '',
+        stage: '',
         schedule_start_date: '',
         schedule_end_date: '',
     };
@@ -131,8 +134,10 @@ const ProjectMaster = () => {
         setFormDisabled(true);
         projectForm.setFieldsValue({
             project_name: project.project_name,
+            stage: project.stage,
             schedule_start_date: project.schedule_start_date.split('T')[0], // Display only the date part
             schedule_end_date: project.schedule_end_date.split('T')[0] // Display only the date part
+
         });
     }
 
@@ -142,6 +147,7 @@ const ProjectMaster = () => {
         setFormDisabled(false);
         projectForm.setFieldsValue({
             project_name: project.project_name,
+            stage: project.stage,
             schedule_start_date: project.schedule_start_date.split('T')[0], // Display only the date part
             schedule_end_date: project.schedule_end_date.split('T')[0] // Display only the date part
         });
@@ -228,6 +234,21 @@ const ProjectMaster = () => {
                                                     ]}
                                                 >
                                                     <Input />
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={12} >
+                                                <Form.Item name="stage" label={<span className='text-info text-capitalize'>Stage</span>}
+                                                    rules={[
+                                                        { required: true, message: 'stage is required' },
+                                                    ]}>
+                                                    <Select>
+                                                        <Option value="">Select</Option>
+                                                        <Option value="rfp">RFP</Option>
+                                                        <Option value="lost">Lost</Option>
+                                                        <Option value="won">Won</Option>
+                                                        <Option value="inprocess">In Process</Option>
+                                                        <Option value="Completed">Completed</Option>
+                                                    </Select>
                                                 </Form.Item>
                                             </Col>
                                             <Col span={12} >

@@ -150,6 +150,22 @@ const SideNavbar = () => {
                       <p>Module Master</p>
                     </Link>
                   </li>
+                  <li className="nav-item btnhovergrey mt-3">
+                    <Link
+                      className={`nav-link text-white ${
+                        window.location.pathname === "/projectplan"
+                          ? "bg-cyan"
+                          : ""
+                      }`}
+                      to="/projectplan"
+                    >
+                      <FontAwesomeIcon
+                        className="nav-icon"
+                        icon={faFolderOpen}
+                      />
+                      <p>Project Plan</p>
+                    </Link>
+                  </li>
                 </>
               ) : (
                 <>
