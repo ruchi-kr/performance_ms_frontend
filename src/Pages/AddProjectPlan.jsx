@@ -24,6 +24,7 @@ import {
 } from "antd";
 import axios from "axios";
 import moment from "moment";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import {
   getAllModules,
@@ -55,6 +56,7 @@ const AddProjectPlan = () => {
   const [projectList, setProjectList] = useState([]);
   const [projectStartDate, setProjectStartDate] = useState("");
   const [projectEndDate, setProjectEndDate] = useState("");
+  const [moduleList, setModuleList] = useState([]);
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
@@ -80,6 +82,20 @@ const AddProjectPlan = () => {
   //   user_active: false,
   // });
 
+  const getModuleListHandler = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/admin/getAllModule/"
+      );
+      setModuleList(response.data);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getModuleListHandler();
+  }, []);
   const [pagination, setPagination] = useState({
     totalRecords: 0,
     pageSize: 10,
@@ -111,7 +127,8 @@ const AddProjectPlan = () => {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(``);
+      // const res = await axios.get(``);
+      const res = [];
       console.log("data", res.data);
       setLoading(false);
       setUserData(res.data.data);
@@ -164,12 +181,11 @@ const AddProjectPlan = () => {
 
   // console.log("selctedUser", selectedUser);
   const onFinish = async (values) => {
-   
     if (isAdding && !isEditing) {
       try {
         console.log("onFinish before sending values adding", values);
         await axios.post("http://localhost:8000/api/admin/addModule", values);
-        // fetchAll();
+        fetchAll();
         handleReset();
         notification.success({
           message: "Module Added.",
@@ -388,12 +404,14 @@ const AddProjectPlan = () => {
       title: "Schd. St. Dt.",
       dataIndex: "from_date",
       key: "from_date",
-      render: (text) => (text ? text : "-"),
+      render: (text) => moment(text).utcOffset('+05:30').format("DD/MM/YYYY"),
     },
     {
       title: "Schd. End Dt.",
       dataIndex: "to_date",
       key: "to_date",
+      render: (text) => moment(text).utcOffset('+05:30').format("DD/MM/YYYY"),
+
     },
 
     {
@@ -403,17 +421,6 @@ const AddProjectPlan = () => {
       align: "center",
 
       // render: (text) => (text ? "Active" : "Inactive"),
-      render: (text) =>
-        text ? (
-          <Tag color="green">Active</Tag>
-        ) : (
-          <Tag color="red">Inactive</Tag>
-        ),
-    },
-    {
-      title: "Email",
-      dataIndex: "user_email",
-      key: "user_email",
     },
 
     {
@@ -464,7 +471,7 @@ const AddProjectPlan = () => {
         <Table
           rowKey={(record) => record.module_id}
           columns={columns}
-          dataSource={userData}
+          dataSource={moduleList}
           loading={loading}
           bordered
           size="small"
@@ -588,12 +595,12 @@ const AddProjectPlan = () => {
                       <Row gutter={16}>
                         <Col span={12}>
                           <Form.Item
-                            label="Schd. End Date"
-                            name="to_date"
+                            label="Schd. Start Date"
+                            name="from_date"
                             rules={[
                               {
                                 required: true,
-                                message: "Please input schedule end date !",
+                                message: "Please input schedule start date !",
                               },
                             ]}
                             // style={{ maxWidth: "50%" }}
@@ -606,12 +613,12 @@ const AddProjectPlan = () => {
                         </Col>
                         <Col span={12}>
                           <Form.Item
-                            label="Schd. St. Date"
-                            name="from_date"
+                            label="Schd. End. Date"
+                            name="to_date"
                             rules={[
                               {
                                 required: true,
-                                message: "Please input schedule start date !",
+                                message: "Please input schedule end date !",
                               },
                             ]}
                             // style={{ maxWidth: "50%" }}
@@ -620,7 +627,7 @@ const AddProjectPlan = () => {
                               disabledDate={(current) =>
                                 disabledEndDate(
                                   current,
-                                  form.getFieldValue("to_date")
+                                  form.getFieldValue("from_date")
                                 )
                               }
                               format="DD/MM/YYYY"
@@ -680,7 +687,6 @@ const AddProjectPlan = () => {
                                 { value: "ongoing", label: "ongoing" },
                                 { value: "completed", label: "completed" },
                               ]}
-                              defaultValue={["ongoing"]}
                               allowClear="true"
                               // onChange={handleChange}
                               placeholder="Status "
