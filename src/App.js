@@ -24,7 +24,7 @@ import EmployeeReport from "./Pages/EmployeeReport";
 import EmployeeReportDw from "./Pages/EmployeeReportDw";
 import Test from "./Pages/Test";
 import ManagerParticularEmployeeReport from "./Pages/ManagerParticularEmployeeReport";
-import AddProjectPlan from "./Pages/AddProjectPlan";
+import AddProjectPlan from "./Pages/AddProjectPlan";import ProjectPlan from "./PlanPages/ProjectPlan";
 
 function App() {
   const status = sessionStorage.getItem("status");
@@ -86,6 +86,10 @@ function App() {
 
             <Route path="*" element={<ErrorPage />}></Route>
             <Route path="/accessdenied" element={<AccessDenied />} />
+
+            {/* project plan route */}
+            <Route path="/projectplan" element={<ProjectPlan />} />
+
             <Route path="/test" element={<Test />} />
           </Routes>
         </BrowserRouter>
