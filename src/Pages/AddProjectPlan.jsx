@@ -108,32 +108,10 @@ const AddProjectPlan = () => {
     };
   }, [search]);
 
-  // Fetch cascader data from API zone
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch data from API using Axios and async/await
-        const response = await axios.get(
-          "http://localhost:8080/api/admin/zone/?pageSize=10000"
-        );
-        const formattedData = response.data.data.map((z) => ({
-          value: z.zone_id,
-          label: z.zone_name,
-        }));
-        setZoneCascaderOptions(formattedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/admAddProjectPlan/?name=${search}&page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortBy=user_name&sortOrder=${sortOrder}`
-      );
+      const res = await axios.get(``);
       console.log("data", res.data);
       setLoading(false);
       setUserData(res.data.data);
@@ -186,8 +164,97 @@ const AddProjectPlan = () => {
 
   // console.log("selctedUser", selectedUser);
   const onFinish = async (values) => {
-    console.log("onFinish before sending values", values);
-    // console.log("type of active", typeof values.user_active[0]);
+   
+    if (isAdding && !isEditing) {
+      try {
+        console.log("onFinish before sending values adding", values);
+        await axios.post("http://localhost:8000/api/admin/addModule", values);
+        // fetchAll();
+        handleReset();
+        notification.success({
+          message: "Module Added.",
+          description: "Successfully",
+        });
+      } catch (error) {
+        console.log(error);
+        notification.error({
+          message: "Failed to add Module.",
+          description: "Try Again !",
+        });
+      }
+    }
+
+    // if (isEditing && !isAdding) {
+    // 	try {
+    // 		const swalWithBootstrapButtons = MySwal.mixin({
+    // 			customClass: {
+    // 				confirmButton: "btn btn-success",
+    // 				cancelButton: "btn btn-danger",
+    // 			},
+    // 		});
+
+    // 		const result = await swalWithBootstrapButtons.fire({
+    // 			title: "Are you sure?",
+    // 			text: "You won't be able to revert this!",
+    // 			icon: "warning",
+    // 			showCancelButton: true,
+    // 			confirmButtonText: "Yes, edit it!",
+    // 			cancelButtonText: "No, cancel!",
+    // 			reverseButtons: true,
+    // 		});
+
+    // 		if (result.isConfirmed) {
+    // 			await Swal.fire(
+    // 				"Edited!",
+    // 				"User details has been modified.",
+    // 				"success",
+    // 			);
+    // 			try {
+    // 				await axios.patch(
+    // 					`http://localhost:8080/api/admin/user/${values.user_id}`,
+    // 					{
+    // 						...values,
+    // 						user_type: values.user_type[0],
+    // 						fk_designation_id: values?.fk_designation_id[0],
+    // 						fk_zone_id:
+    // 							values.fk_zone_id === undefined || values.fk_zone_id === null
+    // 								? null
+    // 								: values?.fk_zone_id[0],
+    // 						fk_circle_id:
+    // 							values.fk_circle_id === undefined ||
+    // 							values.fk_circle_id === null
+    // 								? null
+    // 								: values?.fk_circle_id[0],
+    // 						fk_division_id:
+    // 							values.fk_division_id === undefined ||
+    // 							values.fk_division_id === null
+    // 								? null
+    // 								: values?.fk_division_id[0],
+    // 						user_active: values?.user_active[0],
+    // 						creator_user_id: userid,
+    // 					},
+    // 				);
+    // 				handleReset();
+    // 				fetchAll(); // Refresh the zone list after update
+
+    // 				notification.success({
+    // 					message: "User Edited.",
+    // 					description: "Successfully",
+    // 				});
+    // 			} catch (error) {
+    // 				console.log(error);
+    // 				notification.error({
+    // 					message: "Failed to edit User.",
+    // 					description: "Something went wrong!",
+    // 				});
+    // 			}
+    // 		} else if (result.dismiss === Swal.DismissReason.cancel) {
+    // 			await Swal.fire("Cancelled");
+    // 		}
+    // 	} catch (error) {
+    // 		console.log(error);
+    // 	}
+    // }
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
