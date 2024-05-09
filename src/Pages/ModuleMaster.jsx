@@ -267,13 +267,11 @@ const ModuleMaster = () => {
     const endDate = projectCheckDates.schedule_end_date
       ? moment(projectCheckDates.schedule_end_date)
       : null;
-    const from_dateMoment = moment(from_dateValue, "DD/MM/YYYY");
+    const from_dateMoment = moment(from_dateValue);
     // Disable dates that are before the selected from_dateMoment,
-
     return (
       current &&
-      ((from_dateMoment && current <= from_dateMoment.startOf("day")) ||
-        (startDate && current < startDate.startOf("day")) ||
+      ((from_dateMoment && current < from_dateValue.startOf("day")) ||
         (endDate && current > endDate.endOf("day")))
     );
   };
@@ -406,8 +404,8 @@ const ModuleMaster = () => {
 
       module_name: module.module_name.map((item) => ({
         ...item,
-        to_date: item.to_date ? item.to_date.slice(0, 10) : "",
-        from_date: item.from_date ? item.from_date.slice(0, 10) : "",
+        from_date: dayjs(item.from_date),
+        to_date: dayjs(item.to_date),
       })),
     });
   };
