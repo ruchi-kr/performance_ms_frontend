@@ -14,7 +14,7 @@ import {
 const onFinish = (values) => {
   console.log("Received values of form:", values);
 };
-const App = () => {
+const AddProjectPlan = () => {
   const [form] = Form.useForm();
   return (
     <Form
@@ -157,4 +157,4 @@ const App = () => {
     </Form>
   );
 };
-export default App;
+export default AddProjectPlan;
