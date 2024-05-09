@@ -278,6 +278,7 @@ const ProjectMaster = () => {
                                             <th scope="col">Project Name</th>
                                             <th scope="col">Schd. Start Date</th>
                                             <th scope="col">Schd. End Date</th>
+                                            <th scope="col">Stage</th>
                                             <th scope="col">Action</th>
                                         </tr>
                                     </thead>
@@ -291,6 +292,7 @@ const ProjectMaster = () => {
                                                         <td>{data.project_name}</td>
                                                         <td>{data.schedule_start_date.slice(8, 10)}/{data.schedule_start_date.slice(5, 7)}/{data.schedule_start_date.slice(0, 4)}</td>
                                                         <td>{data.schedule_end_date.slice(8, 10)}/{data.schedule_end_date.slice(5, 7)}/{data.schedule_end_date.slice(0, 4)}</td>
+                                                        <td>{data.stage}</td>
                                                         <td className=''>
                                                             <EyeOutlined onClick={() => openProjectView(data)} style={{ color: "blue", marginRight: "1rem" }} />
                                                             {/* <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button> */}
