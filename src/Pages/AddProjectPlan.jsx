@@ -5,7 +5,9 @@ import {
   InfoCircleOutlined,
   PlusOutlined,
   SettingOutlined,
+  ExclamationCircleFilled,
 } from "@ant-design/icons";
+import { NavLink, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -19,12 +21,14 @@ import {
   Select,
   Table,
   Tag,
+  Modal,
   Tooltip,
   notification,
 } from "antd";
 import axios from "axios";
 import moment from "moment";
 import dayjs from "dayjs";
+
 import { useEffect, useState } from "react";
 import {
   getAllModules,
@@ -34,12 +38,16 @@ import {
   getAllProjects,
 } from "../Config.js";
 import styles from "./AddProjectPlan.module.css";
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
 const { Search } = Input;
 const { Option } = Select;
-
+const { confirm } = Modal;
+dayjs.extend(utc);
+dayjs.extend(timezone);
 const AddProjectPlan = () => {
   const [form] = Form.useForm();
-  const [formResetPassword] = Form.useForm();
+
   const [userData, setUserData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -52,11 +60,21 @@ const AddProjectPlan = () => {
     schedule_start_date: null,
     schedule_end_date: null,
   });
+  const [selectedModuleId, setSelectedModuleId] = useState(null);
   // GET PROJECT LIST
   const [projectList, setProjectList] = useState([]);
   const [projectStartDate, setProjectStartDate] = useState("");
   const [projectEndDate, setProjectEndDate] = useState("");
   const [moduleList, setModuleList] = useState([]);
+  const [pagination, setPagination] = useState({
+    totalRecords: 0,
+    pageSize: 10,
+    totalPages: 0,
+    currentPage: 1,
+    nextPage: null,
+    prevPage: null,
+  });
+  const {project_id}=useParams()
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
@@ -69,25 +87,36 @@ const AddProjectPlan = () => {
   };
   useEffect(() => {
     getProjects();
+    fetchAll();
   }, []);
-
-  // const [userData, setUserData] = useState({
-  //   fk_zone_id: "",
-  //   fk_circle_id: "",
-  //   fk_division_id: "",
-  //   user_designation: false,
-  //   user_name: "",
-  //   user_mobile: "",
-  //   user_email: "",
-  //   user_active: false,
-  // });
 
   const getModuleListHandler = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/getAllModule/"
+        `http://localhost:8000/api/admin/getAllModule/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
       );
-      setModuleList(response.data);
+      console.log("response", response);
+      setModuleList(response.data.results);
+      if (response.data.results !== undefined) {
+        const {
+          totalRecords,
+          totalPages,
+          currentPage,
+          nextPage,
+          prevPage,
+          pageSize,
+        } = response.data.pagination;
+
+        setPagination((prevState) => ({
+          ...prevState,
+          totalRecords: totalRecords,
+          totalPages: totalPages,
+          pageSize: pageSize,
+          currentPage: currentPage,
+          nextPage: nextPage,
+          prevPage: prevPage,
+        }));
+      }
     } catch (error) {
     } finally {
       setLoading(false);
@@ -95,23 +124,9 @@ const AddProjectPlan = () => {
   };
   useEffect(() => {
     getModuleListHandler();
-  }, []);
-  const [pagination, setPagination] = useState({
-    totalRecords: 0,
-    pageSize: 10,
-    totalPages: 0,
-    currentPage: 1,
-    nextPage: null,
-    prevPage: null,
-  });
+  }, [pagination.currentPage, pagination.pageSize]);
 
-  useEffect(() => {
-    fetchAll();
-  }, []);
-
-  useEffect(() => {
-    fetchAll();
-  }, [pagination.currentPage, pagination.pageSize, sortOrder]);
+  // search functionality
 
   useEffect(() => {
     setLoading(true);
@@ -124,6 +139,11 @@ const AddProjectPlan = () => {
     };
   }, [search]);
 
+  const onSearch = async () => {
+    if (search === null || search === undefined) return;
+
+    getModuleListHandler();
+  };
   const fetchAll = async () => {
     setLoading(true);
     try {
@@ -154,30 +174,54 @@ const AddProjectPlan = () => {
       console.log(error);
     }
   };
-
+  const moduleChangeHandler = (value) => {
+    console.log(" module value", value);
+    setSelectedModuleId(value);
+  };
   const handleEdit = (record) => {
     console.log("handle edit", record);
     setIsEditing(true);
-    console.log("type of user active", typeof Boolean(record.user_active));
+    console.log("type of user active", moment(record.from_date));
+    getProjectStartEndDate(record.project_id);
     form.setFieldsValue({
-      user_id: record.user_id,
-      user_name: record.user_name,
-      user_email: record.user_email,
-      user_type: Boolean(record.user_type) === true ? [true] : [false],
-      // user_password: record.user_password,
-      contact_person: record.contact_person,
-      fk_zone_id: record.fk_zone_id,
-      fk_circle_id: record.fk_circle_id,
-      fk_division_id: record.fk_division_id,
-      fk_designation_id: record.fk_designation_id,
-      user_mobile: record.user_mobile,
-      user_active: Boolean(record.user_active) === false ? [false] : [true],
+      module_id: record.module_id,
+      module_name: record.module_name,
+      project_id: record.project_id,
+      from_date: dayjs.utc(record.from_date).tz("Asia/Kolkata"),
+      to_date: dayjs(record.to_date),
+      status: record.status,
     });
-
     setIsEditing(true);
   };
 
-  const handleDelete = async (record) => {};
+  const handleDelete = async (record) => {
+    console.log("record to delete", record);
+    confirm({
+      title: "Are You sure you want to delete the record!",
+      icon: <ExclamationCircleFilled />,
+      // content: "Be sure before deleting, this process is irreversible!",
+      centered: true,
+      async onOk() {
+        try {
+          await axios.delete(
+            `http://localhost:8000/api/admin/deleteModule/${record.module_id}`
+          );
+          notification.success({
+            message: "Success",
+            description: "Record deleted Successfully.",
+          });
+          getModuleListHandler();
+        } catch (error) {
+          // console.error("Error Adding project:", error);
+          notification.error({
+            message: "Failed",
+            description: `${error}`,
+          });
+        }
+      },
+      onCancel() {},
+    });
+  };
 
   // console.log("selctedUser", selectedUser);
   const onFinish = async (values) => {
@@ -185,7 +229,7 @@ const AddProjectPlan = () => {
       try {
         console.log("onFinish before sending values adding", values);
         await axios.post("http://localhost:8000/api/admin/addModule", values);
-        fetchAll();
+        getModuleListHandler();
         handleReset();
         notification.success({
           message: "Module Added.",
@@ -200,106 +244,43 @@ const AddProjectPlan = () => {
       }
     }
 
-    // if (isEditing && !isAdding) {
-    // 	try {
-    // 		const swalWithBootstrapButtons = MySwal.mixin({
-    // 			customClass: {
-    // 				confirmButton: "btn btn-success",
-    // 				cancelButton: "btn btn-danger",
-    // 			},
-    // 		});
+    if (isEditing && !isAdding) {
+      console.log("values inside edit!!!!", values);
+      try {
+        await axios.patch(
+          `http://localhost:8000/api/admin/editModule/${values.module_id}`,
+          values
+        );
+        handleReset();
+        getModuleListHandler(); // Refresh the zone list after update
 
-    // 		const result = await swalWithBootstrapButtons.fire({
-    // 			title: "Are you sure?",
-    // 			text: "You won't be able to revert this!",
-    // 			icon: "warning",
-    // 			showCancelButton: true,
-    // 			confirmButtonText: "Yes, edit it!",
-    // 			cancelButtonText: "No, cancel!",
-    // 			reverseButtons: true,
-    // 		});
-
-    // 		if (result.isConfirmed) {
-    // 			await Swal.fire(
-    // 				"Edited!",
-    // 				"User details has been modified.",
-    // 				"success",
-    // 			);
-    // 			try {
-    // 				await axios.patch(
-    // 					`http://localhost:8080/api/admin/user/${values.user_id}`,
-    // 					{
-    // 						...values,
-    // 						user_type: values.user_type[0],
-    // 						fk_designation_id: values?.fk_designation_id[0],
-    // 						fk_zone_id:
-    // 							values.fk_zone_id === undefined || values.fk_zone_id === null
-    // 								? null
-    // 								: values?.fk_zone_id[0],
-    // 						fk_circle_id:
-    // 							values.fk_circle_id === undefined ||
-    // 							values.fk_circle_id === null
-    // 								? null
-    // 								: values?.fk_circle_id[0],
-    // 						fk_division_id:
-    // 							values.fk_division_id === undefined ||
-    // 							values.fk_division_id === null
-    // 								? null
-    // 								: values?.fk_division_id[0],
-    // 						user_active: values?.user_active[0],
-    // 						creator_user_id: userid,
-    // 					},
-    // 				);
-    // 				handleReset();
-    // 				fetchAll(); // Refresh the zone list after update
-
-    // 				notification.success({
-    // 					message: "User Edited.",
-    // 					description: "Successfully",
-    // 				});
-    // 			} catch (error) {
-    // 				console.log(error);
-    // 				notification.error({
-    // 					message: "Failed to edit User.",
-    // 					description: "Something went wrong!",
-    // 				});
-    // 			}
-    // 		} else if (result.dismiss === Swal.DismissReason.cancel) {
-    // 			await Swal.fire("Cancelled");
-    // 		}
-    // 	} catch (error) {
-    // 		console.log(error);
-    // 	}
-    // }
+        notification.success({
+          message: "Success",
+          description: "Record updated.",
+        });
+      } catch (error) {
+        console.log(error);
+        notification.error({
+          message: "Failed",
+          description: "Unable to update record",
+        });
+      }
+    }
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
     notification.error({
-      message: "Error in user Add/Edit !",
-      description: "Provide valid input",
+      message: "Invalid Input!",
+      description: "Please provide valid input",
     });
   };
 
   const handleReset = () => {
-    // console.log("form", form);
-    // console.log("isAdding", isAdding);
-    // console.log("isEditing", isEditing);
-    // console.log("newZoneDesc", newZoneDesc);
-    // console.log("editZoneId", editZoneId);
     form.resetFields();
-    formResetPassword.resetFields();
-
     setSearch("");
     setIsAdding(false);
     setIsResetPassword(false);
     setIsEditing(false); // Reset the form fields
-  };
-
-  // search functionality
-  const onSearch = async () => {
-    if (search === null || search === undefined) return;
-    // setLoading(true);
-    fetchAll();
   };
 
   //Pagination
@@ -344,7 +325,7 @@ const AddProjectPlan = () => {
       ? moment(projectCheckDates.schedule_end_date)
       : null;
     // Disable dates that are before the start date or after the end date
-
+    console.log("disabdwjkdkawd", startDate);
     return (
       current &&
       ((startDate && current < startDate.startOf("day")) ||
@@ -404,14 +385,13 @@ const AddProjectPlan = () => {
       title: "Schd. St. Dt.",
       dataIndex: "from_date",
       key: "from_date",
-      render: (text) => moment(text).utcOffset('+05:30').format("DD/MM/YYYY"),
+      render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
     },
     {
       title: "Schd. End Dt.",
       dataIndex: "to_date",
       key: "to_date",
-      render: (text) => moment(text).utcOffset('+05:30').format("DD/MM/YYYY"),
-
+      render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
     },
 
     {
@@ -468,6 +448,14 @@ const AddProjectPlan = () => {
             />
           </Col>
         </Row>
+        <Row>
+          <NavLink
+            to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}`}
+            className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+          >
+            <span className="fs-4"> + </span>&nbsp;Add Plan
+          </NavLink>
+        </Row>
         <Table
           rowKey={(record) => record.module_id}
           columns={columns}
@@ -487,9 +475,9 @@ const AddProjectPlan = () => {
           total={pagination.totalRecords}
           pageSize={pagination.pageSize}
           onChange={handlePageChange}
-          showLessItems={true}
+          showLessItems={false}
           onShowSizeChange={pageSizeChange}
-          showQuickJumper={false}
+          showQuickJumper={true}
           showPrevNextJumpers={true}
           showSizeChanger={true}
           onPrev={() => handlePageChange(pagination.prevPage)}
@@ -553,6 +541,7 @@ const AddProjectPlan = () => {
                           <Form.Item
                             label="Module Id"
                             name="module_id"
+                            hidden
                             // style={{ display: "none" }} // Hide the Form.Item
                             // style={{ maxWidth: "50%" }}
                           >

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import SideNavbar from "../Components/SideNavbar.jsx";
 import Header from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
+import { NavLink } from "react-router-dom";
 import {} from "../Config.js";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -16,6 +17,13 @@ import {
   CheckCircleOutlined,
   FileTextOutlined,
 } from "@ant-design/icons";
+import {
+  getAllModules,
+  createModule,
+  editModule,
+  deleteModule,
+  getAllProjects,
+} from "../Config.js";
 import { Steps } from "antd";
 import { Link } from "react-router-dom";
 
@@ -24,7 +32,26 @@ const { Search } = Input;
 
 const ProjectPlan = () => {
   const [allData, setAllData] = useState("");
+  const [projectList, setProjectList] = useState([]);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
+  const getProjects = async (value) => {
+    try {
+      const result = await axios.get(`${getAllProjects}`);
+
+      setProjectList(result.data);
+      console.log("project list", result.data);
+    } catch (error) {
+      console.log("Error fetching project list data", error);
+    }
+  };
+  useEffect(() => {
+    getProjects();
+  }, []);
+  const projectChangeHandler = (value) => {
+    console.log(" projetc value", value);
+    setSelectedProjectId(value);
+  };
   const openAdd = () => {};
 
   return (
@@ -46,6 +73,16 @@ const ProjectPlan = () => {
                   <label className="text-capitalize fw-bold text-info">
                     Select Project
                   </label>
+                  <Select allowClear={true} onChange={projectChangeHandler}>
+                    {projectList.map((project) => (
+                      <Option
+                        key={project.project_id}
+                        value={project.project_id}
+                      >
+                        {project.project_name}
+                      </Option>
+                    ))}
+                  </Select>
                 </div>
                 {/* stage display  */}
                 <Steps
@@ -81,16 +118,15 @@ const ProjectPlan = () => {
 
                 {/* add project row */}
                 <div className="row my-4">
-                  <div className="col-2">
-                    <Link
-                      to="/addprojectplan"
+                  <div className="col-4">
+                    <NavLink
+                      to={`/addprojectplan/?project_id=${selectedProjectId}`}
                       className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
                     >
                       <span className="fs-4"> + </span>&nbsp;Add Plan
-                    </Link>
+                    </NavLink>
                   </div>
                 </div>
-                
 
                 {/* project plan table for 3 stages */}
                 <div className="col-12 mx-0">
@@ -98,7 +134,6 @@ const ProjectPlan = () => {
                     className="table table-bordered p-0"
                     style={{ borderCollapse: "collapse" }}
                   >
-                   
                     <thead>
                       <tr>
                         <th colSpan={4} className="bg-warning-subtle">
@@ -122,7 +157,7 @@ const ProjectPlan = () => {
                         <th colSpan={3}>Module Name</th>
                       </tr>
                       <tr>
-                        <th >Task</th>
+                        <th>Task</th>
                         <th>
                           <div className="d-flex flex-column">
                             <span>Schd. Start Date</span>
@@ -131,7 +166,7 @@ const ProjectPlan = () => {
                         </th>
                         <th>Alloc hrs</th>
 
-                        <th >Task</th>
+                        <th>Task</th>
                         <th>
                           <div className="d-flex flex-column">
                             <span>Schd. Start Date</span>
@@ -140,7 +175,7 @@ const ProjectPlan = () => {
                         </th>
                         <th>Alloc hrs</th>
 
-                        <th >Task</th>
+                        <th>Task</th>
                         <th>
                           <div className="d-flex flex-column">
                             <span>Schd. Start Date</span>

@@ -26,6 +26,7 @@ import Test from "./Pages/Test";
 import ManagerParticularEmployeeReport from "./Pages/ManagerParticularEmployeeReport";
 import AddProjectPlan from "./Pages/AddProjectPlan";
 import ProjectPlan from "./PlanPages/ProjectPlan";
+import AddModuleTasks from "./Pages/AddModuleTasks";
 
 function App() {
   const status = sessionStorage.getItem("status");
@@ -46,6 +47,7 @@ function App() {
             <Route path="/designationmaster" element={<DesignationMaster />} />
             <Route path="/jobrolemaster" element={<JobRoleMaster />} />
             <Route path="/addprojectplan" element={<AddProjectPlan />} />
+            <Route path="/addmoduletasks" element={<AddModuleTasks />} />
 
             <Route path="/modulemaster" element={<ModuleMaster />} />
             <Route path="/assignteam" element={<AssignTeam />}></Route>
