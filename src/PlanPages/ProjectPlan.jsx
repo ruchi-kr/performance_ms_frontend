@@ -76,7 +76,14 @@ const ProjectPlan = () => {
   let items = [
     {
       title: "RFP",
-      status: (projectStage === "rfp" ||projectStage === "inprocess" || projectStage === "won" || projectStage === "completed" || projectStage === "lost") ? "finish" : "wait",
+      status:
+        projectStage === "rfp" ||
+        projectStage === "inprocess" ||
+        projectStage === "won" ||
+        projectStage === "completed" ||
+        projectStage === "lost"
+          ? "finish"
+          : "wait",
       icon: <FileTextOutlined />,
     },
     {
@@ -86,12 +93,20 @@ const ProjectPlan = () => {
     },
     {
       title: "Won",
-      status: (projectStage === "won" || projectStage === "completed" || projectStage === "inprocess") ? "finish" : "wait",
+      status:
+        projectStage === "won" ||
+        projectStage === "completed" ||
+        projectStage === "inprocess"
+          ? "finish"
+          : "wait",
       icon: <CheckCircleOutlined />,
     },
     {
       title: "In Process",
-      status:(projectStage === "inprocess" || projectStage === "completed") ? "finish" : "wait",
+      status:
+        projectStage === "inprocess" || projectStage === "completed"
+          ? "finish"
+          : "wait",
       icon: <LoadingOutlined />,
     },
     {
@@ -102,12 +117,15 @@ const ProjectPlan = () => {
   ];
 
   // If project stage is "won", remove the "Lost" step
-  if (projectStage === "won" || projectStage==="inprocess" || projectStage === "completed") {
+  if (
+    projectStage === "won" ||
+    projectStage === "inprocess" ||
+    projectStage === "completed"
+  ) {
     items = items.filter((item) => item.title !== "Lost");
   }
 
   return (
-
     <>
       <Header />
       <SideNavbar />
@@ -146,14 +164,15 @@ const ProjectPlan = () => {
                 {selectedProjectId ? (
                   <>
                     {/* stage display  */}
-                  
+
                     <Steps style={{ marginTop: "3rem" }}>
-                      {items.map((item) => (
+                      {items.map((item,index) => (
                         <Steps
                           key={item.title}
                           title={item.title}
                           status={item.status}
                           icon={item.icon}
+                          style={index !== items.length - 1 ? { width: 'calc(100% - 24px)' } : {}}
                         />
                       ))}
                     </Steps>
