@@ -437,6 +437,8 @@ const AddProjectPlan = () => {
     },
   ];
 
+
+  const[status, setStatus] = useState("notstarted");
   return (
     <>
       <Header />
@@ -447,7 +449,7 @@ const AddProjectPlan = () => {
             <div className="row my-5">
               <Row justify={"center"}>
                 <Col style={{ paddingBottom: "0" }}>
-                  <Title level={3}>{projectName}</Title>
+                  <Title level={3} className="text-info text-capitalize">{projectName}</Title>
                 </Col>
               </Row>
               <Row>
@@ -680,18 +682,23 @@ const AddProjectPlan = () => {
                                       message: "Please select Status !",
                                     },
                                   ]}
+                                  // defaultValue="notstarted"
                                   // style={{ maxWidth: "50%" }}
                                 >
                                   <Select
+                                   value={status}
+                                   onChange={(value) => setStatus(value)}
+                                   defaultValue="notstarted"
                                     options={[
                                       {
-                                        value: "scrapped",
+                                        value: "notstarted",
                                         label: (
-                                          <span className="text-danger">
-                                            scrapped
+                                          <span className="text-warning">
+                                            Yet To Start
                                           </span>
                                         ),
                                       },
+                                     
                                       {
                                         value: "ongoing",
                                         label: (
@@ -705,6 +712,14 @@ const AddProjectPlan = () => {
                                         label: (
                                           <span className="text-success">
                                             completed
+                                          </span>
+                                        ),
+                                      },
+                                      {
+                                        value: "scrapped",
+                                        label: (
+                                          <span className="text-danger">
+                                            scrapped
                                           </span>
                                         ),
                                       },
