@@ -80,7 +80,7 @@ const ProjectPlan = () => {
     {
       title: "RFP",
       status:
-        projectStage === "rfp" ||
+        projectStage === "rfp" ? "process":
         projectStage === "inprocess" ||
         projectStage === "won" ||
         projectStage === "completed" ||
@@ -91,13 +91,13 @@ const ProjectPlan = () => {
     },
     {
       title: "Lost",
-      status: projectStage === "lost" ? "finish" : "wait",
+      status: projectStage === "lost" ? "process" : "wait",
       icon: <CloseCircleOutlined />,
     },
     {
       title: "Won",
       status:
-        projectStage === "won" ||
+        projectStage === "won" ? "process":
         projectStage === "completed" ||
         projectStage === "inprocess"
           ? "finish"
@@ -107,7 +107,8 @@ const ProjectPlan = () => {
     {
       title: "In Process",
       status:
-        projectStage === "inprocess" || projectStage === "completed"
+        projectStage === "inprocess" ? "process":
+         projectStage === "completed"
           ? "finish"
           : "wait",
       icon:
@@ -174,7 +175,7 @@ const ProjectPlan = () => {
                     {/* stage display  */}
 
                     <Steps style={{ marginTop: "3rem" }}>
-                      {items.map((item, index) => (
+                    
                       {items.map((item, index) => (
                         <Steps
                           key={item.title}
