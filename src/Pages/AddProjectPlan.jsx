@@ -90,6 +90,7 @@ const AddProjectPlan = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const project_id = queryParams.get("project_id");
+  const stage = queryParams.get("stage");
 
   const getProjects = async (value) => {
     try {
@@ -226,7 +227,10 @@ const AddProjectPlan = () => {
     if (isAdding && !isEditing) {
       try {
         console.log("onFinish before sending values adding", values);
-        await axios.post("http://localhost:8000/api/admin/addModule", values);
+        await axios.post("http://localhost:8000/api/admin/addModule", {
+          ...values,
+          stage: stage,
+        });
         getModuleListHandler();
         handleReset();
         notification.success({
@@ -499,7 +503,7 @@ const AddProjectPlan = () => {
                   <Col>
                     <Button type="primary" disabled={!selectedModuleId}>
                       <NavLink
-                        to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}`}
+                        to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}&stage=${stage}`}
                         // className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
                       >
                         <span className="fs-4"> + </span>&nbsp;Add Module Tasks
@@ -507,10 +511,10 @@ const AddProjectPlan = () => {
                     </Button>
                   </Col>
                 }
-                
+
                 <Col>
                   <NavLink
-                    to={`/projectplan/project_id=${project_id}`}
+                    to={`/projectplan`}
                     className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
                   >
                     <span className="fs-4"> &larr; </span>&nbsp;Back To All

@@ -26,6 +26,7 @@ import {
 } from "../Config.js";
 import { Steps } from "antd";
 import { Link } from "react-router-dom";
+import { render } from "@testing-library/react";
 
 const { Option } = Select;
 const { Search } = Input;
@@ -34,6 +35,7 @@ const ProjectPlan = () => {
   const [allData, setAllData] = useState("");
   const [projectList, setProjectList] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedProjectStage, setSelectedProjectStage] = useState(null);
   const [projectStage, setProjectStage] = useState(null);
 
   const getProjects = async (value) => {
@@ -62,6 +64,7 @@ const ProjectPlan = () => {
           `${getAllProjects}/${selectedProjectId}`
         );
         setProjectStage(response.data[0].stage);
+        setSelectedProjectStage(response.data[0].stage);
         console.log("Project stage:", response.data[0].stage);
       } catch (error) {
         console.log("Error fetching project details", error);
@@ -172,6 +175,7 @@ const ProjectPlan = () => {
 
                     <Steps style={{ marginTop: "3rem" }}>
                       {items.map((item, index) => (
+                      {items.map((item, index) => (
                         <Steps
                           key={item.title}
                           title={item.title}
@@ -200,7 +204,7 @@ const ProjectPlan = () => {
                     <div className="row my-4">
                       <div className="col-2">
                         <NavLink
-                          to={`/addprojectplan/?project_id=${selectedProjectId}`}
+                          to={`/addprojectplan/?project_id=${selectedProjectId}&stage=${selectedProjectStage}`}
                           className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
                         >
                           <span className="fs-4"> + </span>&nbsp;Add Plan
