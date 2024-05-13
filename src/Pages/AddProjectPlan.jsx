@@ -7,7 +7,12 @@ import {
   SettingOutlined,
   ExclamationCircleFilled,
 } from "@ant-design/icons";
-import { NavLink, useParams } from "react-router-dom";
+import {
+  NavLink,
+  useParams,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 import {
   Button,
   Card,
@@ -77,7 +82,11 @@ const AddProjectPlan = () => {
     nextPage: null,
     prevPage: null,
   });
-  const { project_id } = useParams();
+  // const { location } = useLocation();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const project_id = queryParams.get("project_id");
+
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
@@ -90,16 +99,19 @@ const AddProjectPlan = () => {
   };
   useEffect(() => {
     getProjects();
-    fetchAll();
+    getModuleListHandler();
   }, []);
 
   const getModuleListHandler = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/getAllModule/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
+        `http://localhost:8000/api/admin/getModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
       );
-      console.log("response", response);
       setModuleList(response.data.results);
+      form.setFieldsValue({
+        project_id: Number(project_id),
+      });
+
       if (response.data.results !== undefined) {
         const {
           totalRecords,
@@ -147,36 +159,36 @@ const AddProjectPlan = () => {
 
     getModuleListHandler();
   };
-  const fetchAll = async () => {
-    setLoading(true);
-    try {
-      // const res = await axios.get(``);
-      const res = [];
-      console.log("data", res.data);
-      setLoading(false);
-      setUserData(res.data.data);
-      const {
-        totalRecords,
-        totalPages,
-        currentPage,
-        nextPage,
-        prevPage,
-        pageSize,
-      } = res.data.pagination;
+  // const fetchAll = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // const res = await axios.get(``);
+  //     const res = [];
+  //     console.log("data", res.data);
+  //     setLoading(false);
+  //     setUserData(res.data.data);
+  //     const {
+  //       totalRecords,
+  //       totalPages,
+  //       currentPage,
+  //       nextPage,
+  //       prevPage,
+  //       pageSize,
+  //     } = res.data.pagination;
 
-      setPagination((prevState) => ({
-        ...prevState,
-        totalRecords: totalRecords,
-        totalPages: totalPages,
-        pageSize: pageSize,
-        currentPage: currentPage,
-        nextPage: nextPage,
-        prevPage: prevPage,
-      }));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     setPagination((prevState) => ({
+  //       ...prevState,
+  //       totalRecords: totalRecords,
+  //       totalPages: totalPages,
+  //       pageSize: pageSize,
+  //       currentPage: currentPage,
+  //       nextPage: nextPage,
+  //       prevPage: prevPage,
+  //     }));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   const moduleChangeHandler = (value) => {
     console.log(" module value", value);
     setSelectedModuleId(value);
@@ -310,14 +322,20 @@ const AddProjectPlan = () => {
     });
   };
   const getProjectStartEndDate = (value) => {
-    const project = projectList?.find(
-      (project) => project.project_id === value
-    );
-    console.log("project selected", project);
-    setProjectCheckDates({
-      schedule_start_date: project?.schedule_start_date,
-      schedule_end_date: project?.schedule_end_date,
-    });
+    const projectId = value || project_id;
+    setTimeout(() => {}, 3000);
+    console.log("project selected", projectList);
+    if (projectList.length > 0) {
+      const project = projectList?.find(
+        (project) => project.project_id === Number(projectId)
+      );
+      setProjectCheckDates({
+        schedule_start_date: project?.schedule_start_date,
+        schedule_end_date: project?.schedule_end_date,
+      });
+      console.log("poroject", project);
+    }
+
     // console.log("dates object", projectCheckDates);
   };
   const disabledStartDate = (current) => {
@@ -440,9 +458,7 @@ const AddProjectPlan = () => {
       <div className="content-wrapper bg-white">
         <div className="content">
           <div className="container-fluid bg-white">
-            
             <div className="row my-5">
-             
               <Row justify="end">
                 <Col>
                 <label className="text-info" style={{ marginBottom: "10px" }}>Module Name</label>
@@ -501,7 +517,10 @@ const AddProjectPlan = () => {
                   <Col>
                     {!isAdding && !isEditing && (
                       <Button
-                        onClick={() => {setIsAdding(true); setIsEditing(false);}}
+                        onClick={() => {{
+                          setIsAdding(true); setIsEditing(false);};
+                          getProjectStartEndDate(Number(project_id));
+                        }}
                         type="primary"
                         style={{ minWidth: "10rem" }}
                       >
@@ -562,6 +581,7 @@ const AddProjectPlan = () => {
                                   ]}
                                 >
                                   <Select
+                                    disabled
                                     placeholder="Select Project"
                                     allowClear={true} // Disable the clear button
                                     // className={styles.cascaderStyle}
@@ -587,14 +607,13 @@ const AddProjectPlan = () => {
                                       required: true,
                                       message: "Please enter module name !",
                                     },
-                                  
+
                                     {
                                       pattern: /^[&,.\-_\w\s]{1,50}$/,
                                       message:
                                         "Please enter a valid Module Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
                                     },
                                   ]}
-                                 
                                 >
                                   <Input
                                     suffix={
@@ -606,7 +625,6 @@ const AddProjectPlan = () => {
                                         />
                                       </Tooltip>
                                     }
-                                   
                                     placeholder="module name"
                                     style={{ marginLeft: "4" }}
                                   />
