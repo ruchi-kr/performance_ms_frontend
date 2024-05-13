@@ -80,6 +80,7 @@ const AddModuleTasks = () => {
   const queryParams = new URLSearchParams(location.search);
   const project_id = Number(queryParams.get("project_id"));
   const module_id = Number(queryParams.get("module_id"));
+  const stage = queryParams.get("stage");
 
   const getProjects = async (value) => {
     try {
@@ -245,7 +246,10 @@ const AddModuleTasks = () => {
     if (isAdding && !isEditing) {
       try {
         console.log("onFinish before sending values adding", values);
-        await axios.post("http://localhost:8000/api/module/task", values);
+        await axios.post("http://localhost:8000/api/module/task", {
+          ...values,
+          stage: stage,
+        });
         getModuleTaskList();
         handleReset();
         notification.success({
@@ -416,7 +420,7 @@ const AddModuleTasks = () => {
             />
           </Col>
         </Row>
-        <Row gutter={24} style={{marginBottom:"1rem"}}>
+        <Row gutter={24} style={{ marginBottom: "1rem" }}>
           <Col>
             <NavLink
               to={`/addprojectplan/?project_id=${project_id}`}
