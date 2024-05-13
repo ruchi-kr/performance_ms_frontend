@@ -375,7 +375,7 @@ const AddModuleTasks = () => {
               color: "green",
               textAlign: "center",
             }}
-            onClick={() => handleEdit(record)}
+            onClick={() => {handleEdit(record); setIsAdding(false);}}
           />
           <DeleteFilled
             type="primary"
@@ -389,8 +389,8 @@ const AddModuleTasks = () => {
 
   return (
     <>
-      <Card className={styles.mainCard}>
-        <h2>Task Master</h2>
+      <>
+        {/* <h2>Task Master</h2> */}
         <br />
         <Row justify="end">
           <Col>
@@ -455,13 +455,13 @@ const AddModuleTasks = () => {
               </Button>
             )}
           </Col>
-          <Col align="center" style={{ minWidth: "100%" }}>
+          <Col align="left" style={{ minWidth: "100%" }}>
             {(isAdding || isEditing) && (
               <Card
-                style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)" }}
-                className={`${styles.card} `}
+                // style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)" }}
+                // className={`${styles.card} `}
               >
-                {isAdding ? <h4>Add Task</h4> : <h4>Edit Task</h4>}
+                {isAdding ? <h4 className="text-info">Add Task</h4> : <h4 className="text-info">Edit Task</h4>}
                 {(isAdding || isEditing) && (
                   <Form
                     colon={false}
@@ -473,12 +473,12 @@ const AddModuleTasks = () => {
                     // initialValues={{
                     //   zone_name: isEditing ? newZoneDesc : "",
                     // }}
-                    labelCol={{
-                      span: 6,
-                    }}
-                    wrapperCol={{
-                      span: 18,
-                    }}
+                    // labelCol={{
+                    //   span: 6,
+                    // }}
+                    // wrapperCol={{
+                    //   span: 18,
+                    // }}
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="on"
@@ -491,8 +491,8 @@ const AddModuleTasks = () => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={16}>
-                      <Col span={12}>
+                    <Row gutter={24}>
+                      <Col span={8}>
                         <Form.Item
                           label="Module"
                           name="module_id"
@@ -525,10 +525,7 @@ const AddModuleTasks = () => {
                           </Select>
                         </Form.Item>
                       </Col>
-                    </Row>
-
-                    <Row gutter={16}>
-                      <Col span={12}>
+                      <Col span={8}>
                         <Form.Item
                           label="Task Name"
                           name="task_name"
@@ -538,8 +535,9 @@ const AddModuleTasks = () => {
                               message: "Please input task name!",
                             },
                             {
-                              pattern: /^[a-zA-Z0-9\s-_]+$/,
-                              message: "Please enter a valid task name!",
+                              pattern: /^[&,.\-_\w\s]{1,50}$/,
+                              message:
+                                "Please enter a valid Task Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
                             },
                           ]}
                           // style={{ maxWidth: "50%" }}
@@ -551,7 +549,7 @@ const AddModuleTasks = () => {
                           />
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      <Col span={8}>
                         <Form.Item
                           label="Allocated Time"
                           name="allocated_time"
@@ -561,7 +559,7 @@ const AddModuleTasks = () => {
                               message: "Please input allocated time!",
                             },
                           ]}
-                          style={{ minWidth: "100%" }}
+                          style={{ width: "100%" }}
                         >
                           <InputNumber
                             min={0}
@@ -573,7 +571,9 @@ const AddModuleTasks = () => {
                       </Col>
                     </Row>
 
-                    <Row justify="center">
+                 
+
+                    <Row justify="start">
                       <Col>
                         <Form.Item>
                           <div className={styles.buttonStyle2}>
@@ -582,11 +582,12 @@ const AddModuleTasks = () => {
                               danger
                               htmlType="button"
                               onClick={handleReset}
+                              className="me-3"
                               // className={styles["login-form-button"]}
-                              style={{
-                                minWidth: "11rem",
-                                marginRight: "1rem",
-                              }}
+                              // style={{
+                              //   minWidth: "11rem",
+                              //   marginRight: "1rem",
+                              // }}
                             >
                               Cancel
                             </Button>
@@ -594,7 +595,7 @@ const AddModuleTasks = () => {
                               type="primary"
                               htmlType="submit"
                               // className={styles["login-form-button"]}
-                              style={{ minWidth: "11rem" }}
+                              // style={{ minWidth: "11rem" }}
                             >
                               {isAdding ? "Add" : "Update"}
                             </Button>
@@ -608,7 +609,7 @@ const AddModuleTasks = () => {
             )}
           </Col>
         </Row>
-      </Card>
+      </>
     </>
   );
 };

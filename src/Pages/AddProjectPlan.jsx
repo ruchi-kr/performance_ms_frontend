@@ -421,7 +421,7 @@ const AddProjectPlan = () => {
               color: "green",
               textAlign: "center",
             }}
-            onClick={() => handleEdit(record)}
+            onClick={() => {handleEdit(record);setIsAdding(false)}}
           />
           <DeleteFilled
             type="primary"
@@ -445,7 +445,7 @@ const AddProjectPlan = () => {
              
               <Row justify="end">
                 <Col>
-                <label style={{ marginBottom: "10px" }}>Module Name</label>
+                <label className="text-info" style={{ marginBottom: "10px" }}>Module Name</label>
                   <Search
                     placeholder="Search by Module Name"
                     onSearch={onSearch}
@@ -501,7 +501,7 @@ const AddProjectPlan = () => {
                   <Col>
                     {!isAdding && !isEditing && (
                       <Button
-                        onClick={() => setIsAdding(true)}
+                        onClick={() => {setIsAdding(true); setIsEditing(false);}}
                         type="primary"
                         style={{ minWidth: "10rem" }}
                       >
@@ -516,13 +516,12 @@ const AddProjectPlan = () => {
                       </Button>
                     )}
                   </Col>
-                  <Col align="center" style={{ minWidth: "100%" }}>
+                  <Col align="left" style={{ width: "100%" }}>
                     {(isAdding || isEditing) && (
                       <Card
-                       
-                        className={`${styles.card} `}
+                        // className={`${styles.card} `}
                       >
-                        {isAdding ? <h4>Add Module</h4> : <h4>Edit Module</h4>}
+                        {isAdding ? <h4 className="text-info">Add Module</h4> : <h4 className="text-info">Edit Module</h4>}
                         {(isAdding || isEditing) && (
                           <Form
                             colon={false}
@@ -530,19 +529,11 @@ const AddProjectPlan = () => {
                             labelAlign="left"
                             form={form}
                             name="basic"
-                            // className="login-form"
-                            // initialValues={{
-                            //   zone_name: isEditing ? newZoneDesc : "",
-                            // }}
-                            labelCol={{
-                              span: 6,
-                            }}
-                            wrapperCol={{
-                              span: 18,
-                            }}
+                           
                             onFinish={onFinish}
                             onFinishFailed={onFinishFailed}
                             autoComplete="on"
+                            className=""
                             style={{ paddingTop: "2rem" }}
                           >
                             <Row gutter={16}>
@@ -551,15 +542,14 @@ const AddProjectPlan = () => {
                                   label="Module Id"
                                   name="module_id"
                                   hidden
-                                  // style={{ display: "none" }} // Hide the Form.Item
-                                  // style={{ maxWidth: "50%" }}
+                                
                                 >
                                   <Input placeholder={editUserId} />
                                 </Form.Item>
                               </Col>
                             </Row>
-                            <Row gutter={16}>
-                              <Col span={12}>
+                            <Row gutter={24}>
+                              <Col span={6}>
                                 <Form.Item
                                   label="Project"
                                   name="project_id"
@@ -588,54 +578,7 @@ const AddProjectPlan = () => {
                                   </Select>
                                 </Form.Item>
                               </Col>
-                            </Row>
-
-                            <Row gutter={16}>
-                              <Col span={12}>
-                                <Form.Item
-                                  label="Schd. Start Date"
-                                  name="from_date"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message:
-                                        "Please input schedule start date !",
-                                    },
-                                  ]}
-                                  // style={{ maxWidth: "50%" }}
-                                >
-                                  <DatePicker
-                                    disabledDate={disabledStartDate}
-                                    format="DD/MM/YYYY"
-                                  />
-                                </Form.Item>
-                              </Col>
-                              <Col span={12}>
-                                <Form.Item
-                                  label="Schd. End. Date"
-                                  name="to_date"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message:
-                                        "Please input schedule end date !",
-                                    },
-                                  ]}
-                                  // style={{ maxWidth: "50%" }}
-                                >
-                                  <DatePicker
-                                    disabledDate={(current) =>
-                                      disabledEndDate(
-                                        current,
-                                        form.getFieldValue("from_date")
-                                      )
-                                    }
-                                    format="DD/MM/YYYY"
-                                  />
-                                </Form.Item>
-                              </Col>
-
-                              <Col span={12}>
+                              <Col span={6}>
                                 <Form.Item
                                   label="Module Name"
                                   name="module_name"
@@ -669,9 +612,7 @@ const AddProjectPlan = () => {
                                   />
                                 </Form.Item>
                               </Col>
-                            </Row>
-                            <Row gutter={16}>
-                              <Col span={12}>
+                              <Col span={6}>
                                 <Form.Item
                                   label="Status"
                                   name="status"
@@ -685,11 +626,11 @@ const AddProjectPlan = () => {
                                 >
                                   <Select
                                     options={[
-                                      { value: "scrapped", label: "scrapped" },
-                                      { value: "ongoing", label: "ongoing" },
+                                      { value: "scrapped", label: <span className="text-danger">scrapped</span> },
+                                      { value: "ongoing", label:<span className="text-primary">ongoing</span> },
                                       {
                                         value: "completed",
-                                        label: "completed",
+                                        label: <span className="text-success">completed</span>,
                                       },
                                     ]}
                                     allowClear="true"
@@ -700,7 +641,58 @@ const AddProjectPlan = () => {
                               </Col>
                             </Row>
 
-                            <Row justify="center">
+                            <Row gutter={16}>
+                              <Col span={4}>
+                                <Form.Item
+                                  label="Schd. Start Date"
+                                  name="from_date"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message:
+                                        "Please input schedule start date !",
+                                    },
+                                  ]}
+                                  
+                                >
+                                  <DatePicker
+                                    disabledDate={disabledStartDate}
+                                    format="DD/MM/YYYY"
+                                    // style={{ width: "100%" }}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col span={4}>
+                                <Form.Item
+                                  label="Schd. End Date"
+                                  name="to_date"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message:
+                                        "Please input schedule end date !",
+                                    },
+                                  ]}
+                                  // style={{ maxWidth: "50%" }}
+                                >
+                                  <DatePicker
+                                    disabledDate={(current) =>
+                                      disabledEndDate(
+                                        current,
+                                        form.getFieldValue("from_date")
+                                      )
+                                    }
+                                    format="DD/MM/YYYY"
+                                    // style={{ width: "100%" }}
+                                  />
+                                </Form.Item>
+                              </Col>
+                             
+                             
+                            </Row>
+                         
+
+                            <Row justify="start">
                               <Col>
                                 <Form.Item>
                                   <div className={styles.buttonStyle2}>
@@ -709,11 +701,12 @@ const AddProjectPlan = () => {
                                       danger
                                       htmlType="button"
                                       onClick={handleReset}
+                                      className="me-3"
                                       // className={styles["login-form-button"]}
-                                      style={{
-                                        minWidth: "11rem",
-                                        marginRight: "1rem",
-                                      }}
+                                      // style={{
+                                      //   minWidth: "11rem",
+                                      //   marginRight: "1rem",
+                                      // }}
                                     >
                                       Cancel
                                     </Button>
@@ -721,7 +714,7 @@ const AddProjectPlan = () => {
                                       type="primary"
                                       htmlType="submit"
                                       // className={styles["login-form-button"]}
-                                      style={{ minWidth: "11rem" }}
+                                      // style={{ minWidth: "11rem" }}
                                     >
                                       {isAdding ? "Add" : "Update"}
                                     </Button>
