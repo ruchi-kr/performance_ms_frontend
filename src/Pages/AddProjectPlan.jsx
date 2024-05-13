@@ -109,7 +109,7 @@ const AddProjectPlan = () => {
     }
   };
 
-  const[taskData, setTaskData] = useState([]);
+  const [taskData, setTaskData] = useState([]);
 
   const getModuleListWithTasks = async () => {
     try {
@@ -443,7 +443,11 @@ const AddProjectPlan = () => {
       key: "action",
       width: 100,
       render: (_, record) => (
-        <div>
+        <div className="d-flex justify-content-center gap-2">
+          <Button size="small" className="d-flex align-items-center">
+            <PlusOutlined />
+            Task
+          </Button>
           <EditFilled
             type="primary"
             style={{
@@ -468,70 +472,90 @@ const AddProjectPlan = () => {
 
   const taskColumn = [
     {
-      title: "S.No",
+      title: <div className="text-primary">S.No</div>,
       dataIndex: "task_id",
       key: "task_id",
       render: (_, record, index) => {
         // Calculate the serial number based on the current page and the index of the item
+        if (record.task_id === null) {
+          return "-";
+        }
         return (pagination.currentPage - 1) * pagination.pageSize + index + 1;
       },
     },
     {
-      title: (
-        <div>
-          Task Name
-          {/* {
-              <ArrowUpOutlined
-                style={{ marginLeft: 12, fontSize: "1rem" }}
-                onClick={handleSortChange}
-                rotate={sortOrder === "ASC" ? 0 : 180}
-              />
-            } */}
-        </div>
-      ),
+      title: <div className="text-primary">Task Name</div>,
       dataIndex: "task_name",
       key: "task_name",
+      render: (text) => `${text ? text : "-"}`,
     },
 
     {
-      title: "Allocated Time",
+      title: <div className="text-primary">Allocated Time</div>,
       dataIndex: "allocated_time",
       key: "allocated_time",
-      render: (text) => `${text} hrs`,
+      render: (text) => `${text ? `${text} hrs` : "-"}`,
     },
 
     {
-      title: "Action",
+      title: <div className="text-primary">Action</div>,
       dataIndex: "action",
       align: "center",
       key: "action",
       width: 100,
+      // render: (_, record) => (
+      //   <div>
+
+      //     <EditOutlined
+      //       type="primary"
+      //       style={{
+      //         marginRight: "9px",
+      //         color: "green",
+      //         textAlign: "center",
+      //       }}
+      //       onClick={() => {
+      //         handleEdit(record);
+      //         setIsAdding(false);
+      //       }}
+      //     />
+      //     <DeleteOutlined
+      //       type="primary"
+      //       style={{ color: "red" }}
+      //       onClick={() => handleDelete(record)}
+      //     />
+      //   </div>
+      // ),
       render: (_, record) => (
         <div>
-          
-          <EditOutlined 
-            type="primary"
-            style={{
-              marginRight: "9px",
-              color: "green",
-              textAlign: "center",
-            }}
-            onClick={() => {
-              handleEdit(record);
-              setIsAdding(false);
-            }}
-          />
-          <DeleteOutlined 
-            type="primary"
-            style={{ color: "red" }}
-            onClick={() => handleDelete(record)}
-          />
+          {record.task_id !== null ? (
+            <>
+              <EditOutlined
+                type="primary"
+                style={{
+                  marginRight: "9px",
+                  color: "green",
+                  textAlign: "center",
+                }}
+                onClick={() => {
+                  handleEdit(record);
+                  setIsAdding(false);
+                }}
+              />
+              <DeleteOutlined
+                type="primary"
+                style={{ color: "red" }}
+                onClick={() => handleDelete(record)}
+              />
+            </>
+          ) : (
+            <span>-</span>
+          )}
         </div>
       ),
     },
   ];
 
-  const[status, setStatus] = useState("notstarted");
+  const [status, setStatus] = useState("notstarted");
   return (
     <>
       <Header />
@@ -542,7 +566,9 @@ const AddProjectPlan = () => {
             <div className="row my-5">
               <Row justify={"center"}>
                 <Col style={{ paddingBottom: "0" }}>
-                  <Title level={3} className="text-info text-capitalize">{projectName}</Title>
+                  <Title level={3} className="text-info text-capitalize">
+                    {projectName}
+                  </Title>
                 </Col>
               </Row>
               <Row>
@@ -626,14 +652,14 @@ const AddProjectPlan = () => {
                 expandable={{
                   expandedRowRender: (record) => (
                     <Table
-                    rowKey={(task) => task.task_id}
-                    columns={taskColumn}
-                    dataSource={record.tasks} // Use the tasks array from the record
-                    pagination={false} // Disable pagination for nested table
-                    size="small"
-                  />
+                      rowKey={(task) => task.task_id}
+                      columns={taskColumn}
+                      dataSource={record.tasks} // Use the tasks array from the record
+                      pagination={false} // Disable pagination for nested table
+                      size="small"
+                      style={{ width: "90%" }}
+                    />
                   ),
-                 
                 }}
               />
 
@@ -663,6 +689,11 @@ const AddProjectPlan = () => {
                           {
                             setIsAdding(true);
                             setIsEditing(false);
+                            //                         const footerElement = document.getElementById("footer");
+                            // if (footerElement) {
+                            //   footerElement.scrollIntoView({ behavior: "smooth" });
+                            // }
+                            window.scrollTo(0, document.body.scrollHeight);
                           }
                           getProjectStartEndDate(Number(project_id));
                         }}
@@ -791,9 +822,9 @@ const AddProjectPlan = () => {
                                   // style={{ maxWidth: "50%" }}
                                 >
                                   <Select
-                                   value={status}
-                                   onChange={(value) => setStatus(value)}
-                                   defaultValue="notstarted"
+                                    value={status}
+                                    onChange={(value) => setStatus(value)}
+                                    defaultValue="notstarted"
                                     options={[
                                       {
                                         value: "notstarted",
@@ -803,7 +834,7 @@ const AddProjectPlan = () => {
                                           </span>
                                         ),
                                       },
-                                     
+
                                       {
                                         value: "ongoing",
                                         label: (

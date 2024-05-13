@@ -4,7 +4,7 @@ const Footer = () => {
     return (
         <>
             <div>
-                <footer className="main-footer mt-3 text-dark">
+                <footer className="main-footer mt-3 text-dark" id="footer">
                     <strong>Copyright © 2024 <a href="https://adminlte.io">PMS</a>.&nbsp;</strong>
                      All rights reserved.
                     {/* <div className="float-right d-none d-sm-inline-block">
