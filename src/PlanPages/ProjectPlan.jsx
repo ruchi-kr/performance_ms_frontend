@@ -69,11 +69,11 @@ const ProjectPlan = () => {
                   <h3 className="text-primary">Project Plan</h3>
                 </div>
                 <hr className="bg-primary border-4" />
-                <div className=" col-2 flex-end">
+                <div className=" col-2 d-flex flex-column">
                   <label className="text-capitalize fw-bold text-info">
                     Select Project
                   </label>
-                  <Select allowClear={true} onChange={projectChangeHandler}>
+                  <Select allowClear={true} onChange={projectChangeHandler} placeholder="Select Project" style={{ width: "100%" }}>
                     {projectList.map((project) => (
                       <Option
                         key={project.project_id}
@@ -118,7 +118,7 @@ const ProjectPlan = () => {
 
                 {/* add project row */}
                 <div className="row my-4">
-                  <div className="col-4">
+                  <div className="col-2">
                     <NavLink
                       to={`/addprojectplan/?project_id=${selectedProjectId}`}
                       className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
