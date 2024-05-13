@@ -1,60 +1,19 @@
-import { useEffect } from 'react';
-
-// Function to get the disabled state from local storage
-const getDisabledStateFromStorage = () => {
-  const disabledState = localStorage.getItem('taskRecordsDisabledState');
-  return disabledState ? JSON.parse(disabledState) : {};
-};
-
-const YourComponent = () => {
-  const [taskRecords, setTaskRecords] = useState([]);
-  const [formDisabled, setFormDisabled] = useState(false);
-  const [taskSaved, setTaskSaved] = useState(false);
-
-  // Function to handle edit task
-  const handleEditTask = (index) => {
-    const updatedTaskRecords = taskRecords.map((record, i) => ({
-      ...record,
-      formDisabled: i === index ? false : true,
-    }));
-    setTaskRecords(updatedTaskRecords);
-    setFormDisabled(true);
-    setTaskSaved(false);
-    // Store the updated disabled state in local storage
-    localStorage.setItem('taskRecordsDisabledState', JSON.stringify(updatedTaskRecords));
-  };
-
-  // Function to handle add task
-  const handleAddTask = () => {
-    const updatedTaskRecords = taskRecords.map(record => ({
-      ...record,
-      formDisabled: true
-    }));
-    const newTaskRecord = {
-      project_id: "",
-      user_id: user_id,
-      employee_id: employee_id,
-      manager_id: "",
-      task: "",
-      allocated_time: "",
-      actual_time: "",
-      status: "",
-      remarks: "",
-      formDisabled: false
-    };
-    setTaskRecords([...updatedTaskRecords, newTaskRecord]);
-    setTaskSaved(false);
-    setFormDisabled(false);
-    // Store the updated disabled state in local storage
-    localStorage.setItem('taskRecordsDisabledState', JSON.stringify([...updatedTaskRecords, newTaskRecord]));
-  };
-
-  useEffect(() => {
-    // Set the disabled state from local storage when component mounts
-    const disabledState = getDisabledStateFromStorage();
-    setTaskRecords(disabledState);
-    setFormDisabled(true);
-  }, []);
-
-  // Rest of your component code...
-};
+SELECT 
+    pm.project_name,
+    mm.module_name,
+    tm.task_name,
+    mm.from_date AS module_start_date,
+    mm.to_date AS module_end_date,
+    TIMESTAMPDIFF(DAY, mm.from_date, mm.to_date) AS allocated_time_in_days,
+    pm.stage
+FROM 
+    project_master pm
+JOIN 
+    module_master mm ON pm.project_id = mm.project_id
+JOIN 
+    task_master tm ON mm.task_id = tm.task_id
+WHERE 
+    pm.stage IN ('inprocess', 'rfp', 'won')
+ORDER BY 
+    pm.project_name,
+    pm.stage;

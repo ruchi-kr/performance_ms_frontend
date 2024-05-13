@@ -37,6 +37,9 @@ import {
   deleteModule,
   getAllProjects,
 } from "../Config.js";
+import SideNavbar from "../Components/SideNavbar";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 import styles from "./AddProjectPlan.module.css";
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
@@ -74,7 +77,7 @@ const AddProjectPlan = () => {
     nextPage: null,
     prevPage: null,
   });
-  const {project_id}=useParams()
+  const { project_id } = useParams();
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
@@ -432,295 +435,312 @@ const AddProjectPlan = () => {
 
   return (
     <>
-      <Card className={styles.mainCard}>
-        <h2>Module Master</h2>
-        <br />
-        <Row justify="end">
-          <Col>
-            <Search
-              placeholder="Search Module Name"
-              onSearch={onSearch}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              enterButton
-              style={{ marginBottom: "16px" }}
-              className={styles.searchStyle}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <NavLink
-            to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}`}
-            className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
-          >
-            <span className="fs-4"> + </span>&nbsp;Add Plan
-          </NavLink>
-        </Row>
-        <Table
-          rowKey={(record) => record.module_id}
-          columns={columns}
-          dataSource={moduleList}
-          loading={loading}
-          bordered
-          size="small"
-          pagination={false}
-          // scroll={{ y: false }} // Disable vertical scroll
-          style={{
-            marginBottom: "1rem",
-          }}
-        />
-
-        <Pagination
-          current={pagination.currentPage}
-          total={pagination.totalRecords}
-          pageSize={pagination.pageSize}
-          onChange={handlePageChange}
-          showLessItems={false}
-          onShowSizeChange={pageSizeChange}
-          showQuickJumper={true}
-          showPrevNextJumpers={true}
-          showSizeChanger={true}
-          onPrev={() => handlePageChange(pagination.prevPage)}
-          onNext={() => handlePageChange(pagination.nextPage)}
-          style={{
-            marginBottom: "2rem",
-          }}
-        />
-
-        {!isResetPassword && (
-          <Row justify="center" align="middle">
-            <Col>
-              {!isAdding && !isEditing && (
-                <Button
-                  onClick={() => setIsAdding(true)}
-                  type="primary"
-                  style={{ minWidth: "10rem" }}
+      <Header />
+      <SideNavbar />
+      <div className="content-wrapper bg-white">
+        <div className="content">
+          <div className="container-fluid bg-white">
+            
+            <div className="row my-5">
+             
+              <Row justify="end">
+                <Col>
+                <label style={{ marginBottom: "10px" }}>Module Name</label>
+                  <Search
+                    placeholder="Search by Module Name"
+                    onSearch={onSearch}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    enterButton
+                    style={{ marginBottom: "16px" }}
+                    className={styles.searchStyle}
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <NavLink
+                  to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}`}
+                  className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
                 >
-                  <div>
-                    <PlusOutlined
-                      style={{
-                        marginRight: "0.5rem",
-                      }}
-                    />
-                    Add Module
-                  </div>
-                </Button>
-              )}
-            </Col>
-            <Col align="center" style={{ minWidth: "100%" }}>
-              {(isAdding || isEditing) && (
-                <Card
-                  style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)" }}
-                  className={`${styles.card} `}
-                >
-                  {isAdding ? <h4>Add Module</h4> : <h4>Edit Module</h4>}
-                  {(isAdding || isEditing) && (
-                    <Form
-                      colon={false}
-                      layout="vertical"
-                      labelAlign="left"
-                      form={form}
-                      name="basic"
-                      // className="login-form"
-                      // initialValues={{
-                      //   zone_name: isEditing ? newZoneDesc : "",
-                      // }}
-                      labelCol={{
-                        span: 6,
-                      }}
-                      wrapperCol={{
-                        span: 18,
-                      }}
-                      onFinish={onFinish}
-                      onFinishFailed={onFinishFailed}
-                      autoComplete="on"
-                      style={{ paddingTop: "2rem" }}
-                    >
-                      <Row gutter={16}>
-                        <Col span={24}>
-                          <Form.Item
-                            label="Module Id"
-                            name="module_id"
-                            hidden
-                            // style={{ display: "none" }} // Hide the Form.Item
-                            // style={{ maxWidth: "50%" }}
+                  <span className="fs-4"> + </span>&nbsp;Add Plan
+                </NavLink>
+              </Row>
+              <Table
+                rowKey={(record) => record.module_id}
+                columns={columns}
+                dataSource={moduleList}
+                loading={loading}
+                bordered
+                size="small"
+                pagination={false}
+                // scroll={{ y: false }} // Disable vertical scroll
+                style={{
+                  marginBottom: "1rem",
+                }}
+              />
+
+              <Pagination
+                current={pagination.currentPage}
+                total={pagination.totalRecords}
+                pageSize={pagination.pageSize}
+                onChange={handlePageChange}
+                showLessItems={false}
+                onShowSizeChange={pageSizeChange}
+                showQuickJumper={true}
+                showPrevNextJumpers={true}
+                showSizeChanger={true}
+                onPrev={() => handlePageChange(pagination.prevPage)}
+                onNext={() => handlePageChange(pagination.nextPage)}
+                style={{
+                  marginBottom: "2rem",
+                }}
+              />
+
+              {!isResetPassword && (
+                <Row justify="center" align="middle">
+                  <Col>
+                    {!isAdding && !isEditing && (
+                      <Button
+                        onClick={() => setIsAdding(true)}
+                        type="primary"
+                        style={{ minWidth: "10rem" }}
+                      >
+                        <div>
+                          <PlusOutlined
+                            style={{
+                              marginRight: "0.5rem",
+                            }}
+                          />
+                          Add Module
+                        </div>
+                      </Button>
+                    )}
+                  </Col>
+                  <Col align="center" style={{ minWidth: "100%" }}>
+                    {(isAdding || isEditing) && (
+                      <Card
+                       
+                        className={`${styles.card} `}
+                      >
+                        {isAdding ? <h4>Add Module</h4> : <h4>Edit Module</h4>}
+                        {(isAdding || isEditing) && (
+                          <Form
+                            colon={false}
+                            layout="vertical"
+                            labelAlign="left"
+                            form={form}
+                            name="basic"
+                            // className="login-form"
+                            // initialValues={{
+                            //   zone_name: isEditing ? newZoneDesc : "",
+                            // }}
+                            labelCol={{
+                              span: 6,
+                            }}
+                            wrapperCol={{
+                              span: 18,
+                            }}
+                            onFinish={onFinish}
+                            onFinishFailed={onFinishFailed}
+                            autoComplete="on"
+                            style={{ paddingTop: "2rem" }}
                           >
-                            <Input placeholder={editUserId} />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                      <Row gutter={16}>
-                        <Col span={12}>
-                          <Form.Item
-                            label="Project"
-                            name="project_id"
-                            // style={{ maxWidth: "50%" }}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please select project !",
-                              },
-                            ]}
-                          >
-                            <Select
-                              placeholder="Select Project"
-                              allowClear={true} // Disable the clear button
-                              // className={styles.cascaderStyle}
-                              onChange={getProjectStartEndDate}
-                            >
-                              {projectList.map((project) => (
-                                <Option
-                                  key={project.project_id}
-                                  value={project.project_id}
+                            <Row gutter={16}>
+                              <Col span={24}>
+                                <Form.Item
+                                  label="Module Id"
+                                  name="module_id"
+                                  hidden
+                                  // style={{ display: "none" }} // Hide the Form.Item
+                                  // style={{ maxWidth: "50%" }}
                                 >
-                                  {project.project_name}
-                                </Option>
-                              ))}
-                            </Select>
-                          </Form.Item>
-                        </Col>
-                      </Row>
+                                  <Input placeholder={editUserId} />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                            <Row gutter={16}>
+                              <Col span={12}>
+                                <Form.Item
+                                  label="Project"
+                                  name="project_id"
+                                  // style={{ maxWidth: "50%" }}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Please select project !",
+                                    },
+                                  ]}
+                                >
+                                  <Select
+                                    placeholder="Select Project"
+                                    allowClear={true} // Disable the clear button
+                                    // className={styles.cascaderStyle}
+                                    onChange={getProjectStartEndDate}
+                                  >
+                                    {projectList.map((project) => (
+                                      <Option
+                                        key={project.project_id}
+                                        value={project.project_id}
+                                      >
+                                        {project.project_name}
+                                      </Option>
+                                    ))}
+                                  </Select>
+                                </Form.Item>
+                              </Col>
+                            </Row>
 
-                      <Row gutter={16}>
-                        <Col span={12}>
-                          <Form.Item
-                            label="Schd. Start Date"
-                            name="from_date"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please input schedule start date !",
-                              },
-                            ]}
-                            // style={{ maxWidth: "50%" }}
-                          >
-                            <DatePicker
-                              disabledDate={disabledStartDate}
-                              format="DD/MM/YYYY"
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                          <Form.Item
-                            label="Schd. End. Date"
-                            name="to_date"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please input schedule end date !",
-                              },
-                            ]}
-                            // style={{ maxWidth: "50%" }}
-                          >
-                            <DatePicker
-                              disabledDate={(current) =>
-                                disabledEndDate(
-                                  current,
-                                  form.getFieldValue("from_date")
-                                )
-                              }
-                              format="DD/MM/YYYY"
-                            />
-                          </Form.Item>
-                        </Col>
-
-                        <Col span={12}>
-                          <Form.Item
-                            label="Module Name"
-                            name="module_name"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please input module name!",
-                              },
-                              {
-                                pattern: /^[a-zA-Z0-9\s-_]+$/,
-                                message: "Please enter a valid name !",
-                              },
-                            ]}
-                            // style={{ maxWidth: "50%" }}
-                          >
-                            <Input
-                              suffix={
-                                <Tooltip title="Please input a valid module name">
-                                  <InfoCircleOutlined
-                                    style={{
-                                      color: "rgba(0,0,0,.45)",
-                                    }}
+                            <Row gutter={16}>
+                              <Col span={12}>
+                                <Form.Item
+                                  label="Schd. Start Date"
+                                  name="from_date"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message:
+                                        "Please input schedule start date !",
+                                    },
+                                  ]}
+                                  // style={{ maxWidth: "50%" }}
+                                >
+                                  <DatePicker
+                                    disabledDate={disabledStartDate}
+                                    format="DD/MM/YYYY"
                                   />
-                                </Tooltip>
-                              }
-                              maxLength={10}
-                              placeholder="module name"
-                              style={{ marginLeft: "4" }}
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                      <Row gutter={16}>
-                        <Col span={12}>
-                          <Form.Item
-                            label="Status"
-                            name="status"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Please select Status !",
-                              },
-                            ]}
-                            // style={{ maxWidth: "50%" }}
-                          >
-                            <Select
-                              options={[
-                                { value: "scrapped", label: "scrapped" },
-                                { value: "ongoing", label: "ongoing" },
-                                { value: "completed", label: "completed" },
-                              ]}
-                              allowClear="true"
-                              // onChange={handleChange}
-                              placeholder="Status "
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
+                                </Form.Item>
+                              </Col>
+                              <Col span={12}>
+                                <Form.Item
+                                  label="Schd. End. Date"
+                                  name="to_date"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message:
+                                        "Please input schedule end date !",
+                                    },
+                                  ]}
+                                  // style={{ maxWidth: "50%" }}
+                                >
+                                  <DatePicker
+                                    disabledDate={(current) =>
+                                      disabledEndDate(
+                                        current,
+                                        form.getFieldValue("from_date")
+                                      )
+                                    }
+                                    format="DD/MM/YYYY"
+                                  />
+                                </Form.Item>
+                              </Col>
 
-                      <Row justify="center">
-                        <Col>
-                          <Form.Item>
-                            <div className={styles.buttonStyle2}>
-                              <Button
-                                type="primary"
-                                danger
-                                htmlType="button"
-                                onClick={handleReset}
-                                // className={styles["login-form-button"]}
-                                style={{
-                                  minWidth: "11rem",
-                                  marginRight: "1rem",
-                                }}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                type="primary"
-                                htmlType="submit"
-                                // className={styles["login-form-button"]}
-                                style={{ minWidth: "11rem" }}
-                              >
-                                {isAdding ? "Add" : "Update"}
-                              </Button>
-                            </div>
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </Form>
-                  )}
-                </Card>
+                              <Col span={12}>
+                                <Form.Item
+                                  label="Module Name"
+                                  name="module_name"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Please enter module name !",
+                                    },
+                                  
+                                    {
+                                      pattern: /^[&,.\-_\w\s]{1,50}$/,
+                                      message:
+                                        "Please enter a valid Module Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
+                                    },
+                                  ]}
+                                 
+                                >
+                                  <Input
+                                    suffix={
+                                      <Tooltip title="Please input a valid module name">
+                                        <InfoCircleOutlined
+                                          style={{
+                                            color: "rgba(0,0,0,.45)",
+                                          }}
+                                        />
+                                      </Tooltip>
+                                    }
+                                   
+                                    placeholder="module name"
+                                    style={{ marginLeft: "4" }}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                            <Row gutter={16}>
+                              <Col span={12}>
+                                <Form.Item
+                                  label="Status"
+                                  name="status"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Please select Status !",
+                                    },
+                                  ]}
+                                  // style={{ maxWidth: "50%" }}
+                                >
+                                  <Select
+                                    options={[
+                                      { value: "scrapped", label: "scrapped" },
+                                      { value: "ongoing", label: "ongoing" },
+                                      {
+                                        value: "completed",
+                                        label: "completed",
+                                      },
+                                    ]}
+                                    allowClear="true"
+                                    // onChange={handleChange}
+                                    placeholder="Status "
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+
+                            <Row justify="center">
+                              <Col>
+                                <Form.Item>
+                                  <div className={styles.buttonStyle2}>
+                                    <Button
+                                      type="primary"
+                                      danger
+                                      htmlType="button"
+                                      onClick={handleReset}
+                                      // className={styles["login-form-button"]}
+                                      style={{
+                                        minWidth: "11rem",
+                                        marginRight: "1rem",
+                                      }}
+                                    >
+                                      Cancel
+                                    </Button>
+                                    <Button
+                                      type="primary"
+                                      htmlType="submit"
+                                      // className={styles["login-form-button"]}
+                                      style={{ minWidth: "11rem" }}
+                                    >
+                                      {isAdding ? "Add" : "Update"}
+                                    </Button>
+                                  </div>
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          </Form>
+                        )}
+                      </Card>
+                    )}
+                  </Col>
+                </Row>
               )}
-            </Col>
-          </Row>
-        )}
-      </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Footer />
     </>
   );
 };
