@@ -30,6 +30,7 @@ import moment from "moment";
 import dayjs from "dayjs";
 
 import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   getAllModules,
   createModule,
@@ -75,6 +76,11 @@ const AddModuleTasks = () => {
     nextPage: null,
     prevPage: null,
   });
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const project_id = Number(queryParams.get("project_id"));
+  const module_id = Number(queryParams.get("module_id"));
+
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
@@ -107,7 +113,7 @@ const AddModuleTasks = () => {
   const getModuleTaskList = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/module/task/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
+        `http://localhost:8000/api/module/task/${module_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
       );
       console.log("response", response.data);
       setTaskList(response.data.results);
@@ -120,7 +126,9 @@ const AddModuleTasks = () => {
           prevPage,
           pageSize,
         } = response.data.pagination;
-
+        form.setFieldsValue({
+          module_id: module_id,
+        });
         setPagination((prevState) => ({
           ...prevState,
           totalRecords: totalRecords,
@@ -375,7 +383,10 @@ const AddModuleTasks = () => {
               color: "green",
               textAlign: "center",
             }}
-            onClick={() => {handleEdit(record); setIsAdding(false);}}
+            onClick={() => {
+              handleEdit(record);
+              setIsAdding(false);
+            }}
           />
           <DeleteFilled
             type="primary"
@@ -403,6 +414,24 @@ const AddModuleTasks = () => {
               style={{ marginBottom: "16px" }}
               className={styles.searchStyle}
             />
+          </Col>
+        </Row>
+        <Row gutter={24} style={{marginBottom:"1rem"}}>
+          <Col>
+            <NavLink
+              to={`/addprojectplan/?project_id=${project_id}`}
+              className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+            >
+              <span className="fs-4"> &larr; </span>&nbsp;Back To Plan Modules
+            </NavLink>
+          </Col>
+          <Col>
+            <NavLink
+              to={`/projectplan`}
+              className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+            >
+              <span className="fs-4"> &larr; </span>&nbsp;Back To All Plans
+            </NavLink>
           </Col>
         </Row>
         <Table
@@ -458,10 +487,14 @@ const AddModuleTasks = () => {
           <Col align="left" style={{ minWidth: "100%" }}>
             {(isAdding || isEditing) && (
               <Card
-                // style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)" }}
-                // className={`${styles.card} `}
+              // style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)" }}
+              // className={`${styles.card} `}
               >
-                {isAdding ? <h4 className="text-info">Add Task</h4> : <h4 className="text-info">Edit Task</h4>}
+                {isAdding ? (
+                  <h4 className="text-info">Add Task</h4>
+                ) : (
+                  <h4 className="text-info">Edit Task</h4>
+                )}
                 {(isAdding || isEditing) && (
                   <Form
                     colon={false}
@@ -505,6 +538,7 @@ const AddModuleTasks = () => {
                           ]}
                         >
                           <Select
+                            disabled
                             placeholder="Select Module"
                             allowClear={true} // Disable the clear button
                             // className={styles.cascaderStyle}
@@ -570,8 +604,6 @@ const AddModuleTasks = () => {
                         </Form.Item>
                       </Col>
                     </Row>
-
-                 
 
                     <Row justify="start">
                       <Col>
