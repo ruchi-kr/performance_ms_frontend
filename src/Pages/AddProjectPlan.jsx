@@ -106,10 +106,20 @@ const AddProjectPlan = () => {
       console.log("Error fetching project list data", error);
     }
   };
-  useEffect(() => {
-    getProjects();
-    getModuleListHandler();
-  }, []);
+
+  const getModuleListWithTasks = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`
+      );
+      console.log("module with their tasks", response.data);
+      // setModuleList(response.data.results);
+      //   if (response.data.results !== undefined) {
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getModuleListHandler = async () => {
     try {
@@ -146,6 +156,11 @@ const AddProjectPlan = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    getProjects();
+    getModuleListHandler();
+    getModuleListWithTasks();
+  }, []);
   useEffect(() => {
     getModuleListHandler();
   }, [pagination.currentPage, pagination.pageSize]);

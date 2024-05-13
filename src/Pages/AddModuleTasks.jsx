@@ -95,11 +95,11 @@ const AddModuleTasks = () => {
   useEffect(() => {
     getProjects();
   }, []);
-
+ 
   const getModuleList = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/getAllModule/?page=1&pageSize=100000&search="
+        "http://localhost:8000/api/admin/getModule/?page=1&pageSize=100000&search="
       );
       setModuleList(response.data.results);
       //   if (response.data.results !== undefined) {
@@ -110,6 +110,7 @@ const AddModuleTasks = () => {
   };
   useEffect(() => {
     getModuleList();
+
   }, []);
   const getModuleTaskList = async () => {
     try {
