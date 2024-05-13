@@ -34,6 +34,7 @@ const ProjectPlan = () => {
   const [allData, setAllData] = useState("");
   const [projectList, setProjectList] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [projectStage, setProjectStage] = useState(null);
 
   const getProjects = async (value) => {
     try {
@@ -52,41 +53,61 @@ const ProjectPlan = () => {
     console.log(" projetc value", value);
     setSelectedProjectId(value);
   };
-  const openAdd = () => {};
+  console.log("selected project id", selectedProjectId);
 
-  const steps = [
+  useEffect(() => {
+    const fetchProjectDetails = async (selectedProjectId) => {
+      try {
+        const response = await axios.get(
+          `${getAllProjects}/${selectedProjectId}`
+        );
+        setProjectStage(response.data[0].stage);
+        console.log("Project stage:", response.data[0].stage);
+      } catch (error) {
+        console.log("Error fetching project details", error);
+      }
+    };
+
+    if (selectedProjectId) {
+      fetchProjectDetails(selectedProjectId);
+    }
+  }, [selectedProjectId]);
+
+  let items = [
     {
-      title: "RFT",
+      title: "RFP",
+      status: (projectStage === "rfp" ||projectStage === "inprocess" || projectStage === "won" || projectStage === "completed" || projectStage === "lost") ? "finish" : "wait",
       icon: <FileTextOutlined />,
     },
     {
       title: "Lost",
+      status: projectStage === "lost" ? "finish" : "wait",
       icon: <CloseCircleOutlined />,
     },
     {
       title: "Won",
+      status: (projectStage === "won" || projectStage === "completed" || projectStage === "inprocess") ? "finish" : "wait",
       icon: <CheckCircleOutlined />,
     },
     {
       title: "In Process",
+      status:(projectStage === "inprocess" || projectStage === "completed") ? "finish" : "wait",
       icon: <LoadingOutlined />,
     },
     {
       title: "Completed",
+      status: projectStage === "completed" ? "finish" : "wait",
       icon: <SmileOutlined />,
     },
   ];
-  const handleStatus = (stage) => {
-    if (stage === "inprocess") {
-      return "inprocess";
-    } else if (stage === "rfp") {
-      return "wait";
-    } else {
-      return "finish";
-    }
-  };
+
+  // If project stage is "won", remove the "Lost" step
+  if (projectStage === "won" || projectStage==="inprocess" || projectStage === "completed") {
+    items = items.filter((item) => item.title !== "Lost");
+  }
 
   return (
+
     <>
       <Header />
       <SideNavbar />
@@ -125,43 +146,17 @@ const ProjectPlan = () => {
                 {selectedProjectId ? (
                   <>
                     {/* stage display  */}
-                    {/* <Steps
-                style={{ marginTop: "3rem" }}
-                items={[
-                  {
-                    title: "RFT",
-                    status: "finish",
-                    icon: <FileTextOutlined />,
-                  },
-                  {
-                    title: "Lost",
-                    status: "finish",
-                    icon: <CloseCircleOutlined />,
-                  },
-                  {
-                    title: "Won",
-                    status: "inprocess",
-                    icon: <CheckCircleOutlined />,
-                  },
-                  {
-                    title: "In Process",
-                    status: "wait",
-                    icon: <LoadingOutlined />,
-                  },
-                  {
-                    title: "Completed",
-                    status: "wait",
-                    icon: <SmileOutlined />,
-                  },
-                ]}
-              /> */}
-                    <Steps
-                      style={{ marginTop: "3rem" }}
-                      items={steps.map((step) => ({
-                        ...step,
-                        status: handleStatus(selectedProjectId.stage),
-                      }))}
-                    />
+                  
+                    <Steps style={{ marginTop: "3rem" }}>
+                      {items.map((item) => (
+                        <Steps
+                          key={item.title}
+                          title={item.title}
+                          status={item.status}
+                          icon={item.icon}
+                        />
+                      ))}
+                    </Steps>
 
                     {/* add project row */}
                     <div className="row my-4">
