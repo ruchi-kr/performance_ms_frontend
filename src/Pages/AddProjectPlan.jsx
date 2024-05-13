@@ -2,6 +2,8 @@ import {
   ArrowUpOutlined,
   DeleteFilled,
   EditFilled,
+  EditOutlined,
+  DeleteOutlined,
   InfoCircleOutlined,
   PlusOutlined,
   SettingOutlined,
@@ -107,13 +109,16 @@ const AddProjectPlan = () => {
     }
   };
 
+  const[taskData, setTaskData] = useState([]);
+
   const getModuleListWithTasks = async () => {
     try {
       const response = await axios.get(
         `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`
       );
-      console.log("module with their tasks", response.data);
-      // setModuleList(response.data.results);
+      console.log("module with their tasks", response.data.data);
+      setModuleList(response.data.data);
+      // setTaskData(response.data.data.tasks);
       //   if (response.data.results !== undefined) {
     } catch (error) {
     } finally {
@@ -123,10 +128,15 @@ const AddProjectPlan = () => {
 
   const getModuleListHandler = async () => {
     try {
+      // const response = await axios.get(
+      //   `http://localhost:8000/api/admin/getModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
+      // );
       const response = await axios.get(
-        `http://localhost:8000/api/admin/getModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`
       );
-      setModuleList(response.data.results);
+      console.log("module with their tasks", response.data.data);
+      setModuleList(response.data.data);
+      // console.log("module list", response.data.results);
       form.setFieldsValue({
         project_id: Number(project_id),
       });
@@ -456,6 +466,70 @@ const AddProjectPlan = () => {
     },
   ];
 
+  const taskColumn = [
+    {
+      title: "S.No",
+      dataIndex: "task_id",
+      key: "task_id",
+      render: (_, record, index) => {
+        // Calculate the serial number based on the current page and the index of the item
+        return (pagination.currentPage - 1) * pagination.pageSize + index + 1;
+      },
+    },
+    {
+      title: (
+        <div>
+          Task Name
+          {/* {
+              <ArrowUpOutlined
+                style={{ marginLeft: 12, fontSize: "1rem" }}
+                onClick={handleSortChange}
+                rotate={sortOrder === "ASC" ? 0 : 180}
+              />
+            } */}
+        </div>
+      ),
+      dataIndex: "task_name",
+      key: "task_name",
+    },
+
+    {
+      title: "Allocated Time",
+      dataIndex: "allocated_time",
+      key: "allocated_time",
+      render: (text) => `${text} hrs`,
+    },
+
+    {
+      title: "Action",
+      dataIndex: "action",
+      align: "center",
+      key: "action",
+      width: 100,
+      render: (_, record) => (
+        <div>
+          
+          <EditOutlined 
+            type="primary"
+            style={{
+              marginRight: "9px",
+              color: "green",
+              textAlign: "center",
+            }}
+            onClick={() => {
+              handleEdit(record);
+              setIsAdding(false);
+            }}
+          />
+          <DeleteOutlined 
+            type="primary"
+            style={{ color: "red" }}
+            onClick={() => handleDelete(record)}
+          />
+        </div>
+      ),
+    },
+  ];
 
   const[status, setStatus] = useState("notstarted");
   return (
@@ -548,6 +622,18 @@ const AddProjectPlan = () => {
                 // scroll={{ y: false }} // Disable vertical scroll
                 style={{
                   marginBottom: "1rem",
+                }}
+                expandable={{
+                  expandedRowRender: (record) => (
+                    <Table
+                    rowKey={(task) => task.task_id}
+                    columns={taskColumn}
+                    dataSource={record.tasks} // Use the tasks array from the record
+                    pagination={false} // Disable pagination for nested table
+                    size="small"
+                  />
+                  ),
+                 
                 }}
               />
 

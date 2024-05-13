@@ -182,24 +182,11 @@ const ProjectPlan = () => {
                           title={item.title}
                           status={item.status}
                           icon={item.icon}
-                          style={
-                            index !== items.length - 1 ? { width: "0%" } : {}
-                          }
+                          
                         />
                       ))}
                     </Steps>
-                    {/* // Wrap the Steps component inside a container with a flex layout */}
-                    {/* <div style={{ display: "flex", justifyContent: "space-between", marginTop: "3rem" }}>
-  {items.map((item) => (
-    <div key={item.title} style={{ flex: "1" }}>
-      <Steps
-        title={item.title}
-        status={item.status}
-        icon={item.icon}
-      />
-    </div>
-  ))}
-</div> */}
+                  
 
                     {/* add project row */}
                     <div className="row my-4">
