@@ -54,6 +54,38 @@ const ProjectPlan = () => {
   };
   const openAdd = () => {};
 
+  const steps = [
+    {
+      title: "RFT",
+      icon: <FileTextOutlined />,
+    },
+    {
+      title: "Lost",
+      icon: <CloseCircleOutlined />,
+    },
+    {
+      title: "Won",
+      icon: <CheckCircleOutlined />,
+    },
+    {
+      title: "In Process",
+      icon: <LoadingOutlined />,
+    },
+    {
+      title: "Completed",
+      icon: <SmileOutlined />,
+    },
+  ];
+  const handleStatus = (stage) => {
+    if (stage === "inprocess") {
+      return "inprocess";
+    } else if (stage === "rfp") {
+      return "wait";
+    } else {
+      return "finish";
+    }
+  };
+
   return (
     <>
       <Header />
@@ -73,7 +105,12 @@ const ProjectPlan = () => {
                   <label className="text-capitalize fw-bold text-info">
                     Select Project
                   </label>
-                  <Select allowClear={true} onChange={projectChangeHandler} placeholder="Select Project" style={{ width: "100%" }}>
+                  <Select
+                    allowClear={true}
+                    onChange={projectChangeHandler}
+                    placeholder="Select Project"
+                    style={{ width: "100%" }}
+                  >
                     {projectList.map((project) => (
                       <Option
                         key={project.project_id}
@@ -84,175 +121,193 @@ const ProjectPlan = () => {
                     ))}
                   </Select>
                 </div>
-                {/* stage display  */}
-                <Steps
-                  style={{ marginTop: "3rem" }}
-                  items={[
-                    {
-                      title: "RFT",
-                      status: "finish",
-                      icon: <FileTextOutlined />,
-                    },
-                    {
-                      title: "Lost",
-                      status: "finish",
-                      icon: <CloseCircleOutlined />,
-                    },
-                    {
-                      title: "Won",
-                      status: "inprocess",
-                      icon: <CheckCircleOutlined />,
-                    },
-                    {
-                      title: "In Process",
-                      status: "wait",
-                      icon: <LoadingOutlined />,
-                    },
-                    {
-                      title: "Completed",
-                      status: "wait",
-                      icon: <SmileOutlined />,
-                    },
-                  ]}
-                />
 
-                {/* add project row */}
-                <div className="row my-4">
-                  <div className="col-2">
-                    <NavLink
-                      to={`/addprojectplan/?project_id=${selectedProjectId}`}
-                      className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
-                    >
-                      <span className="fs-4"> + </span>&nbsp;Add Plan
-                    </NavLink>
-                  </div>
-                </div>
+                {selectedProjectId ? (
+                  <>
+                    {/* stage display  */}
+                    {/* <Steps
+                style={{ marginTop: "3rem" }}
+                items={[
+                  {
+                    title: "RFT",
+                    status: "finish",
+                    icon: <FileTextOutlined />,
+                  },
+                  {
+                    title: "Lost",
+                    status: "finish",
+                    icon: <CloseCircleOutlined />,
+                  },
+                  {
+                    title: "Won",
+                    status: "inprocess",
+                    icon: <CheckCircleOutlined />,
+                  },
+                  {
+                    title: "In Process",
+                    status: "wait",
+                    icon: <LoadingOutlined />,
+                  },
+                  {
+                    title: "Completed",
+                    status: "wait",
+                    icon: <SmileOutlined />,
+                  },
+                ]}
+              /> */}
+                    <Steps
+                      style={{ marginTop: "3rem" }}
+                      items={steps.map((step) => ({
+                        ...step,
+                        status: handleStatus(selectedProjectId.stage),
+                      }))}
+                    />
 
-                {/* project plan table for 3 stages */}
-                <div className="col-12 mx-0">
-                  <table
-                    className="table table-bordered p-0"
-                    style={{ borderCollapse: "collapse" }}
-                  >
-                    <thead>
-                      <tr>
-                        <th colSpan={4} className="bg-warning-subtle">
-                          RFP
-                        </th>
-                        <th colSpan={4} className="bg-primary-subtle">
-                          Contract Signed
-                        </th>
-                        <th colSpan={4} className="bg-success-subtle">
-                          In Process
-                        </th>
-                      </tr>
-                      <tr>
-                        <th rowSpan={3}>S.No.</th>
-                        <th colSpan={3}>Module Name</th>
-                        <th rowSpan={3}>S.No.</th>
+                    {/* add project row */}
+                    <div className="row my-4">
+                      <div className="col-2">
+                        <NavLink
+                          to={`/addprojectplan/?project_id=${selectedProjectId}`}
+                          className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                        >
+                          <span className="fs-4"> + </span>&nbsp;Add Plan
+                        </NavLink>
+                      </div>
+                    </div>
 
-                        <th colSpan={3}>Module Name</th>
-                        <th rowSpan={3}>S.No.</th>
-
-                        <th colSpan={3}>Module Name</th>
-                      </tr>
-                      <tr>
-                        <th>Task</th>
-                        <th>
-                          <div className="d-flex flex-column">
-                            <span>Schd. Start Date</span>
-                            <span>Schd. End Date</span>
-                          </div>
-                        </th>
-                        <th>Alloc hrs</th>
-
-                        <th>Task</th>
-                        <th>
-                          <div className="d-flex flex-column">
-                            <span>Schd. Start Date</span>
-                            <span>Schd. End Date</span>
-                          </div>
-                        </th>
-                        <th>Alloc hrs</th>
-
-                        <th>Task</th>
-                        <th>
-                          <div className="d-flex flex-column">
-                            <span>Schd. Start Date</span>
-                            <span>Schd. End Date</span>
-                          </div>
-                        </th>
-                        <th>Alloc hrs</th>
-                      </tr>
-                    </thead>
-                    {/* <tbody>
-                    {allData.map((report, index) => {
-                      const projects = JSON.parse(report.projects);
-                      const firstProject = projects[0];
-                      const lastProject = projects[projects.length - 1];
-                      const date =
-                        report.date.slice(8, 10) +
-                        "/" +
-                        report.date.slice(5, 7) +
-                        "/" +
-                        report.date.slice(0, 4);
-
-                      console.log("stored date", date);
-                      return (
-                        <React.Fragment key={index}>
+                    {/* project plan table for 3 stages */}
+                    <div className="col-12 mx-0">
+                      <table
+                        className="table table-bordered p-0"
+                        style={{ borderCollapse: "collapse" }}
+                      >
+                        <thead>
                           <tr>
-                            <td>{index + 1}</td>
-                            <td>{date}</td>
-                            <td colSpan={5}>
-                              <b className="text-primary text-capitalize">
-                                {firstProject.project_name}
-                              </b>
-                            </td>
+                            <th colSpan={4} className="bg-warning-subtle">
+                              RFP
+                            </th>
+                            <th colSpan={4} className="bg-primary-subtle">
+                              Contract Signed
+                            </th>
+                            <th colSpan={4} className="bg-success-subtle">
+                              In Process
+                            </th>
                           </tr>
-                          {projects.map((project, projectIndex) => (
-                            <React.Fragment key={projectIndex}>
-                              {projectIndex === 0 ||
-                              project.date != lastProject.date ? null : (
-                                <tr>
+                          <tr>
+                            <th rowSpan={3}>S.No.</th>
+                            <th colSpan={3}>Module Name</th>
+                            <th rowSpan={3}>S.No.</th>
+
+                            <th colSpan={3}>Module Name</th>
+                            <th rowSpan={3}>S.No.</th>
+
+                            <th colSpan={3}>Module Name</th>
+                          </tr>
+                          <tr>
+                            <th>Task</th>
+                            <th>
+                              <div className="d-flex flex-column">
+                                <span>Schd. Start Date</span>
+                                <span>Schd. End Date</span>
+                              </div>
+                            </th>
+                            <th>Alloc hrs</th>
+
+                            <th>Task</th>
+                            <th>
+                              <div className="d-flex flex-column">
+                                <span>Schd. Start Date</span>
+                                <span>Schd. End Date</span>
+                              </div>
+                            </th>
+                            <th>Alloc hrs</th>
+
+                            <th>Task</th>
+                            <th>
+                              <div className="d-flex flex-column">
+                                <span>Schd. Start Date</span>
+                                <span>Schd. End Date</span>
+                              </div>
+                            </th>
+                            <th>Alloc hrs</th>
+                          </tr>
+                        </thead>
+                        {/* <tbody>
+                  {allData.map((report, index) => {
+                    const projects = JSON.parse(report.projects);
+                    const firstProject = projects[0];
+                    const lastProject = projects[projects.length - 1];
+                    const date =
+                      report.date.slice(8, 10) +
+                      "/" +
+                      report.date.slice(5, 7) +
+                      "/" +
+                      report.date.slice(0, 4);
+
+                    console.log("stored date", date);
+                    return (
+                      <React.Fragment key={index}>
+                        <tr>
+                          <td>{index + 1}</td>
+                          <td>{date}</td>
+                          <td colSpan={5}>
+                            <b className="text-primary text-capitalize">
+                              {firstProject.project_name}
+                            </b>
+                          </td>
+                        </tr>
+                        {projects.map((project, projectIndex) => (
+                          <React.Fragment key={projectIndex}>
+                            {projectIndex === 0 ||
+                            project.date != lastProject.date ? null : (
+                              <tr>
+                                <td></td>
+                                <td></td>
+                                <td colSpan={5}>
+                                  <b className="text-primary text-capitalize">
+                                    {project.project_name}
+                                  </b>
+                                </td>
+                              </tr>
+                            )}
+                            {JSON.parse(project.tasks).map(
+                              (task, taskIndex) => (
+                                <tr
+                                  key={`${index}-${projectIndex}-${taskIndex}`}
+                                >
                                   <td></td>
                                   <td></td>
-                                  <td colSpan={5}>
-                                    <b className="text-primary text-capitalize">
-                                      {project.project_name}
-                                    </b>
-                                  </td>
-                                </tr>
-                              )}
-                              {JSON.parse(project.tasks).map(
-                                (task, taskIndex) => (
-                                  <tr
-                                    key={`${index}-${projectIndex}-${taskIndex}`}
+                                  <td>{task.task}</td>
+                                  <td
+                                    style={
+                                      task.status === "inprocess"
+                                        ? { color: "orange" }
+                                        : { color: "green" }
+                                    }
                                   >
-                                    <td></td>
-                                    <td></td>
-                                    <td>{task.task}</td>
-                                    <td
-                                      style={
-                                        task.status === "inprocess"
-                                          ? { color: "orange" }
-                                          : { color: "green" }
-                                      }
-                                    >
-                                      {task.status}
-                                    </td>
-                                    <td>{task.allocated_time}</td>
-                                    <td>{task.actual_time}</td>
-                                  </tr>
-                                )
-                              )}
-                            </React.Fragment>
-                          ))}
-                        </React.Fragment>
-                      );
-                    })}
-                  </tbody> */}
-                  </table>
-                </div>
+                                    {task.status}
+                                  </td>
+                                  <td>{task.allocated_time}</td>
+                                  <td>{task.actual_time}</td>
+                                </tr>
+                              )
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody> */}
+                      </table>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-center text-primary my-5">
+                      Select Project First
+                    </h3>
+                  </>
+                )}
               </div>
             </div>
           </div>
