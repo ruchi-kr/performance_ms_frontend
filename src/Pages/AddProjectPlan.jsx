@@ -29,6 +29,7 @@ import {
   Modal,
   Tooltip,
   notification,
+  Typography,
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -51,6 +52,7 @@ const timezone = require("dayjs/plugin/timezone");
 const { Search } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
+const { Title } = Typography;
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const AddProjectPlan = () => {
@@ -69,10 +71,12 @@ const AddProjectPlan = () => {
     schedule_end_date: null,
   });
   const [selectedModuleId, setSelectedModuleId] = useState(null);
+  const [selectedModuleIdToFetch, setSelectedModuleIdToFetch] = useState(null);
   // GET PROJECT LIST
   const [projectList, setProjectList] = useState([]);
   const [projectStartDate, setProjectStartDate] = useState("");
   const [projectEndDate, setProjectEndDate] = useState("");
+  const [projectName, setProjectName] = useState("");
   const [moduleList, setModuleList] = useState([]);
   const [pagination, setPagination] = useState({
     totalRecords: 0,
@@ -92,7 +96,11 @@ const AddProjectPlan = () => {
       const result = await axios.get(`${getAllProjects}`);
 
       setProjectList(result.data);
-      console.log("project list", result.data);
+
+      const projectDetails = result.data.find(
+        (project) => project.project_id === Number(project_id)
+      );
+      setProjectName(projectDetails.project_name);
     } catch (error) {
       console.log("Error fetching project list data", error);
     }
@@ -159,39 +167,14 @@ const AddProjectPlan = () => {
 
     getModuleListHandler();
   };
-  // const fetchAll = async () => {
-  //   setLoading(true);
-  //   try {
-  //     // const res = await axios.get(``);
-  //     const res = [];
-  //     console.log("data", res.data);
-  //     setLoading(false);
-  //     setUserData(res.data.data);
-  //     const {
-  //       totalRecords,
-  //       totalPages,
-  //       currentPage,
-  //       nextPage,
-  //       prevPage,
-  //       pageSize,
-  //     } = res.data.pagination;
 
-  //     setPagination((prevState) => ({
-  //       ...prevState,
-  //       totalRecords: totalRecords,
-  //       totalPages: totalPages,
-  //       pageSize: pageSize,
-  //       currentPage: currentPage,
-  //       nextPage: nextPage,
-  //       prevPage: prevPage,
-  //     }));
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   const moduleChangeHandler = (value) => {
     console.log(" module value", value);
     setSelectedModuleId(value);
+  };
+  const moduleChangeHandlerToFetch = (value) => {
+    console.log(" module value", value);
+    setSelectedModuleIdToFetch(value);
   };
   const handleEdit = (record) => {
     console.log("handle edit", record);
@@ -439,7 +422,10 @@ const AddProjectPlan = () => {
               color: "green",
               textAlign: "center",
             }}
-            onClick={() => {handleEdit(record);setIsAdding(false)}}
+            onClick={() => {
+              handleEdit(record);
+              setIsAdding(false);
+            }}
           />
           <DeleteFilled
             type="primary"
@@ -459,9 +445,42 @@ const AddProjectPlan = () => {
         <div className="content">
           <div className="container-fluid bg-white">
             <div className="row my-5">
+              <Row justify={"center"}>
+                <Col style={{ paddingBottom: "0" }}>
+                  <Title level={3}>{projectName}</Title>
+                </Col>
+              </Row>
+              <Row>
+                <div className=" col-2 d-flex flex-column">
+                  <label className="text-capitalize fw-bold text-info">
+                    Select Module
+                  </label>
+                  <Select
+                    allowClear={true}
+                    onChange={moduleChangeHandler}
+                    placeholder="Select Module"
+                    style={{ width: "100%" }}
+                  >
+                    {moduleList.map((module) => (
+                      <Option
+                        key={module.module_id}
+                        value={module.module_id}
+                        disabled={
+                          module.status === "scrapped" ||
+                          module.status === "completed"
+                        }
+                      >
+                        {module.module_name}
+                      </Option>
+                    ))}
+                  </Select>
+                </div>
+              </Row>
               <Row justify="end">
                 <Col>
-                <label className="text-info" style={{ marginBottom: "10px" }}>Module Name</label>
+                  <label className="text-info" style={{ marginBottom: "10px" }}>
+                    Module Name
+                  </label>
                   <Search
                     placeholder="Search by Module Name"
                     onSearch={onSearch}
@@ -473,13 +492,29 @@ const AddProjectPlan = () => {
                   />
                 </Col>
               </Row>
-              <Row>
-                <NavLink
-                  to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}`}
-                  className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
-                >
-                  <span className="fs-4"> + </span>&nbsp;Add Plan
-                </NavLink>
+              <Row gutter={24}>
+                {
+                  <Col>
+                    <Button type="primary" disabled={!selectedModuleId}>
+                      <NavLink
+                        to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}`}
+                        // className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                      >
+                        <span className="fs-4"> + </span>&nbsp;Add Module Tasks
+                      </NavLink>
+                    </Button>
+                  </Col>
+                }
+                
+                <Col>
+                  <NavLink
+                    to={`/projectplan/project_id=${project_id}`}
+                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                  >
+                    <span className="fs-4"> &larr; </span>&nbsp;Back To All
+                    Plans
+                  </NavLink>
+                </Col>
               </Row>
               <Table
                 rowKey={(record) => record.module_id}
@@ -517,8 +552,11 @@ const AddProjectPlan = () => {
                   <Col>
                     {!isAdding && !isEditing && (
                       <Button
-                        onClick={() => {{
-                          setIsAdding(true); setIsEditing(false);};
+                        onClick={() => {
+                          {
+                            setIsAdding(true);
+                            setIsEditing(false);
+                          }
                           getProjectStartEndDate(Number(project_id));
                         }}
                         type="primary"
@@ -538,9 +576,13 @@ const AddProjectPlan = () => {
                   <Col align="left" style={{ width: "100%" }}>
                     {(isAdding || isEditing) && (
                       <Card
-                        // className={`${styles.card} `}
+                      // className={`${styles.card} `}
                       >
-                        {isAdding ? <h4 className="text-info">Add Module</h4> : <h4 className="text-info">Edit Module</h4>}
+                        {isAdding ? (
+                          <h4 className="text-info">Add Module</h4>
+                        ) : (
+                          <h4 className="text-info">Edit Module</h4>
+                        )}
                         {(isAdding || isEditing) && (
                           <Form
                             colon={false}
@@ -548,7 +590,6 @@ const AddProjectPlan = () => {
                             labelAlign="left"
                             form={form}
                             name="basic"
-                           
                             onFinish={onFinish}
                             onFinishFailed={onFinishFailed}
                             autoComplete="on"
@@ -561,7 +602,6 @@ const AddProjectPlan = () => {
                                   label="Module Id"
                                   name="module_id"
                                   hidden
-                                
                                 >
                                   <Input placeholder={editUserId} />
                                 </Form.Item>
@@ -644,11 +684,29 @@ const AddProjectPlan = () => {
                                 >
                                   <Select
                                     options={[
-                                      { value: "scrapped", label: <span className="text-danger">scrapped</span> },
-                                      { value: "ongoing", label:<span className="text-primary">ongoing</span> },
+                                      {
+                                        value: "scrapped",
+                                        label: (
+                                          <span className="text-danger">
+                                            scrapped
+                                          </span>
+                                        ),
+                                      },
+                                      {
+                                        value: "ongoing",
+                                        label: (
+                                          <span className="text-primary">
+                                            ongoing
+                                          </span>
+                                        ),
+                                      },
                                       {
                                         value: "completed",
-                                        label: <span className="text-success">completed</span>,
+                                        label: (
+                                          <span className="text-success">
+                                            completed
+                                          </span>
+                                        ),
                                       },
                                     ]}
                                     allowClear="true"
@@ -671,7 +729,6 @@ const AddProjectPlan = () => {
                                         "Please input schedule start date !",
                                     },
                                   ]}
-                                  
                                 >
                                   <DatePicker
                                     disabledDate={disabledStartDate}
@@ -705,10 +762,7 @@ const AddProjectPlan = () => {
                                   />
                                 </Form.Item>
                               </Col>
-                             
-                             
                             </Row>
-                         
 
                             <Row justify="start">
                               <Col>
