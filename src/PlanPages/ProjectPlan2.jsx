@@ -181,7 +181,7 @@ const ProjectPlan = () => {
                     allowClear={true}
                     onChange={projectChangeHandler}
                     placeholder="Select Project"
-                    style={{ width: "28rem" }}
+                    style={{ width: "100%" }}
                   >
                     {projectList.map((project) => (
                       <Option
@@ -222,7 +222,7 @@ const ProjectPlan = () => {
                     </div>
 
                     {/* project plan table for 3 stages */}
-                    <div className="col-12 mx-0">
+                    <div className="col-12 mx-0 d-flex">
                       <table
                         className="table table-bordered p-0"
                         style={{ borderCollapse: "collapse" }}
@@ -232,12 +232,7 @@ const ProjectPlan = () => {
                             <th colSpan={4} className="bg-warning-subtle">
                               RFP
                             </th>
-                            <th colSpan={4} className="bg-primary-subtle">
-                              Contract Signed
-                            </th>
-                            <th colSpan={4} className="bg-success-subtle">
-                              In Process
-                            </th>
+                        
                           </tr>
                           <tr>
                             <th rowSpan={3}>S.No.</th>
@@ -249,36 +244,14 @@ const ProjectPlan = () => {
                               </div>
                             </th>
 
-                            <th rowSpan={3}>S.No.</th>
-                            <th colSpan={1}>Module Name</th>
-                            <th colSpan={2}>
-                              <div className="d-flex flex-column">
-                                <span>Schd. Start Date</span>
-                                <span>Schd. End Date</span>
-                              </div>
-                            </th>
-
-                            <th rowSpan={3}>S.No.</th>
-                            <th colSpan={1}>Module Name</th>
-                            <th colSpan={2}>
-                              <div className="d-flex flex-column">
-                                <span>Schd. Start Date</span>
-                                <span>Schd. End Date</span>
-                              </div>
-                            </th>
+                           
                           </tr>
                           <tr>
                             <th colSpan={2}>Task</th>
 
                             <th>Alloc hrs</th>
 
-                            <th colSpan={2}>Task</th>
-
-                            <th>Alloc hrs</th>
-
-                            <th colSpan={2}>Task</th>
-
-                            <th>Alloc hrs</th>
+                         
                           </tr>
                         </thead>
                         <tbody>
@@ -317,33 +290,9 @@ const ProjectPlan = () => {
                                     </b>
                                   </td>
 
-                                  <td>{index + 1}</td>
-                                  <td colSpan={1}>
-                                    <b className="text-primary text-capitalize">
-                                      {firstModule.module_name}
-                                    </b>
-                                  </td>
-                                  <td colSpan={2}>
-                                    <b className="text-primary text-capitalize">
-                                      {firstModule.from_date.slice(0,10)}<br/>
-                                      {firstModule.to_date.slice(0,10)}
-                                    </b>
-                                  </td>
-
-                                  <td>{index + 1}</td>
-                                  <td colSpan={1}>
-                                    <b className="text-primary text-capitalize">
-                                      {firstModule.module_name}
-                                    </b>
-                                  </td>
-                                  <td colSpan={2}>
-                                    <b className="text-primary text-capitalize">
-                                      {firstModule.from_date.slice(0,10)}<br/>
-                                      {firstModule.to_date.slice(0,10)}
-                                    </b>
-                                  </td>
+                                 
                                 </tr>
-                                {modules.map((module, moduleIndex) => (
+                                {rfpModules.map((module, moduleIndex) => (
                                   <React.Fragment key={moduleIndex}>
                                     {moduleIndex === 0 ? null : (
                                       <tr>
@@ -361,31 +310,7 @@ const ProjectPlan = () => {
                                           </b>
                                         </td>
 
-                                        <td>{index + 1}</td>                                   
-                                        <td colSpan={2}>
-                                          <b className="text-primary text-capitalize">
-                                            {module.module_name}
-                                          </b>
-                                        </td>
-                                        <td colSpan={1}>
-                                          <b className="text-primary text-capitalize">
-                                            {module.from_date.slice(0,10)}<br/>
-                                            {module.to_date.slice(0,10)}
-                                          </b>
-                                        </td>
-
-                                        <td>{index + 1}</td>                                       
-                                        <td colSpan={2}>
-                                          <b className="text-primary text-capitalize">
-                                            {module.module_name}
-                                          </b>
-                                        </td>
-                                        <td colSpan={1}>
-                                          <b className="text-primary text-capitalize">
-                                            {module.from_date.slice(0,10)}<br/>
-                                            {module.to_date.slice(0,10)}
-                                          </b>
-                                        </td>
+                                       
                                       </tr>
                                     )}
                                     {JSON.parse(module.tasks).map(
@@ -397,13 +322,232 @@ const ProjectPlan = () => {
                                           <td colSpan={2}>{task.task_name}</td>
                                           <td>{task.allocated_time}</td>
                                           
-                                          <td></td>                                      
-                                          <td colSpan={2}>{task.task_name}</td>
-                                          <td>{task.allocated_time}</td>
+                                          
+                                        </tr>
+                                      )
+                                    )}
+                                  </React.Fragment>
+                                ))}
 
-                                          <td></td>                                     
+                                
+                              </React.Fragment>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+
+                      <table
+                        className="table table-bordered p-0"
+                        style={{ borderCollapse: "collapse" }}
+                      >
+                        <thead>
+                          <tr>
+                           
+                            <th colSpan={4} className="bg-primary-subtle">
+                              Contract Signed
+                            </th>
+                          
+                          </tr>
+                          <tr>
+                            <th rowSpan={3}>S.No.</th>
+                            <th colSpan={1}>Module Name</th>
+                            <th colSpan={2}>
+                              <div className="d-flex flex-column">
+                                <span>Schd. Start Date</span>
+                                <span>Schd. End Date</span>
+                              </div>
+                            </th>
+
+                           
+                          </tr>
+                          <tr>
+                            <th colSpan={2}>Task</th>
+
+                            <th>Alloc hrs</th>
+
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allData.map((report, index) => {
+                            const modules = report.modules;
+                            const firstModule = modules[0];
+                            const lastModule = modules[modules.length - 1];
+
+                            const rfpModules = report.modules.filter(
+                              (module) => module.stage === "rfp"
+                            )
+
+                            const wonModules = report.modules.filter(
+                              (module) => module.stage === "won"
+                            )
+
+                            const inprocessModules = report.modules.filter(
+                              (module) => module.stage === "inprocess"
+                            )
+
+                            return (
+                              <React.Fragment key={index}>
+                                {/* first stage */}
+                                
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td colSpan={1}>
+                                    <b className="text-primary text-capitalize">
+                                      {firstModule.module_name}
+                                    </b>
+                                  </td>
+                                  <td colSpan={2}>
+                                    <b className="text-primary text-capitalize">
+                                      {firstModule.from_date.slice(0,10)}<br/>
+                                      {firstModule.to_date.slice(0,10)}
+                                    </b>
+                                  </td>
+
+                                 
+                                </tr>
+                                {wonModules.map((module, moduleIndex) => (
+                                  <React.Fragment key={moduleIndex}>
+                                    {moduleIndex === 0 ? null : (
+                                      <tr>
+                                        
+                                         <td>{moduleIndex + 1}</td>                                      
+                                        <td colSpan={2}>
+                                          <b className="text-primary text-capitalize">
+                                            {module.module_name}
+                                          </b>
+                                        </td>
+                                        <td colSpan={1}>
+                                          <b className="text-primary text-capitalize">
+                                            {module.from_date.slice(0,10)}<br/>
+                                            {module.to_date.slice(0,10)}
+                                          </b>
+                                        </td>
+
+                                       
+                                      </tr>
+                                    )}
+                                    {JSON.parse(module.tasks).map(
+                                      (task, taskIndex) => (
+                                        <tr
+                                          key={`${index}-${moduleIndex}-${taskIndex}`}
+                                        >
+                                          <td></td>                                        
                                           <td colSpan={2}>{task.task_name}</td>
                                           <td>{task.allocated_time}</td>
+                                                                                 
+                                        </tr>
+                                      )
+                                    )}
+                                  </React.Fragment>
+                                ))}
+
+                                
+                              </React.Fragment>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+
+                      <table
+                        className="table table-bordered p-0"
+                        style={{ borderCollapse: "collapse" }}
+                      >
+                        <thead>
+                          <tr>
+                           
+                            <th colSpan={4} className="bg-success-subtle">
+                              In Process
+                            </th>
+                          
+                          </tr>
+                          <tr>
+                            <th rowSpan={3}>S.No.</th>
+                            <th colSpan={1}>Module Name</th>
+                            <th colSpan={2}>
+                              <div className="d-flex flex-column">
+                                <span>Schd. Start Date</span>
+                                <span>Schd. End Date</span>
+                              </div>
+                            </th>
+
+                           
+                          </tr>
+                          <tr>
+                            <th colSpan={2}>Task</th>
+
+                            <th>Alloc hrs</th>
+
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allData.map((report, index) => {
+                            const modules = report.modules;
+                            const firstModule = modules[0];
+                            const lastModule = modules[modules.length - 1];
+
+                            const rfpModules = report.modules.filter(
+                              (module) => module.stage === "rfp"
+                            )
+
+                            const wonModules = report.modules.filter(
+                              (module) => module.stage === "won"
+                            )
+
+                            const inprocessModules = report.modules.filter(
+                              (module) => module.stage === "inprocess"
+                            )
+
+                            return (
+                              <React.Fragment key={index}>
+                                {/* first stage */}
+                                
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td colSpan={1}>
+                                    <b className="text-primary text-capitalize">
+                                      {firstModule.module_name}
+                                    </b>
+                                  </td>
+                                  <td colSpan={2}>
+                                    <b className="text-primary text-capitalize">
+                                      {firstModule.from_date.slice(0,10)}<br/>
+                                      {firstModule.to_date.slice(0,10)}
+                                    </b>
+                                  </td>
+
+                                 
+                                </tr>
+                                {inprocessModules.map((module, moduleIndex) => (
+                                  <React.Fragment key={moduleIndex}>
+                                    {moduleIndex === 0 ? null : (
+                                      <tr>
+                                        
+                                         <td>{index + 1}</td>                                      
+                                        <td colSpan={2}>
+                                          <b className="text-primary text-capitalize">
+                                            {module.module_name}
+                                          </b>
+                                        </td>
+                                        <td colSpan={1}>
+                                          <b className="text-primary text-capitalize">
+                                            {module.from_date.slice(0,10)}<br/>
+                                            {module.to_date.slice(0,10)}
+                                          </b>
+                                        </td>
+
+                                       
+                                      </tr>
+                                    )}
+                                    {JSON.parse(module.tasks).map(
+                                      (task, taskIndex) => (
+                                        <tr
+                                          key={`${index}-${moduleIndex}-${taskIndex}`}
+                                        >
+                                          <td></td>                                        
+                                          <td colSpan={2}>{task.task_name}</td>
+                                          <td>{task.allocated_time}</td>
+                                          
+                                          
                                         </tr>
                                       )
                                     )}

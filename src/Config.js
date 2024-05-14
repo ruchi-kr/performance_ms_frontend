@@ -69,6 +69,9 @@ export const getExcelpdfprojects = `${baseURL}/api/admin/getexcelpdfprojects`;
 // for current time used for dts rendering
 export const getCurrentTime = `${baseURL}/api/CurrentTimeStamp`;
 
+// for project plan stage wise rendering in one table
+export const getProjectPlan = `${baseURL}/api/project/plan`;
+
 export const CONFIG_OBJ = {                                         //config object
     headers: {
       "Content-Type": "application/json",
