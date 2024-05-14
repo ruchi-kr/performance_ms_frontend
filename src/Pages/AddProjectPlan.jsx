@@ -138,7 +138,7 @@ const AddProjectPlan = () => {
       const response = await axios.get(
         `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`
       );
-      console.log("module with their tasks", response.data.data);
+      console.log("module list", response.data.data);
       setModuleList(response.data.data);
       // console.log("module list", response.data.results);
       form.setFieldsValue({
@@ -221,6 +221,18 @@ const AddProjectPlan = () => {
     });
     setIsEditing(true);
   };
+  // const handleEditTask = (record) => {
+  //   console.log("handle edit", record);
+  //   setIsEditingTask(true);
+  //   formTask.setFieldsValue({
+  //     task_id: record.task_id,
+  //     task_name: record.task_name,
+  //     module_id: record.module_id,
+  //     allocated_time: record.allocated_time,
+  //   });
+  //   setIsEditing(false);
+  //   setIsEditingTask(true);
+  // };
 
   const handleDelete = async (record) => {
     console.log("record to delete", record);
@@ -267,7 +279,7 @@ const AddProjectPlan = () => {
             message: "Success",
             description: "Record deleted Successfully.",
           });
-          getModuleTaskList();
+          getModuleListWithTasks();
         } catch (error) {
           // console.error("Error Adding project:", error);
           notification.error({
@@ -282,10 +294,12 @@ const AddProjectPlan = () => {
 
   const handleEditTask = (record) => {
     console.log("handle edit", record);
-    setIsEditing(true);
+    setIsEditing(false);
+    setIsAdding(false);
+    setIsAddingTask(false);
     // console.log("type of user active", moment(record.from_date));
     // getProjectStartEndDate(record.project_id);
-    form.setFieldsValue({
+    formTask.setFieldsValue({
       task_id: record.task_id,
       module_id: record.module_id,
       task_name: record.task_name,
@@ -341,8 +355,51 @@ const AddProjectPlan = () => {
       }
     }
   };
-  const onFinishTask = (values) => {
+  const onFinishTask = async (values) => {
     console.log(values);
+    if (isAddingTask && !isEditingTask) {
+      try {
+        console.log("onFinish before sending values adding", values);
+        await axios.post("http://localhost:8000/api/module/task", {
+          ...values,
+          stage: stage,
+        });
+        getModuleListWithTasks();
+        handleReset();
+        notification.success({
+          message: "Task Added.",
+          description: "Successfully",
+        });
+      } catch (error) {
+        console.log(error);
+        notification.error({
+          message: "Failed to add Task.",
+          description: "Try Again !",
+        });
+      }
+    }
+
+    if (isEditingTask && !isAddingTask) {
+      console.log("values inside edit!!!!", values);
+      try {
+        await axios.patch(
+          `http://localhost:8000/api/module/task/${values.task_id}`,
+          values
+        );
+        handleReset();
+        getModuleListWithTasks();
+        notification.success({
+          message: "Success",
+          description: "Record updated.",
+        });
+      } catch (error) {
+        console.log(error);
+        notification.error({
+          message: "Failed",
+          description: "Unable to update record",
+        });
+      }
+    }
   };
   const onFinishFailedTask = (values) => {
     console.log(values);
@@ -498,11 +555,16 @@ const AddProjectPlan = () => {
       width: 100,
       render: (_, record) => (
         <div className="d-flex justify-content-center gap-2">
-        
           <Button
             size="small"
             className="d-flex align-items-center"
-            onClick={() => setIsAddingTask(true)}
+            onClick={() => {
+              setIsAddingTask(true);
+              setIsEditingTask(false);
+              setIsAdding(false);
+              setIsEditing(false);
+              formTask.setFieldsValue({ module_id: record.module_id });
+            }}
           >
             <PlusOutlined />
             Task
@@ -555,6 +617,12 @@ const AddProjectPlan = () => {
       key: "allocated_time",
       render: (text) => `${text ? `${text} hrs` : "-"}`,
     },
+    {
+      title: "Module_id",
+      dataIndex: "module_id",
+      key: "module_id",
+      hidden: true,
+    },
 
     {
       title: <div className="text-primary">Action</div>,
@@ -597,7 +665,10 @@ const AddProjectPlan = () => {
                 }}
                 onClick={() => {
                   handleEditTask(record);
+                  setIsEditingTask(true);
                   setIsAddingTask(false);
+                  setIsAdding(false);
+                  setIsEditing(false);
                 }}
               />
               <DeleteOutlined
@@ -623,17 +694,14 @@ const AddProjectPlan = () => {
         <div className="content">
           <div className="container-fluid bg-white">
             <div className="row my-5">
-              <Row justify={"center"}>
+              <Row justify={"center"} style={{ marginBottom: "3rem" }}>
                 <Col style={{ paddingBottom: "0" }}>
-                  <Title level={3} className="text-info text-capitalize">
-                    {projectName}
-                  </Title>
                   <Title level={3} className="text-info text-capitalize">
                     {projectName}
                   </Title>
                 </Col>
               </Row>
-              <Row>
+              {/* <Row>
                 <div className=" col-2 d-flex flex-column">
                   <label className="text-capitalize fw-bold text-info">
                     Select Module
@@ -658,36 +726,19 @@ const AddProjectPlan = () => {
                     ))}
                   </Select>
                 </div>
-              </Row>
-              <Row justify="end">
-                <Col>
-                  <label className="text-info" style={{ marginBottom: "10px" }}>
-                    Module Name
-                  </label>
-                  <Search
-                    placeholder="Search by Module Name"
-                    onSearch={onSearch}
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    enterButton
-                    style={{ marginBottom: "16px" }}
-                    className={styles.searchStyle}
-                  />
-                </Col>
-              </Row>
-              <Row gutter={24}>
-                {
-                  <Col>
-                    <Button type="primary" disabled={!selectedModuleId}>
-                      <NavLink
-                        to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}&stage=${stage}`}
-                        // className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
-                      >
-                        <span className="fs-4"> + </span>&nbsp;Add Module Tasks
-                      </NavLink>
-                    </Button>
-                  </Col>
-                }
+              </Row> */}
+              <Row justify="end"></Row>
+              <Row justify="space-between" style={{ marginBottom: "1rem" }}>
+                {/* <Col>
+                  <Button type="primary" disabled={!selectedModuleId}>
+                    <NavLink
+                      to={`/addmoduletasks/?project_id=${project_id}&module_id=${selectedModuleId}&stage=${stage}`}
+                      // className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                    >
+                      <span className="fs-4"> + </span>&nbsp;Add Module Tasks
+                    </NavLink>
+                  </Button>
+                </Col> */}
 
                 <Col>
                   <NavLink
@@ -697,6 +748,20 @@ const AddProjectPlan = () => {
                     <span className="fs-4"> &larr; </span>&nbsp;Back To All
                     Plans
                   </NavLink>
+                </Col>
+                <Col>
+                  {/* <label className="text-info" style={{ marginBottom: "10px" }}>
+                    Module Name
+                  </label> */}
+                  <Search
+                    placeholder="Search Module"
+                    onSearch={onSearch}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    enterButton
+                    style={{ marginBottom: "0" }}
+                    // className={styles.searchStyle}
+                  />
                 </Col>
               </Row>
               <Table
@@ -746,20 +811,21 @@ const AddProjectPlan = () => {
                 <Col>
                   {!isAdding &&
                     !isEditing &&
-                    // !isAddingTask&&
-                     (
+                    !isAddingTask &&
+                    !isEditingTask && (
+                      // !isAddingTask&&
                       <Button
                         onClick={() => {
                           setIsAdding(true);
                           setIsEditing(false);
                           getProjectStartEndDate(Number(project_id));
                           form.setFieldsValue({
-                            project_id: project_id,
+                            project_id: Number(project_id),
                             status: "notstarted",
                           });
                         }}
                         type="primary"
-                        style={{ minWidth: "10rem" }}
+                        style={{ minWidth: "10rem", marginBottom: "1rem" }}
                       >
                         <div>
                           <PlusOutlined
@@ -773,352 +839,193 @@ const AddProjectPlan = () => {
                     )}
                 </Col>
                 <Col align="left" style={{ width: "100%" }}>
-                  {(isAdding || isEditing) &&(
+                  {(isAdding || isEditing) && (
                     // (!isAddingTask || !isEditingTask) && (
-                      <Card>
-                        {isAdding ? (
-                          <h4 className="text-info">Add Module</h4>
-                        ) : (
-                          <h4 className="text-info">Edit Module</h4>
-                        )}
-                        {(isAdding || isEditing) && (
-                          <Form
-                            colon={false}
-                            layout="vertical"
-                            labelAlign="left"
-                            form={form}
-                            name="basic"
-                            onFinish={onFinish}
-                            onFinishFailed={onFinishFailed}
-                            autoComplete="on"
-                            className=""
-                            style={{ paddingTop: "2rem" }}
-                          >
-                            <Row gutter={16}>
-                              <Col span={24}>
-                                <Form.Item
-                                  label="Module Id"
-                                  name="module_id"
-                                  hidden
-                                >
-                                  <Input placeholder={editUserId} />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24}>
-                            <Col span={6}>
-                                <Form.Item
-                                  label="Project"
-                                  name="project_id"
-                                  // style={{ maxWidth: "50%" }}
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Please select project !",
-                                    },
-                                  ]}
-                                >
-                                  <Select
-                                    disabled
-                                    placeholder="Select Project"
-                                    allowClear={true} // Disable the clear button
-                                    // className={styles.cascaderStyle}
-                                    onChange={getProjectStartEndDate}
-                                  >
-                                    {projectList.map((project) => (
-                                      <Option
-                                        key={project.project_id}
-                                        value={project.project_id}
-                                      >
-                                        {project.project_name}
-                                      </Option>
-                                    ))}
-                                  </Select>
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24}>
-                             
-                              <Col span={6}>
-                                <Form.Item
-                                  label="Module Name"
-                                  name="module_name"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Please enter module name !",
-                                    },
-
-                                    {
-                                      pattern: /^[&,.\-_\w\s]{1,50}$/,
-                                      message:
-                                        "Please enter a valid Module Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
-                                    },
-                                  ]}
-                                >
-                                  <Input
-                                    suffix={
-                                      <Tooltip title="Please input a valid module name">
-                                        <InfoCircleOutlined
-                                          style={{
-                                            color: "rgba(0,0,0,.45)",
-                                          }}
-                                        />
-                                      </Tooltip>
-                                    }
-                                    placeholder="module name"
-                                    style={{ marginLeft: "4" }}
-                                  />
-                                </Form.Item>
-                              </Col>
-                              <Col span={6}>
-                                <Form.Item
-                                  label="Status"
-                                  name="status"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Please select Status !",
-                                    },
-                                  ]}
-                                  // defaultValue="notstarted"
-                                  // style={{ maxWidth: "50%" }}
-                                >
-                                  <Select
-                                    // value={status}
-                                    // onChange={(value) => setStatus(value)}
-                                    // defaultValue="notstarted"
-                                    options={[
-                                      {
-                                        value: "notstarted",
-                                        label: (
-                                          <span className="text-warning">
-                                            Yet To Start
-                                          </span>
-                                        ),
-                                      },
-
-                                      {
-                                        value: "ongoing",
-                                        label: (
-                                          <span className="text-primary">
-                                            ongoing
-                                          </span>
-                                        ),
-                                      },
-                                      {
-                                        value: "completed",
-                                        label: (
-                                          <span className="text-success">
-                                            completed
-                                          </span>
-                                        ),
-                                      },
-                                      {
-                                        value: "scrapped",
-                                        label: (
-                                          <span className="text-danger">
-                                            scrapped
-                                          </span>
-                                        ),
-                                      },
-                                    ]}
-                                    // onChange={handleChange}
-                                    placeholder="Status "
-                                  />
-                                </Form.Item>
-                              </Col>
-                              <Col span={4}>
-                                <Form.Item
-                                  label="Schd. Start Date"
-                                  name="from_date"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message:
-                                        "Please input schedule start date !",
-                                    },
-                                  ]}
-                                >
-                                  <DatePicker
-                                    disabledDate={disabledStartDate}
-                                    format="DD/MM/YYYY"
-                                    // style={{ width: "100%" }}
-                                  />
-                                </Form.Item>
-                              </Col>
-                              <Col span={4}>
-                                <Form.Item
-                                  label="Schd. End Date"
-                                  name="to_date"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message:
-                                        "Please input schedule end date !",
-                                    },
-                                  ]}
-                                  // style={{ maxWidth: "50%" }}
-                                >
-                                  <DatePicker
-                                    disabledDate={(current) =>
-                                      disabledEndDate(
-                                        current,
-                                        form.getFieldValue("from_date")
-                                      )
-                                    }
-                                    format="DD/MM/YYYY"
-                                    // style={{ width: "100%" }}
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-
-                          
-                            <Row justify="start">
-                              <Col>
-                                <Form.Item>
-                                  <div className={styles.buttonStyle2}>
-                                    <Button
-                                      type="primary"
-                                      danger
-                                      htmlType="button"
-                                      onClick={handleReset}
-                                      className="me-3"
-                                      // className={styles["login-form-button"]}
-                                      // style={{
-                                      //   minWidth: "11rem",
-                                      //   marginRight: "1rem",
-                                      // }}
-                                    >
-                                      Cancel
-                                    </Button>
-                                    <Button
-                                      type="primary"
-                                      htmlType="submit"
-                                      // className={styles["login-form-button"]}
-                                      // style={{ minWidth: "11rem" }}
-                                    >
-                                      {isAdding ? "Add" : "Update"}
-                                    </Button>
-                                  </div>
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </Form>
-                        )}
-                      </Card>
-                    )}
-                </Col>
-                <Col align="left" style={{ width: "100%" }}>
-                  {(
-                    // !isAdding ||
-                    // !isEditing )
-                    // ||
-                    isAddingTask ||
-                    isEditingTask) && 
-                    (
                     <Card>
-                      {isAddingTask ? (
-                        <h4 className="text-info">Add Task</h4>
+                      {isAdding ? (
+                        <h4 className="text-info">Add Module</h4>
                       ) : (
-                        <h4 className="text-info">Edit Task</h4>
+                        <h4 className="text-info">Edit Module</h4>
                       )}
-                      {(isAddingTask || isEditingTask) && (
+                      {(isAdding || isEditing) && (
                         <Form
                           colon={false}
                           layout="vertical"
                           labelAlign="left"
-                          form={formTask}
+                          form={form}
                           name="basic"
-                          onFinish={onFinishTask}
-                          onFinishFailed={onFinishFailedTask}
+                          onFinish={onFinish}
+                          onFinishFailed={onFinishFailed}
                           autoComplete="on"
+                          className=""
                           style={{ paddingTop: "2rem" }}
                         >
                           <Row gutter={16}>
                             <Col span={24}>
-                              <Form.Item label="Task Id" name="task_id" hidden>
-                                <Input />
+                              <Form.Item
+                                label="Module Id"
+                                name="module_id"
+                                hidden
+                              >
+                                <Input placeholder={"Enter module_id"} />
                               </Form.Item>
                             </Col>
                           </Row>
                           <Row gutter={24}>
-                            <Col span={8}>
+                            <Col span={14}>
                               <Form.Item
-                                label="Module"
-                                name="module_id"
+                                // hidden
+                                label="Project"
+                                name="project_id"
                                 // style={{ maxWidth: "50%" }}
                                 rules={[
                                   {
                                     required: true,
-                                    message: "Please select module !",
+                                    message: "Please select project !",
                                   },
                                 ]}
                               >
                                 <Select
                                   disabled
-                                  placeholder="Select Module"
+                                  placeholder="Select Project"
                                   allowClear={true} // Disable the clear button
                                   // className={styles.cascaderStyle}
-                                  // onChange={getProjectStartEndDate}
+                                  onChange={getProjectStartEndDate}
                                 >
-                                  {moduleList.map((module) => (
+                                  {projectList.map((project) => (
                                     <Option
-                                      key={module.module_id}
-                                      value={module.module_id}
-                                      disabled={
-                                        module.status === "scrapped" ||
-                                        module.status === "completed"
-                                      }
+                                      key={project.project_id}
+                                      value={project.project_id}
                                     >
-                                      {module.module_name}
+                                      {project.project_name}
                                     </Option>
                                   ))}
                                 </Select>
                               </Form.Item>
                             </Col>
-                            <Col span={8}>
+                          </Row>
+                          <Row gutter={24}>
+                            <Col span={6}>
                               <Form.Item
-                                label="Task Name"
-                                name="task_name"
+                                label="Module Name"
+                                name="module_name"
                                 rules={[
                                   {
                                     required: true,
-                                    message: "Please input task name!",
+                                    message: "Please enter module name !",
                                   },
+
                                   {
                                     pattern: /^[&,.\-_\w\s]{1,50}$/,
                                     message:
-                                      "Please enter a valid Task Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
+                                      "Please enter a valid Module Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
                                   },
                                 ]}
-                                // style={{ maxWidth: "50%" }}
                               >
                                 <Input
-                                  maxLength={100}
-                                  placeholder="task name"
+                                  placeholder="module name"
                                   style={{ marginLeft: "4" }}
                                 />
                               </Form.Item>
                             </Col>
-                            <Col span={8}>
+
+                            <Col span={4}>
                               <Form.Item
-                                label="Allocated Time"
-                                name="allocated_time"
+                                label="Schd. Start Date"
+                                name="from_date"
                                 rules={[
                                   {
                                     required: true,
-                                    message: "Please input allocated time!",
+                                    message:
+                                      "Please input schedule start date !",
                                   },
                                 ]}
-                                style={{ width: "100%" }}
                               >
-                                <InputNumber
-                                  min={0}
-                                  max={100}
-                                  step={1}
-                                  precision={0}
+                                <DatePicker
+                                  disabledDate={disabledStartDate}
+                                  format="DD/MM/YYYY"
+                                  // style={{ width: "16rem" }}
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col span={4}>
+                              <Form.Item
+                                label="Schd. End Date"
+                                name="to_date"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Please input schedule end date !",
+                                  },
+                                ]}
+                                // style={{ maxWidth: "50%" }}
+                              >
+                                <DatePicker
+                                  disabledDate={(current) =>
+                                    disabledEndDate(
+                                      current,
+                                      form.getFieldValue("from_date")
+                                    )
+                                  }
+                                  format="DD/MM/YYYY"
+                                  // style={{ width: "100%" }}
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col span={6}>
+                              <Form.Item
+                                label="Status"
+                                name="status"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Please select Status !",
+                                  },
+                                ]}
+                                // defaultValue="notstarted"
+                                // style={{ maxWidth: "50%" }}
+                              >
+                                <Select
+                                  // value={status}
+                                  // onChange={(value) => setStatus(value)}
+                                  // defaultValue="notstarted"
+                                  options={[
+                                    {
+                                      value: "notstarted",
+                                      label: (
+                                        <span className="text-warning">
+                                          Yet To Start
+                                        </span>
+                                      ),
+                                    },
+
+                                    {
+                                      value: "ongoing",
+                                      label: (
+                                        <span className="text-primary">
+                                          ongoing
+                                        </span>
+                                      ),
+                                    },
+                                    {
+                                      value: "completed",
+                                      label: (
+                                        <span className="text-success">
+                                          completed
+                                        </span>
+                                      ),
+                                    },
+                                    {
+                                      value: "scrapped",
+                                      label: (
+                                        <span className="text-danger">
+                                          scrapped
+                                        </span>
+                                      ),
+                                    },
+                                  ]}
+                                  // onChange={handleChange}
+                                  placeholder="Status "
                                 />
                               </Form.Item>
                             </Col>
@@ -1148,7 +1055,7 @@ const AddProjectPlan = () => {
                                     // className={styles["login-form-button"]}
                                     // style={{ minWidth: "11rem" }}
                                   >
-                                    {isAddingTask ? "Add" : "Update"}
+                                    {isAdding ? "Add" : "Update"}
                                   </Button>
                                 </div>
                               </Form.Item>
@@ -1158,6 +1065,158 @@ const AddProjectPlan = () => {
                       )}
                     </Card>
                   )}
+                </Col>
+                <Col align="left" style={{ width: "100%" }}>
+                  {
+                    // !isAdding ||
+                    // !isEditing )
+                    // ||
+                    (isAddingTask || isEditingTask) && (
+                      <Card>
+                        {isAddingTask ? (
+                          <h4 className="text-info">Add Task</h4>
+                        ) : (
+                          <h4 className="text-info">Edit Task</h4>
+                        )}
+                        {(isAddingTask || isEditingTask) && (
+                          <Form
+                            colon={false}
+                            layout="vertical"
+                            labelAlign="left"
+                            form={formTask}
+                            name="basic"
+                            onFinish={onFinishTask}
+                            onFinishFailed={onFinishFailedTask}
+                            autoComplete="on"
+                            style={{ paddingTop: "2rem" }}
+                          >
+                            <Row gutter={16}>
+                              <Col span={24}>
+                                <Form.Item
+                                  label="Task Id"
+                                  name="task_id"
+                                  hidden
+                                >
+                                  <Input />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                            <Row gutter={24}>
+                              <Col span={8}>
+                                <Form.Item
+                                  label="Module"
+                                  name="module_id"
+                                  // style={{ maxWidth: "50%" }}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Please select module !",
+                                    },
+                                  ]}
+                                >
+                                  <Select
+                                    disabled
+                                    placeholder="Select Module"
+                                    allowClear={true} // Disable the clear button
+                                    // className={styles.cascaderStyle}
+                                    // onChange={getProjectStartEndDate}
+                                  >
+                                    {moduleList.map((module) => (
+                                      <Option
+                                        key={module.module_id}
+                                        value={module.module_id}
+                                        disabled={
+                                          module.status === "scrapped" ||
+                                          module.status === "completed"
+                                        }
+                                      >
+                                        {module.module_name}
+                                      </Option>
+                                    ))}
+                                  </Select>
+                                </Form.Item>
+                              </Col>
+                              <Col span={8}>
+                                <Form.Item
+                                  label="Task Name"
+                                  name="task_name"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Please input task name!",
+                                    },
+                                    {
+                                      pattern: /^[&,.\-_\w\s]{1,50}$/,
+                                      message:
+                                        "Please enter a valid Task Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
+                                    },
+                                  ]}
+                                  // style={{ maxWidth: "50%" }}
+                                >
+                                  <Input
+                                    maxLength={100}
+                                    placeholder="task name"
+                                    style={{ marginLeft: "4" }}
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col span={8}>
+                                <Form.Item
+                                  label="Allocated Time"
+                                  name="allocated_time"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Please input allocated time!",
+                                    },
+                                  ]}
+                                  style={{ width: "100%" }}
+                                >
+                                  <InputNumber
+                                    min={0}
+                                    max={100}
+                                    step={1}
+                                    precision={0}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </Row>
+
+                            <Row justify="start">
+                              <Col>
+                                <Form.Item>
+                                  <div className={styles.buttonStyle2}>
+                                    <Button
+                                      type="primary"
+                                      danger
+                                      htmlType="button"
+                                      onClick={handleReset}
+                                      className="me-3"
+                                      // className={styles["login-form-button"]}
+                                      // style={{
+                                      //   minWidth: "11rem",
+                                      //   marginRight: "1rem",
+                                      // }}
+                                    >
+                                      Cancel
+                                    </Button>
+                                    <Button
+                                      type="primary"
+                                      htmlType="submit"
+                                      // className={styles["login-form-button"]}
+                                      // style={{ minWidth: "11rem" }}
+                                    >
+                                      {isAddingTask ? "Add" : "Update"}
+                                    </Button>
+                                  </div>
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                          </Form>
+                        )}
+                      </Card>
+                    )
+                  }
                 </Col>
               </Row>
             </div>
