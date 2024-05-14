@@ -142,7 +142,7 @@ const ProjectPlan = () => {
   }
 
   // project plan w.r.t stage
-  const getProjectPlanData = async (selectedProjectId) => {
+  const getProjectPlanData = async () => {
     try {
       const response = await axios.get(
         `${getProjectPlan}/${selectedProjectId}`
