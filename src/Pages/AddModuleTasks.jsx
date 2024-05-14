@@ -95,7 +95,7 @@ const AddModuleTasks = () => {
   useEffect(() => {
     getProjects();
   }, []);
- 
+
   const getModuleList = async () => {
     try {
       const response = await axios.get(
@@ -110,7 +110,6 @@ const AddModuleTasks = () => {
   };
   useEffect(() => {
     getModuleList();
-
   }, []);
   const getModuleTaskList = async () => {
     try {
@@ -339,314 +338,169 @@ const AddModuleTasks = () => {
     });
   };
 
-  const columns = [
-    {
-      title: "S.No",
-      dataIndex: "task_id",
-      key: "task_id",
-      render: (_, record, index) => {
-        // Calculate the serial number based on the current page and the index of the item
-        return (pagination.currentPage - 1) * pagination.pageSize + index + 1;
-      },
-    },
-    {
-      title: (
-        <div>
-          Task Name
-          {/* {
-              <ArrowUpOutlined
-                style={{ marginLeft: 12, fontSize: "1rem" }}
-                onClick={handleSortChange}
-                rotate={sortOrder === "ASC" ? 0 : 180}
-              />
-            } */}
-        </div>
-      ),
-      dataIndex: "task_name",
-      key: "task_name",
-    },
-
-    {
-      title: "Allocated Time",
-      dataIndex: "allocated_time",
-      key: "allocated_time",
-      render: (text) => `${text} hrs`,
-    },
-
-    {
-      title: "Action",
-      dataIndex: "action",
-      align: "center",
-      key: "action",
-      width: 100,
-      render: (_, record) => (
-        <div>
-          <EditFilled
-            type="primary"
-            style={{
-              marginRight: "9px",
-              color: "green",
-              textAlign: "center",
-            }}
-            onClick={() => {
-              handleEdit(record);
-              setIsAdding(false);
-            }}
-          />
-          <DeleteFilled
-            type="primary"
-            style={{ color: "red" }}
-            onClick={() => handleDelete(record)}
-          />
-        </div>
-      ),
-    },
-  ];
-
   return (
     <>
-      <>
-        {/* <h2>Task Master</h2> */}
-        <br />
-        <Row justify="end">
-          <Col>
-            <Search
-              placeholder="Search Task"
-              onSearch={onSearch}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              enterButton
-              style={{ marginBottom: "16px" }}
-              className={styles.searchStyle}
-            />
-          </Col>
-        </Row>
-        <Row gutter={24} style={{ marginBottom: "1rem" }}>
-          <Col>
-            <NavLink
-              to={`/addprojectplan/?project_id=${project_id}`}
-              className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+      <Row justify="center" align="middle">
+        <Col>
+          {!isAdding && !isEditing && (
+            <Button
+              onClick={() => setIsAdding(true)}
+              type="primary"
+              style={{ minWidth: "10rem" }}
             >
-              <span className="fs-4"> &larr; </span>&nbsp;Back To Plan Modules
-            </NavLink>
-          </Col>
-          <Col>
-            <NavLink
-              to={`/projectplan`}
-              className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+              <div>
+                <PlusOutlined
+                  style={{
+                    marginRight: "0.5rem",
+                  }}
+                />
+                Add Task
+              </div>
+            </Button>
+          )}
+        </Col>
+        <Col align="left" style={{ minWidth: "100%" }}>
+          {(isAdding || isEditing) && (
+            <Card
+            // style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)" }}
+            // className={`${styles.card} `}
             >
-              <span className="fs-4"> &larr; </span>&nbsp;Back To All Plans
-            </NavLink>
-          </Col>
-        </Row>
-        <Table
-          rowKey={(record) => record.task_id}
-          columns={columns}
-          dataSource={taskList}
-          loading={loading}
-          bordered
-          size="small"
-          pagination={false}
-          // scroll={{ y: false }} // Disable vertical scroll
-          style={{
-            marginBottom: "1rem",
-          }}
-        />
-
-        <Pagination
-          current={pagination.currentPage}
-          total={pagination.totalRecords}
-          pageSize={pagination.pageSize}
-          onChange={handlePageChange}
-          showLessItems={false}
-          onShowSizeChange={pageSizeChange}
-          showQuickJumper={true}
-          showPrevNextJumpers={true}
-          showSizeChanger={true}
-          onPrev={() => handlePageChange(pagination.prevPage)}
-          onNext={() => handlePageChange(pagination.nextPage)}
-          style={{
-            marginBottom: "2rem",
-          }}
-        />
-
-        <Row justify="center" align="middle">
-          <Col>
-            {!isAdding && !isEditing && (
-              <Button
-                onClick={() => setIsAdding(true)}
-                type="primary"
-                style={{ minWidth: "10rem" }}
-              >
-                <div>
-                  <PlusOutlined
-                    style={{
-                      marginRight: "0.5rem",
-                    }}
-                  />
-                  Add Task
-                </div>
-              </Button>
-            )}
-          </Col>
-          <Col align="left" style={{ minWidth: "100%" }}>
-            {(isAdding || isEditing) && (
-              <Card
-              // style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)" }}
-              // className={`${styles.card} `}
-              >
-                {isAdding ? (
-                  <h4 className="text-info">Add Task</h4>
-                ) : (
-                  <h4 className="text-info">Edit Task</h4>
-                )}
-                {(isAdding || isEditing) && (
-                  <Form
-                    colon={false}
-                    layout="vertical"
-                    labelAlign="left"
-                    form={form}
-                    name="basic"
-                    // className="login-form"
-                    // initialValues={{
-                    //   zone_name: isEditing ? newZoneDesc : "",
-                    // }}
-                    // labelCol={{
-                    //   span: 6,
-                    // }}
-                    // wrapperCol={{
-                    //   span: 18,
-                    // }}
-                    onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
-                    autoComplete="on"
-                    style={{ paddingTop: "2rem" }}
-                  >
-                    <Row gutter={16}>
-                      <Col span={24}>
-                        <Form.Item label="Task Id" name="task_id" hidden>
-                          <Input />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={8}>
-                        <Form.Item
-                          label="Module"
-                          name="module_id"
-                          // style={{ maxWidth: "50%" }}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please select module !",
-                            },
-                          ]}
+              {isAdding ? (
+                <h4 className="text-info">Add Task</h4>
+              ) : (
+                <h4 className="text-info">Edit Task</h4>
+              )}
+              {(isAdding || isEditing) && (
+                <Form
+                  colon={false}
+                  layout="vertical"
+                  labelAlign="left"
+                  form={form}
+                  name="basic"
+                  onFinish={onFinish}
+                  onFinishFailed={onFinishFailed}
+                  autoComplete="on"
+                  style={{ paddingTop: "2rem" }}
+                >
+                  <Row gutter={16}>
+                    <Col span={24}>
+                      <Form.Item label="Task Id" name="task_id" hidden>
+                        <Input />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={24}>
+                    <Col span={8}>
+                      <Form.Item
+                        label="Module"
+                        name="module_id"
+                        // style={{ maxWidth: "50%" }}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please select module !",
+                          },
+                        ]}
+                      >
+                        <Select
+                          disabled
+                          placeholder="Select Module"
+                          allowClear={true} // Disable the clear button
+                          // className={styles.cascaderStyle}
+                          // onChange={getProjectStartEndDate}
                         >
-                          <Select
-                            disabled
-                            placeholder="Select Module"
-                            allowClear={true} // Disable the clear button
-                            // className={styles.cascaderStyle}
-                            // onChange={getProjectStartEndDate}
+                          {moduleList.map((module) => (
+                            <Option
+                              key={module.module_id}
+                              value={module.module_id}
+                              disabled={
+                                module.status === "scrapped" ||
+                                module.status === "completed"
+                              }
+                            >
+                              {module.module_name}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        label="Task Name"
+                        name="task_name"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input task name!",
+                          },
+                          {
+                            pattern: /^[&,.\-_\w\s]{1,50}$/,
+                            message:
+                              "Please enter a valid Task Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
+                          },
+                        ]}
+                        // style={{ maxWidth: "50%" }}
+                      >
+                        <Input
+                          maxLength={10}
+                          placeholder="task name"
+                          style={{ marginLeft: "4" }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        label="Allocated Time"
+                        name="allocated_time"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please input allocated time!",
+                          },
+                        ]}
+                        style={{ width: "100%" }}
+                      >
+                        <InputNumber min={0} max={100} step={1} precision={0} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+
+                  <Row justify="start">
+                    <Col>
+                      <Form.Item>
+                        <div className={styles.buttonStyle2}>
+                          <Button
+                            type="primary"
+                            danger
+                            htmlType="button"
+                            onClick={handleReset}
+                            className="me-3"
+                            // className={styles["login-form-button"]}
+                            // style={{
+                            //   minWidth: "11rem",
+                            //   marginRight: "1rem",
+                            // }}
                           >
-                            {moduleList.map((module) => (
-                              <Option
-                                key={module.module_id}
-                                value={module.module_id}
-                                disabled={
-                                  module.status === "scrapped" ||
-                                  module.status === "completed"
-                                }
-                              >
-                                {module.module_name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item
-                          label="Task Name"
-                          name="task_name"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please input task name!",
-                            },
-                            {
-                              pattern: /^[&,.\-_\w\s]{1,50}$/,
-                              message:
-                                "Please enter a valid Task Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
-                            },
-                          ]}
-                          // style={{ maxWidth: "50%" }}
-                        >
-                          <Input
-                            maxLength={10}
-                            placeholder="task name"
-                            style={{ marginLeft: "4" }}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item
-                          label="Allocated Time"
-                          name="allocated_time"
-                          rules={[
-                            {
-                              required: true,
-                              message: "Please input allocated time!",
-                            },
-                          ]}
-                          style={{ width: "100%" }}
-                        >
-                          <InputNumber
-                            min={0}
-                            max={100}
-                            step={1}
-                            precision={0}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-
-                    <Row justify="start">
-                      <Col>
-                        <Form.Item>
-                          <div className={styles.buttonStyle2}>
-                            <Button
-                              type="primary"
-                              danger
-                              htmlType="button"
-                              onClick={handleReset}
-                              className="me-3"
-                              // className={styles["login-form-button"]}
-                              // style={{
-                              //   minWidth: "11rem",
-                              //   marginRight: "1rem",
-                              // }}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              type="primary"
-                              htmlType="submit"
-                              // className={styles["login-form-button"]}
-                              // style={{ minWidth: "11rem" }}
-                            >
-                              {isAdding ? "Add" : "Update"}
-                            </Button>
-                          </div>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Form>
-                )}
-              </Card>
-            )}
-          </Col>
-        </Row>
-      </>
+                            Cancel
+                          </Button>
+                          <Button
+                            type="primary"
+                            htmlType="submit"
+                            // className={styles["login-form-button"]}
+                            // style={{ minWidth: "11rem" }}
+                          >
+                            {isAdding ? "Add" : "Update"}
+                          </Button>
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Form>
+              )}
+            </Card>
+          )}
+        </Col>
+      </Row>
     </>
   );
 };
