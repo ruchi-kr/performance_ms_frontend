@@ -251,6 +251,49 @@ const AddProjectPlan = () => {
     });
   };
 
+  const handleDeleteTask = async (record) => {
+    console.log("record to delete", record);
+    confirm({
+      title: "Are You sure you want to delete the record!",
+      icon: <ExclamationCircleFilled />,
+      // content: "Be sure before deleting, this process is irreversible!",
+      centered: true,
+      async onOk() {
+        try {
+          await axios.delete(
+            `http://localhost:8000/api/module/task/${record.task_id}`
+          );
+          notification.success({
+            message: "Success",
+            description: "Record deleted Successfully.",
+          });
+          getModuleTaskList();
+        } catch (error) {
+          // console.error("Error Adding project:", error);
+          notification.error({
+            message: "Failed",
+            description: `${error}`,
+          });
+        }
+      },
+      onCancel() {},
+    });
+  };
+
+  const handleEditTask = (record) => {
+    console.log("handle edit", record);
+    setIsEditing(true);
+    // console.log("type of user active", moment(record.from_date));
+    // getProjectStartEndDate(record.project_id);
+    form.setFieldsValue({
+      task_id: record.task_id,
+      module_id: record.module_id,
+      task_name: record.task_name,
+      allocated_time: record.allocated_time,
+    });
+    setIsEditingTask(true);
+  };
+
   // console.log("selctedUser", selectedUser);
   const onFinish = async (values) => {
     if (isAdding && !isEditing) {
@@ -455,10 +498,11 @@ const AddProjectPlan = () => {
       width: 100,
       render: (_, record) => (
         <div className="d-flex justify-content-center gap-2">
+        
           <Button
             size="small"
             className="d-flex align-items-center"
-            onClick={setIsAddingTask(true)}
+            onClick={() => setIsAddingTask(true)}
           >
             <PlusOutlined />
             Task
@@ -552,14 +596,14 @@ const AddProjectPlan = () => {
                   textAlign: "center",
                 }}
                 onClick={() => {
-                  handleEdit(record);
-                  setIsAdding(false);
+                  handleEditTask(record);
+                  setIsAddingTask(false);
                 }}
               />
               <DeleteOutlined
                 type="primary"
                 style={{ color: "red" }}
-                onClick={() => handleDelete(record)}
+                onClick={() => handleDeleteTask(record)}
               />
             </>
           ) : (
@@ -702,7 +746,7 @@ const AddProjectPlan = () => {
                 <Col>
                   {!isAdding &&
                     !isEditing &&
-                    !isAddingTask&&
+                    // !isAddingTask&&
                      (
                       <Button
                         onClick={() => {
@@ -729,8 +773,8 @@ const AddProjectPlan = () => {
                     )}
                 </Col>
                 <Col align="left" style={{ width: "100%" }}>
-                  {(isAdding || isEditing) &&
-                    (!isAddingTask || !isEditingTask) && (
+                  {(isAdding || isEditing) &&(
+                    // (!isAddingTask || !isEditingTask) && (
                       <Card>
                         {isAdding ? (
                           <h4 className="text-info">Add Module</h4>
@@ -967,10 +1011,13 @@ const AddProjectPlan = () => {
                     )}
                 </Col>
                 <Col align="left" style={{ width: "100%" }}>
-                  {(!isAdding ||
-                    !isEditing ||
+                  {(
+                    // !isAdding ||
+                    // !isEditing )
+                    // ||
                     isAddingTask ||
-                    isEditingTask) && (
+                    isEditingTask) && 
+                    (
                     <Card>
                       {isAddingTask ? (
                         <h4 className="text-info">Add Task</h4>

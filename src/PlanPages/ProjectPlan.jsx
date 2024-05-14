@@ -15,6 +15,7 @@ import {
   UserOutlined,
   CloseCircleOutlined,
   CheckCircleOutlined,
+  ClockCircleOutlined,
   FileTextOutlined,
 } from "@ant-design/icons";
 import {
@@ -113,7 +114,8 @@ const ProjectPlan = () => {
           : "wait",
       icon:
         projectStage === "inprocess" ? (
-          <LoadingOutlined />
+          // <LoadingOutlined />
+          <ClockCircleOutlined />
         ) : (
           <SolutionOutlined />
         ),
