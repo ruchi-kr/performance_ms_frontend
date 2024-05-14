@@ -267,7 +267,7 @@ const AddProjectPlan = () => {
             message: "Success",
             description: "Record deleted Successfully.",
           });
-          getModuleTaskList();
+          // getModuleTaskList();
         } catch (error) {
           // console.error("Error Adding project:", error);
           notification.error({

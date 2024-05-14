@@ -26,6 +26,7 @@ import Test from "./Pages/Test";
 import ManagerParticularEmployeeReport from "./Pages/ManagerParticularEmployeeReport";
 import AddProjectPlan from "./Pages/AddProjectPlan";
 import ProjectPlan from "./PlanPages/ProjectPlan";
+import ProjectPlan2 from "./PlanPages/ProjectPlan2";
 import AddModuleTasks from "./Pages/AddModuleTasks";
 
 function App() {
@@ -92,6 +93,7 @@ function App() {
 
             {/* project plan route */}
             <Route path="/projectplan" element={<ProjectPlan />} />
+            <Route path='/projectplan2' element={<ProjectPlan2/>}/>
 
             <Route path="/test" element={<Test />} />
           </Routes>
