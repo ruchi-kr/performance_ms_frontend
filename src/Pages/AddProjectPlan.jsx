@@ -746,7 +746,7 @@ const AddProjectPlan = () => {
                               </Col>
                             </Row>
                             <Row gutter={24}>
-                              <Col span={6}>
+                            <Col span={6}>
                                 <Form.Item
                                   label="Project"
                                   name="project_id"
@@ -776,6 +776,9 @@ const AddProjectPlan = () => {
                                   </Select>
                                 </Form.Item>
                               </Col>
+                            </Row>
+                            <Row gutter={24}>
+                             
                               <Col span={6}>
                                 <Form.Item
                                   label="Module Name"
@@ -866,9 +869,6 @@ const AddProjectPlan = () => {
                                   />
                                 </Form.Item>
                               </Col>
-                            </Row>
-
-                            <Row gutter={16}>
                               <Col span={4}>
                                 <Form.Item
                                   label="Schd. Start Date"
@@ -915,6 +915,7 @@ const AddProjectPlan = () => {
                               </Col>
                             </Row>
 
+                          
                             <Row justify="start">
                               <Col>
                                 <Form.Item>
