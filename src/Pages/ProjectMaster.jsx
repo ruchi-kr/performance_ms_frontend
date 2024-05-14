@@ -103,6 +103,7 @@ const ProjectMaster = () => {
             window.location.reload()                             //reloading the page
         } catch (err) {
             console.log("error deleting project", err);                                 //if error occurs then log it
+            toast.error(err.response.data.error)
         }
     }
     // edit projects function

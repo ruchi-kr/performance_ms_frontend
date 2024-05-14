@@ -1,5 +1,6 @@
 import {
   ArrowUpOutlined,
+  ArrowLeftOutlined,
   DeleteFilled,
   EditFilled,
   EditOutlined,
@@ -730,10 +731,10 @@ const AddProjectPlan = () => {
         <div className="content">
           <div className="container-fluid bg-white">
             <div className="row my-5">
-              <Row justify={"center"} style={{ marginBottom: "3rem" }}>
+              <Row justify={"start"} style={{ marginBottom: "3rem" }}>
                 <Col style={{ paddingBottom: "0" }}>
-                  <Title level={3} className="text-info text-capitalize">
-                    {projectName}
+                  <Title level={3} >
+                    Project - <span className="text-info text-capitalize">{projectName}</span>
                   </Title>
                 </Col>
               </Row>
@@ -779,11 +780,9 @@ const AddProjectPlan = () => {
                 <Col>
                   <NavLink
                     to={`/projectplan`}
-                    className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                    
                   >
-                    <span className="fs-4"> &larr; </span>&nbsp;Back To All
-                    Plans
-                  </NavLink>
+<ArrowLeftOutlined style={{ fontSize: '1.5rem' }} />                  </NavLink>
                 </Col>
                 <Col>
                   {/* <label className="text-info" style={{ marginBottom: "10px" }}>
