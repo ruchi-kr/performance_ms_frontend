@@ -218,6 +218,9 @@ const AddProjectPlan = () => {
       behavior: "smooth", // Optional: smooth scrolling animation
     });
     setIsEditing(true);
+    setIsAdding(false);
+    setIsEditingTask(false);
+    setIsAddingTask(false);
     console.log("type of user active", moment(record.from_date));
     getProjectStartEndDate(record.project_id);
     form.setFieldsValue({
@@ -228,7 +231,6 @@ const AddProjectPlan = () => {
       to_date: dayjs(record.to_date),
       status: record.status,
     });
-    setIsEditing(true);
   };
   // const handleEditTask = (record) => {
   //   console.log("handle edit", record);
