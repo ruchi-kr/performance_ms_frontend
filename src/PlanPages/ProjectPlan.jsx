@@ -159,7 +159,7 @@ const ProjectPlan = () => {
                     allowClear={true}
                     onChange={projectChangeHandler}
                     placeholder="Select Project"
-                    style={{ width: "100%" }}
+                    style={{ width: "28rem" }}
                   >
                     {projectList.map((project) => (
                       <Option

@@ -136,7 +136,7 @@ const AddProjectPlan = () => {
       //   `http://localhost:8000/api/admin/getModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
       // );
       const response = await axios.get(
-        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
       );
       console.log("module list", response.data.data);
       setModuleList(response.data.data);
@@ -208,6 +208,15 @@ const AddProjectPlan = () => {
   };
   const handleEdit = (record) => {
     console.log("handle edit", record);
+    console.clear();
+    console.log("Scroll Height:----->", document.body.scrollHeight);
+
+    // Scroll to the bottom of the page
+    window.scrollTo({
+      // top: document.body.scrollHeight,
+      top: 3000,
+      behavior: "smooth", // Optional: smooth scrolling animation
+    });
     setIsEditing(true);
     console.log("type of user active", moment(record.from_date));
     getProjectStartEndDate(record.project_id);
@@ -297,6 +306,11 @@ const AddProjectPlan = () => {
     setIsEditing(false);
     setIsAdding(false);
     setIsAddingTask(false);
+    window.scrollTo({
+      // top: document.body.scrollHeight,
+      top: 2000,
+      behavior: "smooth", // Optional: smooth scrolling animation
+    });
     // console.log("type of user active", moment(record.from_date));
     // getProjectStartEndDate(record.project_id);
     formTask.setFieldsValue({
@@ -414,6 +428,11 @@ const AddProjectPlan = () => {
 
   const handleReset = () => {
     form.resetFields();
+    formTask.resetFields();
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: smooth scrolling animation
+    });
     setSearch("");
     setIsAdding(false);
     setIsAddingTask(false);
@@ -500,13 +519,15 @@ const AddProjectPlan = () => {
 
   const columns = [
     {
-      title: "S.No",
+      title: "S.No.",
       dataIndex: "module_id",
       key: "module_id",
       render: (_, record, index) => {
         // Calculate the serial number based on the current page and the index of the item
         return (pagination.currentPage - 1) * pagination.pageSize + index + 1;
       },
+      width: "5%",
+      align: "center",
     },
     {
       title: (
@@ -530,21 +551,23 @@ const AddProjectPlan = () => {
       dataIndex: "from_date",
       key: "from_date",
       render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
+      width: "10%",
     },
     {
       title: "Schd. End Dt.",
       dataIndex: "to_date",
       key: "to_date",
       render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
+      width: "10%",
     },
 
     {
       title: "Status  ",
       dataIndex: "status",
       key: "status",
-      align: "center",
 
-      // render: (text) => (text ? "Active" : "Inactive"),
+      render: (text) => <p className="text-capitalize">{text}</p>,
+      width: "10%",
     },
 
     {
@@ -552,7 +575,7 @@ const AddProjectPlan = () => {
       dataIndex: "action",
       align: "center",
       key: "action",
-      width: 100,
+      width: "15%",
       render: (_, record) => (
         <div className="d-flex justify-content-center gap-2">
           <Button
@@ -563,6 +586,11 @@ const AddProjectPlan = () => {
               setIsEditingTask(false);
               setIsAdding(false);
               setIsEditing(false);
+              window.scrollTo({
+                // top: document.body.scrollHeight,
+                top: 2000,
+                behavior: "smooth", // Optional: smooth scrolling animation
+              });
               formTask.setFieldsValue({ module_id: record.module_id });
             }}
           >
@@ -572,6 +600,7 @@ const AddProjectPlan = () => {
           <EditFilled
             type="primary"
             style={{
+              marginLeft: "9px",
               marginRight: "9px",
               color: "green",
               textAlign: "center",
@@ -596,12 +625,14 @@ const AddProjectPlan = () => {
       title: <div className="text-primary">S.No</div>,
       dataIndex: "task_id",
       key: "task_id",
+      align: "center",
+      width: "5%",
       render: (_, record, index) => {
         // Calculate the serial number based on the current page and the index of the item
         if (record.task_id === null) {
           return "-";
         }
-        return (pagination.currentPage - 1) * pagination.pageSize + index + 1;
+        return index + 1;
       },
     },
     {
@@ -615,6 +646,8 @@ const AddProjectPlan = () => {
       title: <div className="text-primary">Allocated Time</div>,
       dataIndex: "allocated_time",
       key: "allocated_time",
+      width: "15%",
+      align: "center",
       render: (text) => `${text ? `${text} hrs` : "-"}`,
     },
     {
@@ -629,7 +662,7 @@ const AddProjectPlan = () => {
       dataIndex: "action",
       align: "center",
       key: "action",
-      width: 100,
+      width: "20%",
       // render: (_, record) => (
       //   <div>
 
@@ -659,7 +692,8 @@ const AddProjectPlan = () => {
               <EditOutlined
                 type="primary"
                 style={{
-                  marginRight: "9px",
+                  marginRight: "1rem",
+                  marginLeft: "9px",
                   color: "green",
                   textAlign: "center",
                 }}
@@ -770,7 +804,7 @@ const AddProjectPlan = () => {
                 dataSource={moduleList}
                 loading={loading}
                 bordered
-                size="small"
+                size="large"
                 pagination={false}
                 // scroll={{ y: false }} // Disable vertical scroll
                 style={{
@@ -791,6 +825,7 @@ const AddProjectPlan = () => {
               />
 
               <Pagination
+                disabled="true"
                 current={pagination.currentPage}
                 total={pagination.totalRecords}
                 pageSize={pagination.pageSize}
@@ -799,7 +834,7 @@ const AddProjectPlan = () => {
                 onShowSizeChange={pageSizeChange}
                 showQuickJumper={true}
                 showPrevNextJumpers={true}
-                showSizeChanger={true}
+                // showSizeChanger={true}
                 onPrev={() => handlePageChange(pagination.prevPage)}
                 onNext={() => handlePageChange(pagination.nextPage)}
                 style={{
