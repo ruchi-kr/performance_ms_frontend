@@ -158,49 +158,7 @@ const ProjectMaster = () => {
     });
   };
 
-  // const openProjectEdit = async (project) => {
-  //     setEditingProject(project);
-  //     setModalVisible(true);
-  //     setFormDisabled(false);
-  //     projectForm.setFieldsValue({
-  //         project_name: project.project_name,
-  //         stage: project.stage,
-  //         schedule_start_date: project.schedule_start_date.split('T')[0], // Display only the date part
-  //         schedule_end_date: project.schedule_end_date.split('T')[0] // Display only the date part
-  //     });
-  // };
-
-  // const openProjectEdit = async (project) => {
-  //     setEditingProject(project);
-  //     setModalVisible(true);
-  //     setFormDisabled(false);
-  //     projectForm.setFieldsValue({
-  //         project_name: project.project_name,
-  //         stage: project.stage,
-  //         schedule_start_date: project.schedule_start_date.split('T')[0], // Display only the date part
-  //         schedule_end_date: project.schedule_end_date.split('T')[0] // Display only the date part
-  //     });
-
-  //     const values = projectForm.getFieldsValue(['stage']);
-  //     const newStage = values['stage'];
-  //     console.log("new stage", newStage);
-  //     console.log("old stage", project.stage);
-
-  //     if (newStage !== project.stage && newStage !== undefined) {
-  //         confirm({
-  //             title: 'Are you sure?',
-  //             icon: <ExclamationCircleFilled />,
-  //             content: 'Once project stage is escalated, you will not be able to move backwards.',
-  //             onOk() {
-  //                 console.log('OK');
-  //                 projectForm.setFieldsValue({ stage: newStage });
-  //             },
-  //             onCancel() {
-  //                 console.log('Cancel');
-  //             },
-  //         });
-  //     }
-  // };
+ 
 
   const openProjectEdit = async (project) => {
     setEditingProject(project);
@@ -232,6 +190,7 @@ const ProjectMaster = () => {
         },
         onCancel() {
           console.log("Cancel");
+          projectForm.setFieldsValue({ stage: editingProject.stage });
         },
       });
     }
@@ -243,11 +202,11 @@ const ProjectMaster = () => {
     console.log("selected value for disabling", selectedValue.stage);
     switch (selectedValue.stage) {
       case "rfp":
-        return ["rfp"].includes(optionValue);
+        return ["rfp","inprocess","completed"].includes(optionValue);
       case "lost":
         return ["rfp", "won", "inprocess", "completed", "scrapped"].includes(optionValue);        
       case "won":
-        return ["rfp", "lost"].includes(optionValue);
+        return ["rfp", "lost","completed"].includes(optionValue);
       case "inprocess":
         return ["rfp", "lost", "won"].includes(optionValue);
       case "completed":

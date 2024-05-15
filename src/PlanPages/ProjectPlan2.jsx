@@ -17,6 +17,9 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   FileTextOutlined,
+  ArrowDownOutlined,
+  FilePdfOutlined,
+  FileExcelOutlined,
 } from "@ant-design/icons";
 import {
   getAllModules,
@@ -30,10 +33,23 @@ import { Steps } from "antd";
 import { Link } from "react-router-dom";
 import { render } from "@testing-library/react";
 
+import { saveAs } from "file-saver";
+import { Document, Page, pdfjs } from "react-pdf";
+// import { pdf } from "react-pdf";
+
+import { Button } from "antd";
+import * as XLSX from "xlsx";
+
 const { Option } = Select;
 const { Search } = Input;
 
 const ProjectPlan = () => {
+  // for excel pdf
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pdfData, setPdfData] = useState(null);
+  const [excelData, setExcelData] = useState(null);
+
   const [allData, setAllData] = useState("");
   const [projectList, setProjectList] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
@@ -158,6 +174,69 @@ const ProjectPlan = () => {
     getProjectPlanData();
   }, [selectedProjectId]);
 
+  // function for excel pdf
+  // const generatePDF = async () => {
+  //   try {
+  //     const pdfBlob = await pdf(
+  //       <div>
+  //         <h1>Project Plan</h1>
+  //         {/* Add your table and other content here */}
+  //       </div>
+  //     ).toBlob();
+  //     setPdfData(pdfBlob);
+  //   } catch (error) {
+  //     console.log("Error generating PDF", error);
+  //   }
+  // };
+
+  const generatePDF = async () => {
+    try {
+      const pdfData = (
+        <Document>
+          <Page>
+            <div>
+              <h1>Project Plan</h1>
+              {/* Add your table and other content here */}
+            </div>
+          </Page>
+        </Document>
+      );
+  
+      // Convert the PDF data to a blob
+      const pdfBlob = await pdfjs(pdfData).toBlob();
+      setPdfData(pdfBlob);
+    } catch (error) {
+      console.log("Error generating PDF", error);
+    }
+  };
+
+  const generateExcel = () => {
+    try {
+      const ws = XLSX.utils.json_to_sheet(allData);
+      const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+      const excelBlob = XLSX.write(wb, { bookType: "xlsx", type: "blob" });
+      setExcelData(excelBlob);
+    } catch (error) {
+      console.log("Error generating Excel", error);
+    }
+  };
+
+  const downloadPDF = () => {
+    if (pdfData) {
+      saveAs(pdfData, "project_plan.pdf");
+    } else {
+      generatePDF();
+    }
+  };
+
+  const downloadExcel = () => {
+    if (excelData) {
+      saveAs(excelData, "project_plan.xlsx");
+    } else {
+      generateExcel();
+    }
+  };
+
   return (
     <>
       <Header />
@@ -210,7 +289,7 @@ const ProjectPlan = () => {
                     </Steps>
 
                     {/* add project row */}
-                    <div className="row my-4">
+                    <div className="row my-4 d-flex align-items-center justify-content-between">
                       <div className="col-2">
                         <NavLink
                           to={`/addprojectplan/?project_id=${selectedProjectId}&stage=${selectedProjectStage}`}
@@ -218,6 +297,10 @@ const ProjectPlan = () => {
                         >
                           <span className="fs-4"> + </span>&nbsp;Add Plan
                         </NavLink>
+                      </div>
+                      <div className="col-2 d-flex align-items-center gap-2">
+                        <Button onClick={downloadPDF} size="small" type="primary" className="d-flex align-items-center"><ArrowDownOutlined /><FilePdfOutlined />PDF</Button>
+                        <Button onClick={downloadExcel} size="small" type="primary" className="d-flex align-items-center"><ArrowDownOutlined /><FileExcelOutlined />Excel</Button>
                       </div>
                     </div>
 
