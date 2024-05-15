@@ -550,6 +550,7 @@ const AddProjectPlan = () => {
       ),
       dataIndex: "module_name",
       key: "module_name",
+      render: (text) => <p className="text-capitalize">{text}</p>,
     },
 
     {
@@ -567,15 +568,41 @@ const AddProjectPlan = () => {
       width: "10%",
     },
 
+    // {
+    //   title: "Status  ",
+    //   dataIndex: "status",
+    //   key: "status",
+
+    //   render: (text) => <p className="text-capitalize">{text}</p>,
+    //   width: "10%",
+    // },
     {
-      title: "Status  ",
+      title: "Status",
       dataIndex: "status",
       key: "status",
-
-      render: (text) => <p className="text-capitalize">{text}</p>,
+      render: (text) => {
+          let color = '';
+          switch (text) {
+              case "ongoing":
+                  color = 'text-primary';
+                  break;
+              case "notstarted":
+                  color = 'text-warning';
+                  break;
+              case "completed":
+                  color = 'text-success';
+                  break;
+              case "scrapped":
+                  color = 'text-danger';
+                  break;
+              default:
+                  color = 'text-dark';
+                  break;
+          }
+          return <p className={`text-capitalize ${color} `}>{text}</p>;
+      },
       width: "10%",
-    },
-
+  },
     {
       title: "Action",
       dataIndex: "action",

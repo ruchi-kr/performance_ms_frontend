@@ -238,6 +238,7 @@ const ProjectMaster = () => {
   };
 
   const isOptionDisabled = (optionValue) => {
+    console.log("option value", optionValue);
     const selectedValue = projectForm.getFieldsValue(['stage']);
     console.log("selected value for disabling", selectedValue.stage);
     switch (selectedValue.stage) {
