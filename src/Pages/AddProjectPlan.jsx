@@ -335,7 +335,8 @@ const AddProjectPlan = () => {
           stage: stage,
         });
         getModuleListHandler();
-        handleReset();
+        form.resetFields(["module_name", "from_date", "to_date", "status"]);
+        // handleReset();
         notification.success({
           message: "Module Added.",
           description: "Successfully",
@@ -381,8 +382,10 @@ const AddProjectPlan = () => {
           ...values,
           stage: stage,
         });
+        formTask.resetFields(["task_name", "allocated_time"]);
         getModuleListWithTasks();
-        handleReset();
+        // handleReset();
+        // form.resetField("task_name")
         notification.success({
           message: "Task Added.",
           description: "Successfully",
