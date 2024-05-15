@@ -26,7 +26,7 @@ const user_type = JSON.parse(sessionStorage.getItem('user_type'));
     return (
         <>
             {/* Navbar */}
-            <nav className="main-header navbar navbar-expand d-flex align-items-center bg-dark">
+            <nav className={`main-header navbar navbar-expand d-flex align-items-center bg-dark ${window.location.pathname === '/projectplan' ? 'navbar-collapse' : ''}`}>
                 {/* Left navbar links */}
                 <ul className="navbar-nav">
                     <li className="nav-item">

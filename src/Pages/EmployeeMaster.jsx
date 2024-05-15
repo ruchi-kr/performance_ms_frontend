@@ -293,7 +293,10 @@ const EmployeeMaster = () => {
                   okButtonProps={{
                     style: { display: formDisabled ? "none" : "" },
                   }}
-                  width={500}
+                  width={550}
+                  style={{
+                    top: 35,
+                  }}
                   centered
                 >
                   <Form
@@ -303,7 +306,7 @@ const EmployeeMaster = () => {
                     disabled={formDisabled}
                   >
                     {/* <p className='text-info text-decoration-underline'>Employee Details</p> */}
-                    <Row gutter={[8, 4]}>
+                    <Row gutter={[8, 1]}>
                       <Col span={12}>
                         <Form.Item
                           name="name"
@@ -373,7 +376,7 @@ const EmployeeMaster = () => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={[8, 4]}>
+                    <Row gutter={[8, 1]}>
                       <Col span={12}>
                         <Form.Item
                           name="doj"
@@ -404,7 +407,7 @@ const EmployeeMaster = () => {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={[8, 4]}>
+                    <Row gutter={[8, 1]}>
                     <Col span={12}>
                         <Form.Item
                           name="dob"
@@ -554,7 +557,7 @@ const EmployeeMaster = () => {
                         <></>
                       )}
                     </Row>
-                    <Row gutter={[8, 4]}>
+                    <Row gutter={[8, 1]}>
                       <Col span={24}>
                         <Form.Item
                           name="skills"
@@ -566,7 +569,7 @@ const EmployeeMaster = () => {
                           <TextArea
                             placeholder="write relevant skills here"
                             autoSize={{
-                              minRows: 2,
+                              minRows: 1,
                               maxRows: 6,
                             }}
                             allowClear

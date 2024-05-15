@@ -27,7 +27,7 @@ const SideNavbar = () => {
   return (
     <>
       {/* Main Sidebar Container */}
-      <aside className="main-sidebar bg-dark elevation-2 mb-3 ">
+      <aside className="main-sidebar bg-dark elevation-2 mb-3">
         {/* Brand Logo */}
         {user_type == "1" ? (
           <>
@@ -63,23 +63,32 @@ const SideNavbar = () => {
             >
               {user_type == "1" ? (
                 <>
-                  <li className="nav-item btnhovergrey mt-3">
+                  <li className="nav-item  btnhovergrey mt-3">
                     <Link
                       className={`nav-link text-white ${
-                        window.location.pathname === "/projectmaster"
+                        window.location.pathname === "/designationmaster"
                           ? "bg-cyan"
                           : ""
                       }`}
-                      to="/projectmaster"
+                      to="/designationmaster"
                     >
-                      <FontAwesomeIcon
-                        className="nav-icon"
-                        icon={faFolderOpen}
-                      />
-                      <p>Project Master</p>
+                      <FontAwesomeIcon className="nav-icon" icon={faUsers} />
+                      <p>Designation Master</p>
                     </Link>
                   </li>
-
+                  <li className="nav-item btnhovergrey mt-3">
+                    <Link
+                      className={`nav-link text-white ${
+                        window.location.pathname === "/jobrolemaster"
+                          ? "bg-cyan"
+                          : ""
+                      }`}
+                      to="/jobrolemaster"
+                    >
+                      <FontAwesomeIcon className="nav-icon" icon={faUsers} />
+                      <p>Job Role Master</p>
+                    </Link>
+                  </li>
                   <li className="nav-item  btnhovergrey mt-3">
                     <Link
                       className={`nav-link text-white ${
@@ -108,33 +117,8 @@ const SideNavbar = () => {
                       <p>User Master</p>
                     </Link>
                   </li>
-                  <li className="nav-item  btnhovergrey mt-3">
-                    <Link
-                      className={`nav-link text-white ${
-                        window.location.pathname === "/designationmaster"
-                          ? "bg-cyan"
-                          : ""
-                      }`}
-                      to="/designationmaster"
-                    >
-                      <FontAwesomeIcon className="nav-icon" icon={faUsers} />
-                      <p>Designation Master</p>
-                    </Link>
-                  </li>
-                  <li className="nav-item btnhovergrey mt-3">
-                    <Link
-                      className={`nav-link text-white ${
-                        window.location.pathname === "/jobrolemaster"
-                          ? "bg-cyan"
-                          : ""
-                      }`}
-                      to="/jobrolemaster"
-                    >
-                      <FontAwesomeIcon className="nav-icon" icon={faUsers} />
-                      <p>Job Role Master</p>
-                    </Link>
-                  </li>
-                  <li className="nav-item btnhovergrey mt-3">
+                  
+                  {/* <li className="nav-item btnhovergrey mt-3">
                     <Link
                       className={`nav-link text-white ${
                         window.location.pathname === "/modulemaster"
@@ -149,7 +133,24 @@ const SideNavbar = () => {
                       />
                       <p>Module Master</p>
                     </Link>
+                  </li> */}
+                  <li className="nav-item btnhovergrey mt-3">
+                    <Link
+                      className={`nav-link text-white ${
+                        window.location.pathname === "/projectmaster"
+                          ? "bg-cyan"
+                          : ""
+                      }`}
+                      to="/projectmaster"
+                    >
+                      <FontAwesomeIcon
+                        className="nav-icon"
+                        icon={faFolderOpen}
+                      />
+                      <p>Project Master</p>
+                    </Link>
                   </li>
+
                   <li className="nav-item btnhovergrey mt-3">
                     <Link
                       className={`nav-link text-white ${
@@ -200,7 +201,7 @@ const SideNavbar = () => {
                             className="nav-icon"
                             icon={faFolderOpen}
                           />
-                          <p>DTS</p>
+                          <p>Daily Tracking Sheet</p>
                         </Link>
                       </li>
                       <li className="nav-item btnhovergrey mt-3">

@@ -1,4 +1,6 @@
-
+.custom-table > tbody > tr {
+  background-color: rgb(169, 228, 124);
+}
 
 .loginbg {
   background-image: linear-gradient(

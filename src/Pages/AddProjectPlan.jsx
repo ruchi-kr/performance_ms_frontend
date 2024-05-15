@@ -550,21 +550,24 @@ const AddProjectPlan = () => {
       ),
       dataIndex: "module_name",
       key: "module_name",
-      render: (text) => <p className="text-capitalize">{text}</p>,
+      render: (text) => <p className="text-capitalize fs-6 fw-medium">{text}</p>,
     },
 
     {
       title: "Schd. St. Dt.",
       dataIndex: "from_date",
       key: "from_date",
-      render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
+      render: (text) => <span className="fs-6 fw-medium">{moment(text).utcOffset("+05:30").format("DD/MM/YYYY")}</span>,
+      // render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
       width: "10%",
     },
     {
       title: "Schd. End Dt.",
       dataIndex: "to_date",
       key: "to_date",
-      render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
+      render: (text) => <span className="fs-6 fw-medium">{moment(text).utcOffset("+05:30").format("DD/MM/YYYY")}</span>,
+
+      // render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
       width: "10%",
     },
 
@@ -599,7 +602,7 @@ const AddProjectPlan = () => {
                   color = 'text-dark';
                   break;
           }
-          return <p className={`text-capitalize ${color} `}>{text}</p>;
+          return <p className={`text-capitalize ${color} fs-6 fw-medium`}>{text}</p>;
       },
       width: "10%",
   },
@@ -676,7 +679,7 @@ const AddProjectPlan = () => {
     },
 
     {
-      title: <div className="text-primary">Allocated Time</div>,
+      title: <div className="text-primary">Allocated Time (hrs)</div>,
       dataIndex: "allocated_time",
       key: "allocated_time",
       width: "15%",
@@ -841,6 +844,7 @@ const AddProjectPlan = () => {
                 style={{
                   marginBottom: "1rem",
                 }}
+                className="custom-table"
                 expandable={{
                   expandedRowRender: (record) => (
                     <Table
@@ -1226,9 +1230,9 @@ const AddProjectPlan = () => {
                                   />
                                 </Form.Item>
                               </Col>
-                              <Col span={8}>
+                              <Col span={4}>
                                 <Form.Item
-                                  label="Allocated Time"
+                                  label="Allocated Time (hrs)"
                                   name="allocated_time"
                                   rules={[
                                     {
@@ -1236,13 +1240,14 @@ const AddProjectPlan = () => {
                                       message: "Please input allocated time!",
                                     },
                                   ]}
-                                  style={{ width: "100%" }}
+                                  // style={{ width: "25rem" }}
                                 >
                                   <InputNumber
                                     min={0}
-                                    max={100}
-                                    step={1}
-                                    precision={0}
+                                    max={500}
+                                    style={{width:"100%"}}
+                                    // step={0.1}
+                                    // precision={0.1}
                                   />
                                 </Form.Item>
                               </Col>

@@ -183,7 +183,7 @@ const ProjectMaster = () => {
         title: "Are you sure?",
         icon: <ExclamationCircleFilled />,
         content:
-          "Once project stage is escalated, you will not be able to move backwards.",
+          "Once project stage is moved to next stage, you will not be able to revert.",
         onOk() {
           console.log("OK");
           projectForm.setFieldsValue({ stage: newStage });
@@ -446,7 +446,8 @@ const ProjectMaster = () => {
                             {data.schedule_end_date.slice(5, 7)}/
                             {data.schedule_end_date.slice(0, 4)}
                           </td>
-                          <td>{data.stage}</td>
+                          {/* <td >{data.stage}</td> */}
+                          <td className={data.stage === 'rfp' ? 'text-uppercase' : 'text-capitalize'}>{data.stage}</td>
                           <td className="">
                             <EyeOutlined
                               onClick={() => openProjectView(data)}

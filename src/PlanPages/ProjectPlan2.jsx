@@ -298,10 +298,10 @@ const ProjectPlan = () => {
                           <span className="fs-4"> + </span>&nbsp;Add Plan
                         </NavLink>
                       </div>
-                      <div className="col-2 d-flex align-items-center gap-2">
+                      {/* <div className="col-2 d-flex align-items-center gap-2">
                         <Button onClick={downloadPDF} size="small" type="primary" className="d-flex align-items-center"><ArrowDownOutlined /><FilePdfOutlined />PDF</Button>
                         <Button onClick={downloadExcel} size="small" type="primary" className="d-flex align-items-center"><ArrowDownOutlined /><FileExcelOutlined />Excel</Button>
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* project plan table for 3 stages */}
@@ -356,7 +356,7 @@ const ProjectPlan = () => {
                                     <tr>
                                       <td>{index + 1}</td>
                                       <td colSpan={1}>
-                                        <b className="text-primary text-capitalize">
+                                        <b className={`text-primary text-capitalize ${firstModulerfp?.status == 'scrapped' ? 'text-decoration-line-through text-danger' : ''}`}>
                                           {firstModulerfp?.module_name}
                                         </b>
                                       </td>
@@ -390,7 +390,7 @@ const ProjectPlan = () => {
                                         <tr>
                                           <td>{moduleIndex + 1}</td>
                                           <td colSpan={2}>
-                                            <b className="text-primary text-capitalize">
+                                            <b className={`text-primary text-capitalize ${module.status == 'scrapped' ? 'text-decoration-line-through' : ''}`}>
                                               {module.module_name}
                                             </b>
                                           </td>
@@ -482,7 +482,7 @@ const ProjectPlan = () => {
                                       {/* <td>{rfpModules.length == null ? index : index+1}</td> */}
                                       <td>{index}</td>
                                       <td colSpan={1}>
-                                        <b className="text-primary text-capitalize">
+                                        <b className={`text-primary text-capitalize ${firstModulewon?.status == 'scrapped' ? 'text-decoration-line-through' : ''}`}>
                                           {firstModulewon?.module_name}
                                         </b>
                                       </td>
@@ -518,7 +518,7 @@ const ProjectPlan = () => {
                                         <tr>
                                           <td>{moduleIndex + 1}</td>
                                           <td colSpan={2}>
-                                            <b className="text-primary text-capitalize">
+                                            <b className={`text-primary text-capitalize ${module.status == 'scrapped' ? 'text-decoration-line-through' : ''}`}>
                                               {module.module_name}
                                             </b>
                                           </td>
@@ -608,7 +608,7 @@ const ProjectPlan = () => {
                                     <tr>
                                       <td>{index}</td>
                                       <td colSpan={1}>
-                                        <b className="text-primary text-capitalize">
+                                        <b className={`text-primary text-capitalize ${firstModuleinprocess?.status == 'scrapped' ? 'text-decoration-line-through' : ''}`}>
                                           {firstModuleinprocess?.module_name}
                                         </b>
                                       </td>
@@ -655,7 +655,7 @@ const ProjectPlan = () => {
                                           <tr>
                                             <td>{moduleIndex + 1}</td>
                                             <td colSpan={2}>
-                                              <b className="text-primary text-capitalize">
+                                              <b className={`text-primary text-capitalize ${module.status == 'scrapped' ? 'text-decoration-line-through text-red' : ''}`}>
                                                 {module.module_name}
                                               </b>
                                             </td>
