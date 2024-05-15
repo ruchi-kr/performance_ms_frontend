@@ -181,7 +181,7 @@ const ProjectPlan = () => {
                     allowClear={true}
                     onChange={projectChangeHandler}
                     placeholder="Select Project"
-                    style={{ width: "100%" }}
+                    style={{ width: "20rem" }}
                   >
                     {projectList.map((project) => (
                       <Option
@@ -265,26 +265,41 @@ const ProjectPlan = () => {
                               // const firstModulerfp = rfpModules[0];
                               console.log("rfp modules", rfpModules);
                               console.log("first rfp module", firstModulerfp);
-
+                              let serialNumber = 1;
                               return (
                                 <React.Fragment key={index}>
                                   {/* first stage */}
-                                  { rfpModules.length > 0 && (
-                                  <tr>
-                                    <td>{index + 1}</td>
-                                    <td colSpan={1}>
-                                      <b className="text-primary text-capitalize">
-                                        {firstModulerfp?.module_name}
-                                      </b>
-                                    </td>
-                                    <td colSpan={2}>
-                                      <b className="text-primary text-capitalize">
-                                        {firstModulerfp?.from_date.slice(8, 10)}/{firstModulerfp?.from_date.slice(5, 7)}/{firstModulerfp?.from_date.slice(0, 4)}
-                                        <br />
-                                        {firstModulerfp?.to_date.slice(8, 10)}/{firstModulerfp?.to_date.slice(5, 7)}/{firstModulerfp?.to_date.slice(0, 4)}
-                                      </b>
-                                    </td>
-                                  </tr>
+                                  {rfpModules.length > 0 && (
+                                    <tr>
+                                      <td>{index + 1}</td>
+                                      <td colSpan={1}>
+                                        <b className="text-primary text-capitalize">
+                                          {firstModulerfp?.module_name}
+                                        </b>
+                                      </td>
+                                      <td colSpan={2}>
+                                        <b className="text-primary text-capitalize">
+                                          {firstModulerfp?.from_date.slice(
+                                            8,
+                                            10
+                                          )}
+                                          /
+                                          {firstModulerfp?.from_date.slice(
+                                            5,
+                                            7
+                                          )}
+                                          /
+                                          {firstModulerfp?.from_date.slice(
+                                            0,
+                                            4
+                                          )}
+                                          <br />
+                                          {firstModulerfp?.to_date.slice(8, 10)}
+                                          /{firstModulerfp?.to_date.slice(5, 7)}
+                                          /{firstModulerfp?.to_date.slice(0, 4)}
+                                        </b>
+                                      </td>
+                                    </tr>
                                   )}
                                   {rfpModules.map((module, moduleIndex) => (
                                     <React.Fragment key={moduleIndex}>
@@ -298,9 +313,13 @@ const ProjectPlan = () => {
                                           </td>
                                           <td colSpan={1}>
                                             <b className="text-primary text-capitalize">
-                                              {module.from_date.slice(8, 10)}/{module.from_date.slice(5, 7)}/{module.from_date.slice(0, 4)}
+                                              {module.from_date.slice(8, 10)}/
+                                              {module.from_date.slice(5, 7)}/
+                                              {module.from_date.slice(0, 4)}
                                               <br />
-                                              {module.to_date.slice(8, 10)}/{module.to_date.slice(5, 7)}/{module.to_date.slice(0, 4)}
+                                              {module.to_date.slice(8, 10)}/
+                                              {module.to_date.slice(5, 7)}/
+                                              {module.to_date.slice(0, 4)}
                                             </b>
                                           </td>
                                         </tr>
@@ -368,34 +387,48 @@ const ProjectPlan = () => {
                                 (module) => module.stage === "rfp"
                               );
 
-
                               const firstModulewon =
                                 wonModules.length > 0 ? wonModules[0] : null;
                               console.log("won modules", wonModules);
 
                               return (
                                 <React.Fragment key={index}>
-                               {/* { index <= 0 ? null : ( */}
-                               {wonModules.length > 0 && (
-                                   <tr>
-                                    {/* <td>{rfpModules.length == null ? index : index+1}</td> */}
-                                   <td>{index}</td>
-                                   <td colSpan={1}>
-                                     <b className="text-primary text-capitalize">
-                                       {firstModulewon?.module_name}
-                                     </b>
-                                   </td>
-                                   <td colSpan={2}>
-                                     <b className="text-primary text-capitalize">
-                                       {firstModulewon?.from_date.slice(8, 10)}/{firstModulewon?.from_date.slice(5, 7)}/{firstModulewon?.from_date.slice(0, 4)}
-                                       <br />
-                                       {firstModulewon?.to_date.slice(8, 10)}/{firstModulewon?.to_date.slice(5, 7)}/{firstModulewon?.to_date.slice(0, 4)}
-                                     </b>
-                                   </td>
-                                 </tr>
-                               )}
-                               {/* )} */}
-                                  
+                                  {/* { index <= 0 ? null : ( */}
+                                  {wonModules.length > 0 && (
+                                    <tr>
+                                      {/* <td>{rfpModules.length == null ? index : index+1}</td> */}
+                                      <td>{index}</td>
+                                      <td colSpan={1}>
+                                        <b className="text-primary text-capitalize">
+                                          {firstModulewon?.module_name}
+                                        </b>
+                                      </td>
+                                      <td colSpan={2}>
+                                        <b className="text-primary text-capitalize">
+                                          {firstModulewon?.from_date.slice(
+                                            8,
+                                            10
+                                          )}
+                                          /
+                                          {firstModulewon?.from_date.slice(
+                                            5,
+                                            7
+                                          )}
+                                          /
+                                          {firstModulewon?.from_date.slice(
+                                            0,
+                                            4
+                                          )}
+                                          <br />
+                                          {firstModulewon?.to_date.slice(8, 10)}
+                                          /{firstModulewon?.to_date.slice(5, 7)}
+                                          /{firstModulewon?.to_date.slice(0, 4)}
+                                        </b>
+                                      </td>
+                                    </tr>
+                                  )}
+                                  {/* )} */}
+
                                   {wonModules.map((module, moduleIndex) => (
                                     <React.Fragment key={moduleIndex}>
                                       {moduleIndex === 0 ? null : (
@@ -408,9 +441,13 @@ const ProjectPlan = () => {
                                           </td>
                                           <td colSpan={1}>
                                             <b className="text-primary text-capitalize">
-                                              {module.from_date.slice(8, 10)}/{module.from_date.slice(5, 7)}/{module.from_date.slice(0, 4)}
+                                              {module.from_date.slice(8, 10)}/
+                                              {module.from_date.slice(5, 7)}/
+                                              {module.from_date.slice(0, 4)}
                                               <br />
-                                              {module.to_date.slice(8, 10)}/{module.to_date.slice(5, 7)}/{module.to_date.slice(0, 4)}
+                                              {module.to_date.slice(8, 10)}/
+                                              {module.to_date.slice(5, 7)}/
+                                              {module.to_date.slice(0, 4)}
                                             </b>
                                           </td>
                                         </tr>
@@ -484,25 +521,50 @@ const ProjectPlan = () => {
                               );
                               return (
                                 <React.Fragment key={index}>
-                                {  
-                                  inprocessModules.length > 0 && (
-                                     <tr>
-                                     <td>{index}</td>
-                                     <td colSpan={1}>
-                                       <b className="text-primary text-capitalize">
-                                         {firstModuleinprocess?.module_name}
-                                       </b>
-                                     </td>
-                                     <td colSpan={2}>
-                                       <b className="text-primary text-capitalize">
-                                         {firstModuleinprocess?.from_date.slice(8,10)}/{firstModuleinprocess?.from_date.slice(5, 7)}/{firstModuleinprocess?.from_date.slice(0, 4)}
-                                         <br />
-                                         {firstModuleinprocess?.to_date.slice(8,10)}/{firstModuleinprocess?.to_date.slice(5, 7)}/{firstModuleinprocess?.to_date.slice( 0, 4)}
-                                       </b>
-                                     </td>
-                                   </tr>
-                                )}
-                                 
+                                  {inprocessModules.length > 0 && (
+                                    <tr>
+                                      <td>{index}</td>
+                                      <td colSpan={1}>
+                                        <b className="text-primary text-capitalize">
+                                          {firstModuleinprocess?.module_name}
+                                        </b>
+                                      </td>
+                                      <td colSpan={2}>
+                                        <b className="text-primary text-capitalize">
+                                          {firstModuleinprocess?.from_date.slice(
+                                            8,
+                                            10
+                                          )}
+                                          /
+                                          {firstModuleinprocess?.from_date.slice(
+                                            5,
+                                            7
+                                          )}
+                                          /
+                                          {firstModuleinprocess?.from_date.slice(
+                                            0,
+                                            4
+                                          )}
+                                          <br />
+                                          {firstModuleinprocess?.to_date.slice(
+                                            8,
+                                            10
+                                          )}
+                                          /
+                                          {firstModuleinprocess?.to_date.slice(
+                                            5,
+                                            7
+                                          )}
+                                          /
+                                          {firstModuleinprocess?.to_date.slice(
+                                            0,
+                                            4
+                                          )}
+                                        </b>
+                                      </td>
+                                    </tr>
+                                  )}
+
                                   {inprocessModules.map(
                                     (module, moduleIndex) => (
                                       <React.Fragment key={moduleIndex}>

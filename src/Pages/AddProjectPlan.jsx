@@ -780,9 +780,9 @@ const AddProjectPlan = () => {
                 <Col>
                   <NavLink
                     to={`/projectplan`}
-                    
+                   className=" d-flex align-items-center" 
                   >
-<ArrowLeftOutlined style={{ fontSize: '1.5rem' }} />                  </NavLink>
+<ArrowLeftOutlined style={{ fontSize: '1.5rem' }} />&nbsp; Back                </NavLink>
                 </Col>
                 <Col>
                   {/* <label className="text-info" style={{ marginBottom: "10px" }}>
@@ -1091,7 +1091,7 @@ const AddProjectPlan = () => {
                                     // className={styles["login-form-button"]}
                                     // style={{ minWidth: "11rem" }}
                                   >
-                                    {isAdding ? "Add" : "Update"}
+                                    {isAdding ? "Submit" : "Update"}
                                   </Button>
                                 </div>
                               </Form.Item>
@@ -1242,7 +1242,7 @@ const AddProjectPlan = () => {
                                       // className={styles["login-form-button"]}
                                       // style={{ minWidth: "11rem" }}
                                     >
-                                      {isAddingTask ? "Add" : "Update"}
+                                      {isAddingTask ? "Submit" : "Update"}
                                     </Button>
                                   </div>
                                 </Form.Item>

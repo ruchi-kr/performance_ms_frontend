@@ -447,8 +447,9 @@ const EmployeeMaster = () => {
                           rules={[
                             { required: true, message: "Email is required" },
                           ]}
+
                         >
-                          <Input type="email" placeholder="you@example.com" />
+                          <Input type="email" placeholder="you@example.com" allowClear/>
                         </Form.Item>
                       </Col>
                       
@@ -568,6 +569,7 @@ const EmployeeMaster = () => {
                               minRows: 2,
                               maxRows: 6,
                             }}
+                            allowClear
                           />
                         </Form.Item>
                       </Col>
