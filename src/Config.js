@@ -49,6 +49,7 @@ export const loginUrl =`${baseURL}/api/login`;
 export const getManagerList = `${baseURL}/api/admin/getManagersList`;
 export const getDesignationList = `${baseURL}/api/admin/getDesignationList`;
 export const getEmployerList = `${baseURL}/api/admin/getEmployeesList`;
+export const EmployeeList = `${baseURL}/api/admin/EmployeesList`;
 
 // for dashdata counter
 export const getDashData = `${baseURL}/api/getDashData`;

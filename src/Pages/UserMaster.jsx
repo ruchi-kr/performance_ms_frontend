@@ -124,11 +124,12 @@ const UserMaster = () => {
   };
   // edit projects function
 
-  const [userForm] = Form.useForm();
-  let [managerId, setManagerId] = useState(null);
-  let [modalVisible, setModalVisible] = useState(false);
-  const [formDisabled, setFormDisabled] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
+    const [userForm] = Form.useForm();
+    let [managerId, setManagerId] = useState(null);
+    let [modalVisible, setModalVisible] = useState(false);
+    const [formDisabled, setFormDisabled] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
+
 
   const userData = {
     employee_id: "",
@@ -149,47 +150,49 @@ const UserMaster = () => {
     setFormDisabled(false);
   };
 
-  const openUserView = async (user) => {
-    setModalVisible(true);
-    setFormDisabled(true);
-    userForm.setFieldsValue({
-      username: user.username,
-      password: user.password,
-      user_type: user.user_type,
-      status: user.status,
-      employee_id: user.employee_id,
-      // email_id: user.email_id,
-      role: user.role,
-    });
-  };
+    const openUserView = async (user) => {
+        setModalVisible(true);
+        setFormDisabled(true);
+        userForm.setFieldsValue({
+            username: user.username,
+            password: user.password,
+            user_type: user.user_type,
+            status: user.status,
+            employee_id: user.employee_name,
+            // email_id: user.email_id,
+            role: user.role
+        });
+    }
 
-  const openUserEdit = async (user) => {
-    setEditingUser(user);
-    setModalVisible(true);
-    setFormDisabled(false);
-    userForm.setFieldsValue({
-      username: user.username,
-      password: user.password,
-      user_type: user.user_type,
-      status: user.status,
-      employee_id: user.employee_id,
-      // email_id: user.email_id,
-      role: user.role,
-    });
-  };
+    const openUserEdit = async (user) => {
+        setEditingUser(user);
+        setModalVisible(true);
+        setFormDisabled(false);
+        userForm.setFieldsValue({
+            username: user.username,
+            password: user.password,
+            user_type: user.user_type,
+            status: user.status,
+            employee_id: user.employee_name,
+            // email_id: user.email_id,
+            role: user.role
+        });
+    };
 
-  const [userType, setUserType] = useState("");
-  const filterOption = (input, option) =>
-    (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
-  const [employerList, setEmployerList] = useState([]);
-  const [employer, setEmployer] = useState("");
-  const getEmployers = async (value) => {
-    try {
-      const result = await axios.get(`${getEmployerList}`);
-      setEmployerList(result.data);
-      console.log("employer list", result.data);
-    } catch (error) {
-      console.log("Error fetching employer list data", error);
+    const [userType, setUserType] = useState('');
+    const filterOption = (input, option) =>
+        (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+    const [employerList, setEmployerList] = useState([]);
+    const [employer, setEmployer] = useState('')
+    const getEmployers = async (value) => {
+        try {
+            const result = await axios.get(`${EmployeeList}`);
+            setEmployerList(result.data);
+            console.log("employer list", result.data);
+        } catch (error) {
+
+            console.log('Error fetching employer list data', error)
+        }
     }
   };
   useEffect(() => {
@@ -236,80 +239,63 @@ const UserMaster = () => {
               <div className="col-11 mx-auto">
                 {/* user master detailed table */}
 
-                <div className="d-flex justify-content-between">
-                  <h3 className="text-primary">User Details</h3>
-                  <button
-                    className="btn btn-sm btn-info d-flex align-items-center"
-                    onClick={openUserAdd}
-                  >
-                    <span className="fs-4"> + </span>&nbsp;Add User
-                  </button>
-                </div>
-                <hr className="bg-primary border-4" />
-                <div className=" col-2 flex-end">
-                  <label className="text-capitalize fw-bold text-info">
-                    Search by name or email
-                  </label>
+                                <div className='d-flex justify-content-between'>
+                                    <h3 className='text-primary'>User Details</h3>
+                                    <button className='btn btn-sm btn-info d-flex align-items-center' onClick={openUserAdd} >
+                                        <span className='fs-4'> + </span>&nbsp;Add User
+                                    </button>
+                                </div>
+                                <hr className='bg-primary border-4' />
+                                <div className=" col-2 flex-end">
+                                    <label className="text-capitalize fw-bold text-info">
+                                        Search by name or email
+                                    </label>
+                                    
+                                    <Search
+                                        placeholder="search by username, email or role"
+                                        allowClear
+                                        // onSearch={onSearch}
+                                        style={{
+                                            width: 200,
+                                        }}
+                                        value={search} onChange={(e) => setSearch(e.target.value)}
+                                    />
+                                </div>
+                                {/* modal */}
+                                <Modal title={editingUser ? 'Edit User' : 'Add User'} visible={modalVisible}
+                                    onOk={userFormSubmit}
+                                    onCancel={() => {
+                                        setModalVisible(false);
+                                        setEditingUser(null);
+                                    }}
+                                    okText="Submit"
+                                    okButtonProps={{ style: { display: formDisabled ? 'none' : '' } }}
+                                    width={500}
+                                    centered
+                                >
+                                    <Form form={userForm} onFinish={userFormSubmit} layout="vertical" disabled={formDisabled}>
+                                        {/* <p className='text-info text-decoration-underline'>User Details</p> */}
+                                        <Row gutter={[8, 4]}>
+                                            <Col span={12}>
+                                                <Form.Item name="employee_id" label={<span className='text-info'>Employer Name</span>}
 
-                  <Search
-                    placeholder="search by username, email or role"
-                    allowClear
-                    // onSearch={onSearch}
-                    style={{
-                      width: 200,
-                    }}
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </div>
-                {/* modal */}
-                <Modal
-                  title={editingUser ? "Edit User" : "Add User"}
-                  visible={modalVisible}
-                  onOk={userFormSubmit}
-                  onCancel={() => {
-                    setModalVisible(false);
-                    setEditingUser(null);
-                  }}
-                  okText="Submit"
-                  okButtonProps={{
-                    style: { display: formDisabled ? "none" : "" },
-                  }}
-                  width={500}
-                  centered
-                >
-                  <Form
-                    form={userForm}
-                    onFinish={userFormSubmit}
-                    layout="vertical"
-                    disabled={formDisabled}
-                  >
-                    {/* <p className='text-info text-decoration-underline'>User Details</p> */}
-                    <Row gutter={[8, 4]}>
-                      <Col span={12}>
-                        <Form.Item
-                          name="employee_id"
-                          label={
-                            <span className="text-info">Employer Name</span>
-                          }
-                          rules={[
-                            {
-                              required: true,
-                              message: "Employer Name is required",
-                            },
-                          ]}
-                        >
-                          <Select
-                            showSearch
-                            allowClear
-                            placeholder="Select"
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            onChange={handleEmployerSearch}
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            <Option value="">Select</Option>
+                                                    rules={[
+                                                        { required: true, message: 'Employer Name is required' },
+                                                    ]}
+                                                >
+                                                    <Select
+                                                        showSearch
+                                                        allowClear
+                                                        placeholder="Select"
+                                                        optionFilterProp="children"
+                                                        filterOption={filterOption}
+                                                        onChange={handleEmployerSearch}
+                                                        style={{ width: "100%" }}
+                                                        className="rounded-2"
+                                                        disabled={editingUser}
+                                                    >
+
+                                                        <Option value="" disabled>Select</Option>
 
                             {employerList.map((employer, index) => (
                               <Option
@@ -355,175 +341,134 @@ const UserMaster = () => {
                                                     </Select>
                                                 </Form.Item>
                                             </Col> */}
-                      <Col span={12}>
-                        <Form.Item
-                          name="role"
-                          label={<span className="text-info">Role</span>}
-                        >
-                          <Select
-                            showSearch
-                            allowClear
-                            placeholder="Select"
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            onChange={handleUserTypeSearch}
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            <Option value="">Select</Option>
-                            <Option value="manager" className="text-info">
-                              Manager
-                            </Option>
-                            <Option value="employee" className="text-info">
-                              Employee
-                            </Option>
-                            <Option value="management" className="text-info">
-                              Management
-                            </Option>
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          name="user_type"
-                          label={<span className="text-info">User Type</span>}
-                          rules={[
-                            {
-                              required: true,
-                              message: "User Type is required",
-                            },
-                          ]}
-                        >
-                          <Select
-                            showSearch
-                            allowClear
-                            placeholder="Select"
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            onChange={handleUserTypeSearch}
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            <Option value="">Select</Option>
-                            <Option value="1">Admin</Option>
-                            <Option value="0">General</Option>
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          name="status"
-                          label={<span className="text-info">Status</span>}
-                          rules={[
-                            { required: true, message: "Status is required" },
-                          ]}
-                        >
-                          <Select
-                            showSearch
-                            allowClear
-                            placeholder="Select"
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            onChange={handleUserTypeSearch}
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            <Option value="">Select</Option>
-                            <Option value="active" className="text-success">
-                              Active
-                            </Option>
-                            <Option value="inactive" className="text-danger">
-                              Inactive
-                            </Option>
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          name="username"
-                          label={<span className="text-info">Username</span>}
-                          rules={[
-                            { required: true, message: "Username is required" },
-                            {
-                              pattern: /^[&,.\-_\w\s]{1,10}$/,
-                              message:
-                                "Please enter a valid Username (up to 20 characters, only &, , ., -, _ special characters are allowed)",
-                            },
-                          ]}
-                        >
-                          <Input type="text" placeholder="username" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          name="password"
-                          label={<span className="text-info">Password</span>}
-                          rules={[
-                            { required: true, message: "Password is required" },
-                            {
-                              pattern: /^[@,&,.\-_\w\s]{8,20}$/,
-                              message:
-                                "Please enter a valid Password (up to 8-20 characters, only @, &, , ., -, _ special characters are allowed)",
-                            },
-                          ]}
-                        >
-                          <Input type="password" placeholder="password" />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Modal>
-                {/* table */}
-                <table className="table table-striped table-hover mt-5">
-                  <thead>
-                    <tr>
-                      <th scope="col">S.No.</th>
-                      <th scope="col">
-                        <div className="d-flex">
-                          <div>Username</div>
+                                            <Col span={12}>
+                                                <Form.Item name="role" label={<span className='text-info'>Role</span>}
+                                                   
+                                                >
+                                                    <Select
+                                                        showSearch
+                                                        allowClear
+                                                        placeholder="Select"
+                                                        optionFilterProp="children"
+                                                        filterOption={filterOption}
+                                                        onChange={handleUserTypeSearch}
+                                                        style={{ width: "100%" }}
+                                                        className="rounded-2"
+                                                    >
+                                                        <Option value="">Select</Option>
+                                                        <Option value="manager" className='text-info'>Manager</Option>
+                                                        <Option value="employee" className='text-info'>Employee</Option>
+                                                        <Option value="management" className='text-info'>Management</Option>
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={12}>
+                                                <Form.Item name="user_type" label={<span className='text-info'>User Type</span>}
+                                                    rules={[
+                                                        { required: true, message: 'User Type is required' },
 
-                          <ArrowUpOutlined
-                            style={{ marginLeft: 18, fontSize: "1rem" }}
-                            onClick={handleSortChange}
-                            rotate={sortOrder === "ASC" ? 0 : 180}
-                          />
-                        </div>
-                      </th>
-                      <th scope="col">Password</th>
-                      <th scope="col">User Type</th>
-                      <th scope="col">Employee Name</th>
-                      {/* <th scope="col">Email</th> */}
-                      <th scope="col">Role</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="table-group-divider">
-                    {allUserData.map((data, index) => {
-                      return (
-                        <tr key={data.user_id}>
-                          <th scope="row">{index + 1}</th>
-                          <td>{data.username}</td>
-                          <td className="text-capitalize">{data.password}</td>
-                          <td className="text-capitalize">
-                            {data.user_type === 1 ? "admin" : "general"}
-                          </td>
-                          <td className="text-capitalize">
-                            {data.employee_name}
-                          </td>
-                          {/* <td className='text-capitalize'>{data.email}</td> */}
-                          <td className="text-capitalize">{data.role}</td>
-                          <td
-                            className={`text-capitalize ${
-                              data.status === "active"
-                                ? "text-success"
-                                : "text-danger"
-                            }`}
-                          >
-                            {data.status}
-                          </td>
-                          <td className="">
-                            {/* <button className="btn btn-primary btn-sm" onClick={() => openUserEdit(data)} >Edit</button>
+                                                    ]}
+                                                >
+
+                                                    <Select
+                                                        showSearch
+                                                        allowClear
+                                                        placeholder="Select"
+                                                        optionFilterProp="children"
+                                                        filterOption={filterOption}
+                                                        onChange={handleUserTypeSearch}
+                                                        style={{ width: "100%" }}
+                                                        className="rounded-2"
+                                                    >
+                                                        <Option value="" disabled>Select</Option>
+                                                        <Option value="1">Admin</Option>
+                                                        <Option value="0">General</Option>
+                                                    </Select>
+
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={12}>
+                                                <Form.Item name="status" label={<span className='text-info'>Status</span>}
+                                                    rules={[
+                                                        { required: true, message: 'Status is required' },
+
+                                                    ]}
+                                                >
+                                                    <Select
+                                                        showSearch
+                                                        allowClear
+                                                        placeholder="Select"
+                                                        optionFilterProp="children"
+                                                        filterOption={filterOption}
+                                                        onChange={handleUserTypeSearch}
+                                                        style={{ width: "100%" }}
+                                                        className="rounded-2"
+                                                    >
+                                                        <Option value="" disabled>Select</Option>
+                                                        <Option value="active" className='text-success'>Active</Option>
+                                                        <Option value="inactive" className='text-danger'>Inactive</Option>
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={12}>
+                                                <Form.Item name="username" label={<span className='text-info'>Username</span>}
+                                                    rules={[
+                                                        { required: true, message: 'Username is required' },
+                                                        {
+                                                            pattern: /^[&,.\-_\w\s]{1,10}$/,
+                                                            message: 'Please enter a valid Username (up to 20 characters, only &, , ., -, _ special characters are allowed)'
+                                                        }
+                                                    ]}
+                                                >
+                                                    <Input type="text" placeholder='username' />
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={12}>
+                                                <Form.Item name="password" label={<span className='text-info'>Password</span>}
+                                                    rules={[
+                                                        { required: true, message: 'Password is required' },
+                                                        {
+                                                            pattern: /^[@,&,.\-_\w\s]{8,20}$/,
+                                                            message: 'Please enter a valid Password (up to 8-20 characters, only @, &, , ., -, _ special characters are allowed)'
+                                                        }
+                                                    ]}
+                                                >
+                                                    <Input type="password" placeholder='password' />
+                                                </Form.Item>
+                                            </Col>
+                                        </Row>
+                                    </Form>
+                                </Modal>
+                                {/* table */}
+                                <table className="table table-striped table-hover mt-5">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">S.No.</th>
+                                            <th scope="col">UserName</th>
+                                            <th scope="col">Password</th>
+                                            <th scope="col">User Type</th>
+                                            <th scope="col">Employee Name</th>
+                                            {/* <th scope="col">Email</th> */}
+                                            <th scope="col">Role</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="table-group-divider">
+                                        {
+                                            allUserData.map((data, index) => {
+                                                return (
+                                                    <tr key={data.user_id}>
+                                                        <th scope="row">{index + 1}</th>
+                                                        <td>{data.username}</td>
+                                                        <td className='text-capitalize'>{data.password}</td>
+                                                        <td className='text-capitalize'>{data.user_type === 1 ? 'admin' : 'general'}</td>
+                                                        <td className='text-capitalize'>{data.employee_name}</td>
+                                                        {/* <td className='text-capitalize'>{data.email}</td> */}
+                                                        <td className='text-capitalize'>{data.role}</td>
+                                                        <td className={`text-capitalize ${data.status === 'active' ? 'text-success' : 'text-danger'}`}>{data.status}</td>
+                                                        <td className=''>
+                                                            {/* <button className="btn btn-primary btn-sm" onClick={() => openUserEdit(data)} >Edit</button>
                                                             <button className="btn btn-danger btn-sm" onClick={() => deleteUserHandler(data.user_id)}>Delete</button> */}
                             <EyeOutlined
                               onClick={() => openUserView(data)}
