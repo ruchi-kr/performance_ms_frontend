@@ -212,7 +212,12 @@ const Employee = () => {
   };
 
   // Function to edit a task
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
   const handleEditTask = (index) => {
+    setEditingIndex(index);
+    setIsEditing(true);
     // Enable the row for editing
     const updatedTaskRecords = taskRecords.map((record, i) => ({
       ...record,
@@ -412,7 +417,7 @@ const Employee = () => {
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
   };
-  // Function to handle changes in module selection
+  // Function to handle changes in module selection selectedModule.module_id
   const handleModuleChange = (index, value) => {
     console.log("value**********", value);
     const updatedTaskRecords = [...taskRecords];
@@ -421,6 +426,15 @@ const Employee = () => {
     console.log("task records", taskRecords);
     setModule_id(value);
   };
+
+  // const handleModuleChange = (index, value) => {
+  //   console.log("value**********", value);
+  //   const updatedTaskRecords = [...taskRecords];
+  //   updatedTaskRecords[index].selectedModule.module_id = value;
+  //   setTaskRecords(updatedTaskRecords);
+  //   console.log("task records", taskRecords);
+  //   setModule_id(value);
+  // };
   // Function to handle changes in manager selection
   const handleManagerChange = (index, value) => {
     const updatedTaskRecords = [...taskRecords];
@@ -637,10 +651,22 @@ const Employee = () => {
                                     : "100%",
                               }}
                               className="rounded-2"
-                              value={task.id ? record.module_id : record.module_name}
+                              // value={record.module_id}
+                              value={
+                                isEditing && index === editingIndex
+                                  ? record.module_id
+                                  : record.module_name
+                              }
                               onChange={(value) =>
                                 handleModuleChange(index, value)
                               }
+                              //                             value={record.module_name} // Initially set the value to module_name
+                              // onChange={(value) => {
+                              //   const selectedModule = moduleList.find((module) => module.module_name === value);
+                              //   if (selectedModule && selectedModule.module_id) {
+                              //     handleModuleChange(index, selectedModule.module_id);
+                              //   }
+                              // }}
                               required
                               disabled={
                                 record.formDisabled ||
@@ -659,9 +685,9 @@ const Employee = () => {
                               ))}
                             </Select>
                             {!record.project_id ||
-                              !record.module_id && (
+                              (!record.module_id && (
                                 <span className="text-danger">*</span>
-                              )}
+                              ))}
                           </td>
 
                           {showSelect && (
@@ -731,7 +757,12 @@ const Employee = () => {
                                     : "100%",
                               }}
                               className="rounded-2"
-                              value={record.task_name}
+                              // value={record.task_id}
+                              value={
+                                isEditing && index === editingIndex
+                                  ? record.task_id
+                                  : record.task_name
+                              }
                               // defaultValue={projectManagerName}
                               onChange={(value) =>
                                 handleTaskChange(index, value)
@@ -755,7 +786,7 @@ const Employee = () => {
                             </Select>
                             {!record.task_id && (
                               <span className="text-danger">*</span>
-                            )} 
+                            )}
                           </td>
                           <td>
                             <input
