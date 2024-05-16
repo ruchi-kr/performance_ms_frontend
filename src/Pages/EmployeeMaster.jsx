@@ -14,21 +14,10 @@ import {
   getJobRoleList,
 } from "../Config.js";
 import { toast } from "react-toastify";
-<<<<<<< HEAD
-import { Col, Form, Input, Modal, Row, Select, Pagination } from "antd";
-import { DatePicker } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-  ArrowUpOutlined,
-} from "@ant-design/icons";
-=======
 import dayjs from "dayjs";
 import { Col, Form, Input, Modal, Row, Select } from "antd";
-import { DatePicker } from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
->>>>>>> 5009ed485daa27e26b43b0bf043012a8fb99c736
+import { DatePicker ,Pagination} from 'antd';
+import { EditOutlined, DeleteOutlined, EyeOutlined,ArrowUpOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
 const { Option } = Select;
 const { Search } = Input;
@@ -186,13 +175,8 @@ const EmployeeMaster = () => {
     employeeForm.setFieldsValue({
       name: employee.name,
       designation_id: employee.designation_id,
-<<<<<<< HEAD
-      doj: employee.doj.slice(0, 10),
-      dob: employee.dob.slice(0, 10),
-=======
       doj: dayjs(employee.doj),
       dob: dayjs(employee.dob),
->>>>>>> 5009ed485daa27e26b43b0bf043012a8fb99c736
       job_id: employee.job_id,
       experience: employee.experience,
       skills: employee.skills,

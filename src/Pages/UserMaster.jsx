@@ -6,6 +6,7 @@ import {
   editUser,
   deleteUser,
   getEmployerList,
+  EmployeeList,
 } from "../Config.js";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
@@ -194,7 +195,7 @@ const UserMaster = () => {
             console.log('Error fetching employer list data', error)
         }
     }
-  };
+  
   useEffect(() => {
     getEmployers();
   }, []);
