@@ -22,6 +22,13 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { Select, Modal, Input, Button } from "antd";
 import dayjs from "dayjs";
+import {
+  getAllModules,
+  createModule,
+  editModule,
+  deleteModule,
+  getProjectPlan,
+} from "../Config.js";
 import { Space } from "antd";
 const { TextArea } = Input;
 
@@ -37,12 +44,15 @@ const Employee = () => {
   const [showSelect, setShowSelect] = useState(false);
   // for adhoc
   const [adhoc, setAdhoc] = useState(0);
-  const [project_id, setProject_id] = useState(null);
+  const [project_id, setProject_id] = useState(12);
+  const [module_id, setModule_id] = useState(null);
+  const [taskList, setTaskList] = useState([]);
   // for disable form
   const [formDisabled, setFormDisabled] = useState(false);
   const [taskSaved, setTaskSaved] = useState(false);
   const [projectManagerName, setProjectManagerName] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
+  const [planData, setPlanData] = useState([]);
 
   // user_id
   const user_id = sessionStorage.getItem("id");
@@ -74,22 +84,53 @@ const Employee = () => {
     getProjects();
   }, []);
 
-  //To get modules per project
-  useEffect(() => {
-    async function getModules(value) {
-      try {
-        const result = await axios.get(
-          `http://localhost:8000/api/admin/getAllModule/`
-        );
-        console.log("modeule data", result.data);
-        setModuleList(result.data[0].module_name);
-        console.log("module list", result.data[0].module_name);
-      } catch (error) {
-        console.log("Error fetching project list data", error);
-      }
+  // project plan w.r.t stage
+  const getProjectPlanData = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?search=`
+      );
+      console.log("project plan data", response.data.data);
+      setModuleList(response.data.data);
+      setPlanData(response.data);
+    } catch (error) {
+      console.log("Error fetching project plan data", error);
     }
-    getModules();
-  }, []);
+  };
+
+  useEffect(() => {
+    getProjectPlanData();
+  }, [project_id]);
+
+  const getTasks = async (moduleId) => {
+    console.log("module id selected----->", moduleId);
+    const tempModule = moduleList?.filter(
+      (module) => module.module_id === moduleId
+    );
+    setTaskList(tempModule[0]?.tasks);
+    // console.log("temp modules", tempModule);
+    console.log("temp modules task", tempModule[0]?.tasks);
+  };
+
+  useEffect(() => {
+    getTasks(module_id);
+  }, [module_id]);
+  //To get modules per project
+  // useEffect(() => {
+  //   async function getModules(value) {
+  //     try {
+  //       const result = await axios.get(
+  //         `http://localhost:8000/api/admin/getAllModule/12`
+  //       );
+  //       console.log("modeule data", result.data);
+  //       setModuleList(result.data[0].module_name);
+  //       console.log("module list", result.data[0].module_name);
+  //     } catch (error) {
+  //       console.log("Error fetching project list data", error);
+  //     }
+  //   }
+  //   getModules();
+  // }, []);
 
   useEffect(() => {
     // get all projects function
@@ -289,7 +330,13 @@ const Employee = () => {
   const saveTask = async (index) => {
     const task = taskRecords[index];
     try {
-      if (!task.project_id || !task.module_id || !task.task || !task.allocated_time || !task.status) {
+      if (
+        !task.project_id ||
+        !task.module_id ||
+        !task.task ||
+        !task.allocated_time ||
+        !task.status
+      ) {
         toast.error("Please fill required the fields");
         // return false
       }
@@ -373,12 +420,20 @@ const Employee = () => {
     updatedTaskRecords[index].module_id = value;
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
+    setModule_id(value);
   };
   // Function to handle changes in manager selection
   const handleManagerChange = (index, value) => {
     const updatedTaskRecords = [...taskRecords];
     console.log("manager id selected", value);
     updatedTaskRecords[index].manager_id = value;
+    setTaskRecords(updatedTaskRecords);
+  };
+  // Function to handle changes in manager selection
+  const handleTaskChange = (index, value) => {
+    const updatedTaskRecords = [...taskRecords];
+    console.log("manager id selected", value);
+    updatedTaskRecords[index].task_id = value;
     setTaskRecords(updatedTaskRecords);
   };
 
@@ -451,13 +506,16 @@ const Employee = () => {
                       <th className="form-label text-info fs-6 text-center">
                         S.No.
                       </th>
-                      <th className="form-label text-info fs-6 text-center" style={{
-
-                        width:
-                          window.location.pathname !== "/plan" && dayjs(currentTime).hour() >= 12
-                            ? "150px"
-                            : '250px',
-                      }}>
+                      <th
+                        className="form-label text-info fs-6 text-center"
+                        style={{
+                          width:
+                            window.location.pathname !== "/plan" &&
+                            dayjs(currentTime).hour() >= 12
+                              ? "150px"
+                              : "250px",
+                        }}
+                      >
                         <div>
                           Project Name<span style={{ color: "red" }}>*</span>
                         </div>
@@ -595,13 +653,16 @@ const Employee = () => {
                                 <Option
                                   key={module.module_id}
                                   value={module.module_id}
-                                  label={module.item}
+                                  label={module.module_name}
                                 >
-                                  {module.item}
+                                  {module.module_name}
                                 </Option>
                               ))}
                             </Select>
-                            {!record.project_id || !record.module_id && <span className="text-danger">*</span>}
+                            {!record.project_id ||
+                              (!record.module_id && (
+                                <span className="text-danger">*</span>
+                              ))}
                           </td>
 
                           {showSelect && (
@@ -639,7 +700,7 @@ const Employee = () => {
                           )}
 
                           <td>
-                            <TextArea
+                            {/* <TextArea
                               type="text"
                               name="task"
                               className="form-control"
@@ -658,7 +719,38 @@ const Employee = () => {
                               }
                               // disabled={formDisabled}
                             />
-                            {!record.task && <span className="text-danger">*</span>}
+                            {!record.task && (
+                              <span className="text-danger">*</span>
+                            )} */}
+                            <Select
+                              allowClear
+                              placeholder="Select Task"
+                              style={{
+                                width:
+                                  window.location.pathname !== "/plan"
+                                    ? "150px"
+                                    : "100%",
+                              }}
+                              className="rounded-2"
+                              value={record.task_id}
+                              // defaultValue={projectManagerName}
+                              onChange={(value) =>
+                                handleTaskChange(index, value)
+                              }
+                              required
+                              // disabled
+                              // disabled={record.formDisabled || formDisabled}
+                            >
+                              {taskList?.map((task) => (
+                                <Option
+                                  key={task.task_id}
+                                  value={task.task_id}
+                                  label={task.task_name}
+                                >
+                                  {task.task_name}
+                                </Option>
+                              ))}
+                            </Select>
                           </td>
                           <td>
                             <input
@@ -685,7 +777,9 @@ const Employee = () => {
                               max="24"
                               defaultValue="0"
                             />
-                            {!record.allocated_time && <span className="text-danger">*</span>}
+                            {!record.allocated_time && (
+                              <span className="text-danger">*</span>
+                            )}
                           </td>
                           {window.location.pathname !== "/plan" &&
                           dayjs(currentTime).hour() >= 12 ? (
@@ -739,7 +833,9 @@ const Employee = () => {
                                     />
                                   ) : null}
                                 </Space>
-                                {!record.actual_time && <span className="text-danger">*</span>}
+                                {!record.actual_time && (
+                                  <span className="text-danger">*</span>
+                                )}
                               </td>
 
                               <td>
@@ -781,7 +877,9 @@ const Employee = () => {
                                     Completed
                                   </option>
                                 </select>
-                                {!record.status && <span className="text-danger">*</span>}
+                                {!record.status && (
+                                  <span className="text-danger">*</span>
+                                )}
                               </td>
                               <td>
                                 <TextArea
@@ -799,7 +897,9 @@ const Employee = () => {
                                   required
                                   disabled={record.formDisabled || formDisabled}
                                 />
-                                {!record.remarks && <span className="text-danger">*</span>}
+                                {!record.remarks && (
+                                  <span className="text-danger">*</span>
+                                )}
                               </td>
                               <td>
                                 <TextArea

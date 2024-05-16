@@ -12,7 +12,16 @@ import {
   getExcelpdfprojects,
 } from "../Config.js";
 import axios from "axios";
-import { Col, Form, Input, Modal, Row, Select,DatePicker } from "antd";
+import {
+  Col,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Select,
+  DatePicker,
+  Pagination,
+} from "antd";
 import { toast } from "react-toastify";
 // import {DeleteOutlined, EditOutlined} from '@ant-design/icon'
 import {
@@ -20,6 +29,7 @@ import {
   DeleteOutlined,
   EyeOutlined,
   ExclamationCircleFilled,
+  ArrowUpOutlined,
 } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -40,30 +50,52 @@ const ProjectMaster = () => {
   const pageSize = 10; // Number of items per page
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [pagination, setPagination] = useState({
+    totalRecords: 0,
+    pageSize: 10,
+    totalPages: 0,
+    currentPage: 1,
+    nextPage: null,
+    prevPage: null,
+  });
+  const [sortOrder, setSortOrder] = useState("DESC");
 
   // get all projects function
   const getAllProjectsHandler = async (page) => {
     try {
       const response = await axios.get(
-        `${getAllProjectsUrlPagination}?page=${page}&pageSize=${pageSize}&name=${project}`
+        `${getAllProjectsUrlPagination}?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=project_name&name=${project}`
       );
-      setAllProjectData(response.data);
+      setAllProjectData(response.data.data);
       console.log("project details data", response.data);
 
+      const {
+        totalRecords,
+        totalPages,
+        currentPage,
+        nextPage,
+        prevPage,
+        pageSize,
+      } = response.data.pagination;
+
+      setPagination((prevState) => ({
+        ...prevState,
+        totalRecords: totalRecords,
+        totalPages: totalPages,
+        pageSize: pageSize,
+        currentPage: currentPage,
+        nextPage: nextPage,
+        prevPage: prevPage,
+      }));
       setTotalPages(Math.ceil(response.headers["x-total-count"] / pageSize));
     } catch (err) {
       console.log(err);
     }
   };
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
-    getAllProjectsHandler(pageNumber == 0 ? 1 : pageNumber);
-  };
-
   useEffect(() => {
     getAllProjectsHandler(currentPage);
-  }, [currentPage, project]);
+  }, [project, pagination.currentPage, pagination.pageSize, sortOrder]);
 
   // create project
   const projectFormSubmit = (values) => {
@@ -159,8 +191,6 @@ const ProjectMaster = () => {
     });
   };
 
- 
-
   const openProjectEdit = async (project) => {
     setEditingProject(project);
     setModalVisible(true);
@@ -175,11 +205,11 @@ const ProjectMaster = () => {
 
   // Define a function to handle the change in the 'stage' field
   const handleStageChange = (newValue) => {
-    if(editingProject ){
+    if (editingProject) {
       const newStage = newValue;
       console.log("new stage", newStage);
       console.log("old stage", editingProject.stage); // Assuming 'editingProject' holds the currently edited project
-  
+
       if (newStage !== editingProject?.stage && newStage !== undefined) {
         confirm({
           title: "Are you sure?",
@@ -197,30 +227,56 @@ const ProjectMaster = () => {
         });
       }
     }
-   
   };
 
   const isOptionDisabled = (optionValue) => {
     console.log("option value", optionValue);
-    const selectedValue = projectForm.getFieldsValue(['stage']);
+    const selectedValue = projectForm.getFieldsValue(["stage"]);
     console.log("selected value for disabling", selectedValue.stage);
     switch (selectedValue.stage) {
       case "rfp":
-        return ["inprocess","completed"].includes(optionValue);
+        return ["inprocess", "completed"].includes(optionValue);
       case "lost":
-        return ["rfp", "won", "inprocess", "completed", "scrapped"].includes(optionValue);        
+        return ["rfp", "won", "inprocess", "completed", "scrapped"].includes(
+          optionValue
+        );
       case "won":
-        return ["rfp", "lost","completed"].includes(optionValue);
+        return ["rfp", "lost", "completed"].includes(optionValue);
       case "inprocess":
         return ["rfp", "lost", "won"].includes(optionValue);
       case "completed":
-        return ["rfp", "lost", "won", "inprocess", "scrapped"].includes(optionValue);
+        return ["rfp", "lost", "won", "inprocess", "scrapped"].includes(
+          optionValue
+        );
       case "scrapped":
-        return ["rfp", "lost", "won", "inprocess", "completed"].includes(optionValue);
+        return ["rfp", "lost", "won", "inprocess", "completed"].includes(
+          optionValue
+        );
       default:
         return false;
     }
-    
+  };
+  //Pagination
+  const handlePageChange = (page) => {
+    setPagination((prevState) => ({
+      ...prevState,
+      currentPage: page,
+    }));
+  };
+  const pageSizeChange = (current, pageSize) => {
+    setPagination((prevState) => ({
+      ...prevState,
+      pageSize: pageSize,
+    }));
+  };
+  const handleSortChange = () => {
+    // Toggle sorting order when the button is clicked
+    setSortOrder((prevOrder) => {
+      if (prevOrder === "ASC") {
+        return "DESC";
+      }
+      return "ASC";
+    });
   };
 
   // for export to excel
@@ -330,8 +386,6 @@ const ProjectMaster = () => {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                      
-
                         <Form.Item
                           name="stage"
                           label={
@@ -343,43 +397,61 @@ const ProjectMaster = () => {
                             { required: true, message: "stage is required" },
                           ]}
                         >
-                        
-                            <Select onChange={(value) => handleStageChange(value)}>
-                              <Option value="" disabled>
-                                Select
-                              </Option>
-                              <Option
-                                value="rfp"
-                                disabled={editingProject && isOptionDisabled("rfp")}
-                              >
-                                RFP
-                              </Option>
-                              <Option
-                                value="lost"
-                                disabled={editingProject && isOptionDisabled("lost")}
-                              >
-                                Lost
-                              </Option>
-                              <Option
-                                value="won"
-                                disabled={editingProject && isOptionDisabled("won")}
-                              >
-                                Won
-                              </Option>
-                              <Option
-                                value="inprocess"
-                                disabled={ editingProject && isOptionDisabled("inprocess")}
-                              >
-                                In Process
-                              </Option>
-                              <Option
-                                value="completed"
-                                disabled={editingProject && isOptionDisabled("completed")}
-                              >
-                                Completed
-                              </Option>
-                              <Option value="scrapped" disabled={ editingProject && isOptionDisabled("scrapped")}>Scrapped</Option>
-                            </Select>
+                          <Select
+                            onChange={(value) => handleStageChange(value)}
+                          >
+                            <Option value="" disabled>
+                              Select
+                            </Option>
+                            <Option
+                              value="rfp"
+                              disabled={
+                                editingProject && isOptionDisabled("rfp")
+                              }
+                            >
+                              RFP
+                            </Option>
+                            <Option
+                              value="lost"
+                              disabled={
+                                editingProject && isOptionDisabled("lost")
+                              }
+                            >
+                              Lost
+                            </Option>
+                            <Option
+                              value="won"
+                              disabled={
+                                editingProject && isOptionDisabled("won")
+                              }
+                            >
+                              Won
+                            </Option>
+                            <Option
+                              value="inprocess"
+                              disabled={
+                                editingProject && isOptionDisabled("inprocess")
+                              }
+                            >
+                              In Process
+                            </Option>
+                            <Option
+                              value="completed"
+                              disabled={
+                                editingProject && isOptionDisabled("completed")
+                              }
+                            >
+                              Completed
+                            </Option>
+                            <Option
+                              value="scrapped"
+                              disabled={
+                                editingProject && isOptionDisabled("scrapped")
+                              }
+                            >
+                              Scrapped
+                            </Option>
+                          </Select>
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -397,7 +469,10 @@ const ProjectMaster = () => {
                             },
                           ]}
                         >
-                           < DatePicker format="DD/MM/YYYY"  style={{width:"100%"}}/>
+                          <DatePicker
+                            format="DD/MM/YYYY"
+                            style={{ width: "100%" }}
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -412,7 +487,10 @@ const ProjectMaster = () => {
                             { required: true, message: "end date is required" },
                           ]}
                         >
-                           < DatePicker format="DD/MM/YYYY"  style={{width:"100%"}}/>
+                          <DatePicker
+                            format="DD/MM/YYYY"
+                            style={{ width: "100%" }}
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -426,7 +504,17 @@ const ProjectMaster = () => {
                     <tr>
                       <th scope="col">S.No.</th>
                       {/* <th scope="col">Project Id</th> */}
-                      <th scope="col">Project Name</th>
+                      <th scope="col">
+                        <div className="d-flex">
+                          <div>Project Name</div>
+
+                          <ArrowUpOutlined
+                            style={{ marginLeft: 18, fontSize: "1rem" }}
+                            onClick={handleSortChange}
+                            rotate={sortOrder === "ASC" ? 0 : 180}
+                          />
+                        </div>
+                      </th>
                       <th scope="col">Schd. Start Date</th>
                       <th scope="col">Schd. End Date</th>
                       <th scope="col">Stage</th>
@@ -437,7 +525,12 @@ const ProjectMaster = () => {
                     {allProjectData.map((data, index) => {
                       return (
                         <tr key={data.project_id}>
-                          <th scope="row">{index + 1}</th>
+                          <th scope="row">
+                            {(pagination.currentPage - 1) *
+                              pagination.pageSize +
+                              index +
+                              1}
+                          </th>
                           {/* <td>{data.project_id}</td> */}
                           <td>{data.project_name}</td>
                           <td>
@@ -451,7 +544,15 @@ const ProjectMaster = () => {
                             {data.schedule_end_date.slice(0, 4)}
                           </td>
                           {/* <td >{data.stage}</td> */}
-                          <td className={data.stage === 'rfp' ? 'text-uppercase' : 'text-capitalize'}>{data.stage}</td>
+                          <td
+                            className={
+                              data.stage === "rfp"
+                                ? "text-uppercase"
+                                : "text-capitalize"
+                            }
+                          >
+                            {data.stage}
+                          </td>
                           <td className="">
                             <EyeOutlined
                               onClick={() => openProjectView(data)}
@@ -475,51 +576,24 @@ const ProjectMaster = () => {
                     })}
                   </tbody>
                 </table>
-                <div className="row float-right">
-                  <nav
-                    aria-label="Page navigation example"
-                    className="d-flex align-self-end mt-3"
-                  >
-                    <ul className="pagination">
-                      <li className="page-item">
-                        <a
-                          className="page-link"
-                          href="#"
-                          aria-label="Previous"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                          <span aria-hidden="true">«</span>
-                        </a>
-                      </li>
-                      {Array.from({ length: totalPages }, (_, index) => (
-                        <li
-                          key={index}
-                          className={`page-item ${
-                            currentPage === index + 1 ? "active" : ""
-                          }`}
-                        >
-                          <a
-                            className="page-link"
-                            href="#"
-                            onClick={() => handlePageChange(index + 1)}
-                          >
-                            {index + 1}
-                          </a>
-                        </li>
-                      ))}
-                      <li className="page-item">
-                        <a
-                          className="page-link"
-                          href="#"
-                          aria-label="Next"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                          <span aria-hidden="true">»</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+
+                <Pagination
+                  current={pagination.currentPage}
+                  total={pagination.totalRecords}
+                  pageSize={pagination.pageSize}
+                  onChange={handlePageChange}
+                  showLessItems={true}
+                  onShowSizeChange={pageSizeChange}
+                  showQuickJumper={false}
+                  showPrevNextJumpers={true}
+                  showSizeChanger={true}
+                  onPrev={() => handlePageChange(pagination.prevPage)}
+                  onNext={() => handlePageChange(pagination.nextPage)}
+                  style={{
+                    marginBottom: "2rem",
+                  }}
+                />
+                <div className="row float-right"></div>
               </div>
             </div>
           </div>
