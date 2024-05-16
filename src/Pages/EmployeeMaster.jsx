@@ -14,6 +14,7 @@ import {
   getJobRoleList,
 } from "../Config.js";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
 import { Col, Form, Input, Modal, Row, Select } from "antd";
 import { DatePicker } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
@@ -158,8 +159,8 @@ const EmployeeMaster = () => {
     employeeForm.setFieldsValue({
       name: employee.name,
       designation_id: employee.designation_id,
-      doj: employee.doj.slice(0,10),
-      dob: employee.dob.slice(0, 10),
+      doj: dayjs(employee.doj),
+      dob: dayjs(employee.dob),
       job_id: employee.job_id,
       experience: employee.experience,
       skills: employee.skills,
@@ -176,8 +177,8 @@ const EmployeeMaster = () => {
     employeeForm.setFieldsValue({
       name: employee.name,
       designation_id: employee.designation_id,
-      doj: employee.doj.slice(0, 10),
-      dob: employee.dob.slice(0, 10),
+      doj: dayjs(employee.doj),
+      dob: dayjs(employee.dob),
       job_id: employee.job_id,
       experience: employee.experience,
       skills: employee.skills,

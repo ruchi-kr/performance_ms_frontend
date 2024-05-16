@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import { getAllUsers, createUser, editUser, deleteUser, getEmployerList } from '../Config.js';
+import { getAllUsers, createUser, editUser, deleteUser, getEmployerList,EmployeeList } from '../Config.js';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
@@ -97,6 +97,7 @@ const UserMaster = () => {
     const [formDisabled, setFormDisabled] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
 
+
     const userData = {
         employee_id: '',
         user_type: '',
@@ -124,7 +125,7 @@ const UserMaster = () => {
             password: user.password,
             user_type: user.user_type,
             status: user.status,
-            employee_id: user.employee_id,
+            employee_id: user.employee_name,
             // email_id: user.email_id,
             role: user.role
         });
@@ -139,7 +140,7 @@ const UserMaster = () => {
             password: user.password,
             user_type: user.user_type,
             status: user.status,
-            employee_id: user.employee_id,
+            employee_id: user.employee_name,
             // email_id: user.email_id,
             role: user.role
         });
@@ -152,7 +153,7 @@ const UserMaster = () => {
     const [employer, setEmployer] = useState('')
     const getEmployers = async (value) => {
         try {
-            const result = await axios.get(`${getEmployerList}`);
+            const result = await axios.get(`${EmployeeList}`);
             setEmployerList(result.data);
             console.log("employer list", result.data);
         } catch (error) {
@@ -234,9 +235,10 @@ const UserMaster = () => {
                                                         onChange={handleEmployerSearch}
                                                         style={{ width: "100%" }}
                                                         className="rounded-2"
+                                                        disabled={editingUser}
                                                     >
 
-                                                        <Option value="">Select</Option>
+                                                        <Option value="" disabled>Select</Option>
 
                                                         {employerList.map((employer, index) => (
                                                             <Option
@@ -321,7 +323,7 @@ const UserMaster = () => {
                                                         style={{ width: "100%" }}
                                                         className="rounded-2"
                                                     >
-                                                        <Option value="">Select</Option>
+                                                        <Option value="" disabled>Select</Option>
                                                         <Option value="1">Admin</Option>
                                                         <Option value="0">General</Option>
                                                     </Select>
@@ -345,7 +347,7 @@ const UserMaster = () => {
                                                         style={{ width: "100%" }}
                                                         className="rounded-2"
                                                     >
-                                                        <Option value="">Select</Option>
+                                                        <Option value="" disabled>Select</Option>
                                                         <Option value="active" className='text-success'>Active</Option>
                                                         <Option value="inactive" className='text-danger'>Inactive</Option>
                                                     </Select>
