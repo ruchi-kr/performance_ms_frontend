@@ -6,6 +6,7 @@ import {
   faArrowRightFromBracket,
   faUsers,
   faFolderOpen,
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
 const SideNavbar = () => {
@@ -211,7 +212,8 @@ const SideNavbar = () => {
                             icon={faFolderOpen}
                           />
                           <p>Reports</p>
-                          <i className="fas fa-angle-left right"></i>
+                          {/* <i className="fas fa-angle-left right"></i> */}
+                          <FontAwesomeIcon icon={faChevronRight} className="right" />
                         </a>
                         <ul className="nav nav-treeview mt-3">
                           <div>

@@ -389,7 +389,7 @@ const UserMaster = () => {
                                             <th scope="col">Password</th>
                                             <th scope="col">User Type</th>
                                             <th scope="col">Employee Name</th>
-                                            <th scope="col">Email</th>
+                                            {/* <th scope="col">Email</th> */}
                                             <th scope="col">Role</th>
                                             <th scope="col">Status</th>
                                             <th scope="col">Action</th>
@@ -405,7 +405,7 @@ const UserMaster = () => {
                                                         <td className='text-capitalize'>{data.password}</td>
                                                         <td className='text-capitalize'>{data.user_type === 1 ? 'admin' : 'general'}</td>
                                                         <td className='text-capitalize'>{data.employee_name}</td>
-                                                        <td className='text-capitalize'>{data.email}</td>
+                                                        {/* <td className='text-capitalize'>{data.email}</td> */}
                                                         <td className='text-capitalize'>{data.role}</td>
                                                         <td className={`text-capitalize ${data.status === 'active' ? 'text-success' : 'text-danger'}`}>{data.status}</td>
                                                         <td className=''>

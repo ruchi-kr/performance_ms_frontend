@@ -12,7 +12,7 @@ import {
   getExcelpdfprojects,
 } from "../Config.js";
 import axios from "axios";
-import { Col, Form, Input, Modal, Row, Select } from "antd";
+import { Col, Form, Input, Modal, Row, Select,DatePicker } from "antd";
 import { toast } from "react-toastify";
 // import {DeleteOutlined, EditOutlined} from '@ant-design/icon'
 import {
@@ -24,6 +24,7 @@ import {
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import dayjs from "dayjs";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const { Search } = Input;
@@ -133,7 +134,7 @@ const ProjectMaster = () => {
 
   const projectData = {
     project_name: "",
-    stage: "",
+    stage: "rfp",
     schedule_start_date: "",
     schedule_end_date: "",
   };
@@ -153,8 +154,8 @@ const ProjectMaster = () => {
     projectForm.setFieldsValue({
       project_name: project.project_name,
       stage: project.stage,
-      schedule_start_date: project.schedule_start_date.split("T")[0], // Display only the date part
-      schedule_end_date: project.schedule_end_date.split("T")[0], // Display only the date part
+      schedule_start_date: dayjs(project.schedule_start_date), // Display only the date part
+      schedule_end_date: dayjs(project.schedule_end_date), // Display only the date part
     });
   };
 
@@ -167,33 +168,36 @@ const ProjectMaster = () => {
     projectForm.setFieldsValue({
       project_name: project.project_name,
       stage: project.stage,
-      schedule_start_date: project.schedule_start_date.split("T")[0], // Display only the date part
-      schedule_end_date: project.schedule_end_date.split("T")[0], // Display only the date part
+      schedule_start_date: dayjs(project.schedule_start_date), // Display only the date part
+      schedule_end_date: dayjs(project.schedule_end_date), // Display only the date part
     });
   };
 
   // Define a function to handle the change in the 'stage' field
   const handleStageChange = (newValue) => {
-    const newStage = newValue;
-    console.log("new stage", newStage);
-    console.log("old stage", editingProject.stage); // Assuming 'editingProject' holds the currently edited project
-
-    if (newStage !== editingProject.stage && newStage !== undefined) {
-      confirm({
-        title: "Are you sure?",
-        icon: <ExclamationCircleFilled />,
-        content:
-          "Once project stage is moved to next stage, you will not be able to revert.",
-        onOk() {
-          console.log("OK");
-          projectForm.setFieldsValue({ stage: newStage });
-        },
-        onCancel() {
-          console.log("Cancel");
-          projectForm.setFieldsValue({ stage: editingProject.stage });
-        },
-      });
+    if(editingProject ){
+      const newStage = newValue;
+      console.log("new stage", newStage);
+      console.log("old stage", editingProject.stage); // Assuming 'editingProject' holds the currently edited project
+  
+      if (newStage !== editingProject?.stage && newStage !== undefined) {
+        confirm({
+          title: "Are you sure?",
+          icon: <ExclamationCircleFilled />,
+          content:
+            "Once project stage is moved to next stage, you will not be able to revert.",
+          onOk() {
+            console.log("OK");
+            projectForm.setFieldsValue({ stage: newStage });
+          },
+          onCancel() {
+            console.log("Cancel");
+            projectForm.setFieldsValue({ stage: editingProject.stage });
+          },
+        });
+      }
     }
+   
   };
 
   const isOptionDisabled = (optionValue) => {
@@ -202,7 +206,7 @@ const ProjectMaster = () => {
     console.log("selected value for disabling", selectedValue.stage);
     switch (selectedValue.stage) {
       case "rfp":
-        return ["rfp","inprocess","completed"].includes(optionValue);
+        return ["inprocess","completed"].includes(optionValue);
       case "lost":
         return ["rfp", "won", "inprocess", "completed", "scrapped"].includes(optionValue);        
       case "won":
@@ -346,35 +350,35 @@ const ProjectMaster = () => {
                               </Option>
                               <Option
                                 value="rfp"
-                                disabled={isOptionDisabled("rfp")}
+                                disabled={editingProject && isOptionDisabled("rfp")}
                               >
                                 RFP
                               </Option>
                               <Option
                                 value="lost"
-                                disabled={isOptionDisabled("lost")}
+                                disabled={editingProject && isOptionDisabled("lost")}
                               >
                                 Lost
                               </Option>
                               <Option
                                 value="won"
-                                disabled={isOptionDisabled("won")}
+                                disabled={editingProject && isOptionDisabled("won")}
                               >
                                 Won
                               </Option>
                               <Option
                                 value="inprocess"
-                                disabled={isOptionDisabled("inprocess")}
+                                disabled={ editingProject && isOptionDisabled("inprocess")}
                               >
                                 In Process
                               </Option>
                               <Option
                                 value="completed"
-                                disabled={isOptionDisabled("completed")}
+                                disabled={editingProject && isOptionDisabled("completed")}
                               >
                                 Completed
                               </Option>
-                              <Option value="scrapped" disabled={isOptionDisabled("scrapped")}>Scrapped</Option>
+                              <Option value="scrapped" disabled={ editingProject && isOptionDisabled("scrapped")}>Scrapped</Option>
                             </Select>
                         </Form.Item>
                       </Col>
@@ -393,7 +397,7 @@ const ProjectMaster = () => {
                             },
                           ]}
                         >
-                          <Input type="date" />
+                           < DatePicker format="DD/MM/YYYY"  style={{width:"100%"}}/>
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -408,7 +412,7 @@ const ProjectMaster = () => {
                             { required: true, message: "end date is required" },
                           ]}
                         >
-                          <Input type="date" />
+                           < DatePicker format="DD/MM/YYYY"  style={{width:"100%"}}/>
                         </Form.Item>
                       </Col>
                     </Row>

@@ -267,7 +267,7 @@ const AddProjectPlan = () => {
           // console.error("Error Adding project:", error);
           notification.error({
             message: "Failed",
-            description: `${error}`,
+            description: `${error.response.data.msg}`,
           });
         }
       },
@@ -828,7 +828,6 @@ const AddProjectPlan = () => {
                     onChange={(e) => setSearch(e.target.value)}
                     enterButton
                     style={{ marginBottom: "0" }}
-                    // className={styles.searchStyle}
                   />
                 </Col>
               </Row>
@@ -840,7 +839,6 @@ const AddProjectPlan = () => {
                 bordered
                 size="large"
                 pagination={false}
-                // scroll={{ y: false }} // Disable vertical scroll
                 style={{
                   marginBottom: "1rem",
                 }}
@@ -869,7 +867,6 @@ const AddProjectPlan = () => {
                 onShowSizeChange={pageSizeChange}
                 showQuickJumper={true}
                 showPrevNextJumpers={true}
-                // showSizeChanger={true}
                 onPrev={() => handlePageChange(pagination.prevPage)}
                 onNext={() => handlePageChange(pagination.nextPage)}
                 style={{
@@ -910,7 +907,7 @@ const AddProjectPlan = () => {
                 </Col>
                 <Col align="left" style={{ width: "100%" }}>
                   {(isAdding || isEditing) && (
-                    // (!isAddingTask || !isEditingTask) && (
+                  
                     <Card>
                       {isAdding ? (
                         <h4 className="text-info">Add Module</h4>
@@ -1052,13 +1049,10 @@ const AddProjectPlan = () => {
                                     message: "Please select Status !",
                                   },
                                 ]}
-                                // defaultValue="notstarted"
-                                // style={{ maxWidth: "50%" }}
+                               
                               >
                                 <Select
-                                  // value={status}
-                                  // onChange={(value) => setStatus(value)}
-                                  // defaultValue="notstarted"
+                                
                                   options={[
                                     {
                                       value: "notstarted",
@@ -1080,10 +1074,11 @@ const AddProjectPlan = () => {
                                     {
                                       value: "completed",
                                       label: (
-                                        <span className="text-success">
-                                          completed
+                                        <span className={stage === "rfp" ? "text-secondary-subtle" : "text-success"}>
+                                        completed
                                         </span>
                                       ),
+                                      disabled: stage ==="rfp"
                                     },
                                     {
                                       value: "scrapped",
@@ -1092,9 +1087,10 @@ const AddProjectPlan = () => {
                                           scrapped
                                         </span>
                                       ),
+                                      
                                     },
                                   ]}
-                                  // onChange={handleChange}
+                                 
                                   placeholder="Status "
                                 />
                               </Form.Item>
@@ -1111,19 +1107,14 @@ const AddProjectPlan = () => {
                                     htmlType="button"
                                     onClick={handleReset}
                                     className="me-3"
-                                    // className={styles["login-form-button"]}
-                                    // style={{
-                                    //   minWidth: "11rem",
-                                    //   marginRight: "1rem",
-                                    // }}
+                                   
                                   >
                                     Cancel
                                   </Button>
                                   <Button
                                     type="primary"
                                     htmlType="submit"
-                                    // className={styles["login-form-button"]}
-                                    // style={{ minWidth: "11rem" }}
+                                  
                                   >
                                     {isAdding ? "Submit" : "Update"}
                                   </Button>
@@ -1138,9 +1129,7 @@ const AddProjectPlan = () => {
                 </Col>
                 <Col align="left" style={{ width: "100%" }}>
                   {
-                    // !isAdding ||
-                    // !isEditing )
-                    // ||
+                  
                     (isAddingTask || isEditingTask) && (
                       <Card>
                         {isAddingTask ? (
@@ -1188,8 +1177,7 @@ const AddProjectPlan = () => {
                                     disabled
                                     placeholder="Select Module"
                                     allowClear={true} // Disable the clear button
-                                    // className={styles.cascaderStyle}
-                                    // onChange={getProjectStartEndDate}
+                                  
                                   >
                                     {moduleList.map((module) => (
                                       <Option
@@ -1221,7 +1209,7 @@ const AddProjectPlan = () => {
                                         "Please enter a valid Task Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
                                     },
                                   ]}
-                                  // style={{ maxWidth: "50%" }}
+                                 
                                 >
                                   <Input
                                     maxLength={100}
@@ -1240,14 +1228,13 @@ const AddProjectPlan = () => {
                                       message: "Please input allocated time!",
                                     },
                                   ]}
-                                  // style={{ width: "25rem" }}
+                                
                                 >
                                   <InputNumber
                                     min={0}
                                     max={500}
                                     style={{width:"100%"}}
-                                    // step={0.1}
-                                    // precision={0.1}
+                                  
                                   />
                                 </Form.Item>
                               </Col>
@@ -1263,19 +1250,14 @@ const AddProjectPlan = () => {
                                       htmlType="button"
                                       onClick={handleReset}
                                       className="me-3"
-                                      // className={styles["login-form-button"]}
-                                      // style={{
-                                      //   minWidth: "11rem",
-                                      //   marginRight: "1rem",
-                                      // }}
+                                     
                                     >
                                       Cancel
                                     </Button>
                                     <Button
                                       type="primary"
                                       htmlType="submit"
-                                      // className={styles["login-form-button"]}
-                                      // style={{ minWidth: "11rem" }}
+                                    
                                     >
                                       {isAddingTask ? "Submit" : "Update"}
                                     </Button>

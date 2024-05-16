@@ -201,7 +201,7 @@ const ProjectPlan = () => {
           </Page>
         </Document>
       );
-  
+
       // Convert the PDF data to a blob
       const pdfBlob = await pdfjs(pdfData).toBlob();
       setPdfData(pdfBlob);
@@ -291,12 +291,16 @@ const ProjectPlan = () => {
                     {/* add project row */}
                     <div className="row my-4 d-flex align-items-center justify-content-between">
                       <div className="col-2">
-                        <NavLink
+                       
+                          <button className="btn btn-sm btn-info" disabled={selectedProjectStage === "completed"}>
+                          <NavLink
                           to={`/addprojectplan/?project_id=${selectedProjectId}&stage=${selectedProjectStage}`}
-                          className="btn btn-sm btn-info d-flex align-items-center justify-content-center"
+                          className="text-decoration-none text-white d-flex align-items-center justify-content-center"
                         >
-                          <span className="fs-4"> + </span>&nbsp;Add Plan
-                        </NavLink>
+                          <span className="fs-4"> + </span>&nbsp;{selectedProjectStage==="rfp" ? "Add Plan" : "Edit Plan"}
+                          </NavLink>
+                          </button>
+                        
                       </div>
                       {/* <div className="col-2 d-flex align-items-center gap-2">
                         <Button onClick={downloadPDF} size="small" type="primary" className="d-flex align-items-center"><ArrowDownOutlined /><FilePdfOutlined />PDF</Button>
@@ -322,8 +326,8 @@ const ProjectPlan = () => {
                             <th colSpan={1}>Module Name</th>
                             <th colSpan={2}>
                               <div className="d-flex flex-column">
-                                <span>Schd. Start Date</span>
-                                <span>Schd. End Date</span>
+                                <span>Schd. St. Dt.</span>
+                                <span>Schd. End Dt.</span>
                               </div>
                             </th>
                           </tr>
@@ -356,12 +360,24 @@ const ProjectPlan = () => {
                                     <tr>
                                       <td>{index + 1}</td>
                                       <td colSpan={1}>
-                                        <b className={`text-primary text-capitalize ${firstModulerfp?.status == 'scrapped' ? 'text-decoration-line-through text-danger' : ''}`}>
+                                        <p
+                                          className={`text-primary text-capitalize ${
+                                            firstModulerfp?.status == "scrapped"
+                                              ? "text-decoration-line-through text-danger"
+                                              : ""
+                                          }`}
+                                        >
                                           {firstModulerfp?.module_name}
-                                        </b>
+                                        </p>
                                       </td>
                                       <td colSpan={2}>
-                                        <b className="text-primary text-capitalize">
+                                        <p
+                                          className={`text-primary text-capitalize ${
+                                            firstModulerfp?.status == "scrapped"
+                                              ? "text-decoration-line-through text-danger"
+                                              : ""
+                                          }`}
+                                        >
                                           {firstModulerfp?.from_date.slice(
                                             8,
                                             10
@@ -380,7 +396,7 @@ const ProjectPlan = () => {
                                           {firstModulerfp?.to_date.slice(8, 10)}
                                           /{firstModulerfp?.to_date.slice(5, 7)}
                                           /{firstModulerfp?.to_date.slice(0, 4)}
-                                        </b>
+                                        </p>
                                       </td>
                                     </tr>
                                   )}
@@ -390,12 +406,24 @@ const ProjectPlan = () => {
                                         <tr>
                                           <td>{moduleIndex + 1}</td>
                                           <td colSpan={2}>
-                                            <b className={`text-primary text-capitalize ${module.status == 'scrapped' ? 'text-decoration-line-through' : ''}`}>
+                                            <p
+                                              className={`text-primary text-capitalize ${
+                                                module.status == "scrapped"
+                                                  ? "text-decoration-line-through text-danger"
+                                                  : ""
+                                              }`}
+                                            >
                                               {module.module_name}
-                                            </b>
+                                            </p>
                                           </td>
                                           <td colSpan={1}>
-                                            <b className="text-primary text-capitalize">
+                                            <p
+                                              className={`text-primary text-capitalize ${
+                                                module.status == "scrapped"
+                                                  ? "text-decoration-line-through text-danger"
+                                                  : ""
+                                              }`}
+                                            >
                                               {module.from_date.slice(8, 10)}/
                                               {module.from_date.slice(5, 7)}/
                                               {module.from_date.slice(0, 4)}
@@ -403,7 +431,7 @@ const ProjectPlan = () => {
                                               {module.to_date.slice(8, 10)}/
                                               {module.to_date.slice(5, 7)}/
                                               {module.to_date.slice(0, 4)}
-                                            </b>
+                                            </p>
                                           </td>
                                         </tr>
                                       )}
@@ -413,10 +441,29 @@ const ProjectPlan = () => {
                                             key={`${index}-${moduleIndex}-${taskIndex}`}
                                           >
                                             <td></td>
-                                            <td colSpan={2}>
+                                            {/* <td colSpan={2}>
                                               {task.task_name}
+                                            </td> */}
+                                            <td colSpan={2}>
+                                              <span
+                                                className={`text-capitalize ${
+                                                  module.status === "scrapped"
+                                                    ? "text-decoration-line-through text-dark"
+                                                    : ""
+                                                }`}
+                                              >
+                                                {task.task_name}
+                                              </span>
                                             </td>
-                                            <td>{task.allocated_time}</td>
+                                            <td
+                                              className={`${
+                                                module.status === "scrapped"
+                                                  ? "text-decoration-line-through text-dark"
+                                                  : ""
+                                              }`}
+                                            >
+                                              {task.allocated_time}
+                                            </td>
                                           </tr>
                                         )
                                       )}
@@ -444,8 +491,8 @@ const ProjectPlan = () => {
                             <th colSpan={1}>Module Name</th>
                             <th colSpan={2}>
                               <div className="d-flex flex-column">
-                                <span>Schd. Start Date</span>
-                                <span>Schd. End Date</span>
+                                <span>Schd. St. Dt.</span>
+                                <span>Schd. End Dt.</span>
                               </div>
                             </th>
                           </tr>
@@ -482,12 +529,24 @@ const ProjectPlan = () => {
                                       {/* <td>{rfpModules.length == null ? index : index+1}</td> */}
                                       <td>{index}</td>
                                       <td colSpan={1}>
-                                        <b className={`text-primary text-capitalize ${firstModulewon?.status == 'scrapped' ? 'text-decoration-line-through' : ''}`}>
+                                        <p
+                                          className={`text-primary text-capitalize ${
+                                            firstModulewon?.status == "scrapped"
+                                              ? "text-decoration-line-through text-danger"
+                                              : ""
+                                          }`}
+                                        >
                                           {firstModulewon?.module_name}
-                                        </b>
+                                        </p>
                                       </td>
                                       <td colSpan={2}>
-                                        <b className="text-primary text-capitalize">
+                                        <p
+                                          className={`text-primary text-capitalize ${
+                                            firstModulewon?.status == "scrapped"
+                                              ? "text-decoration-line-through text-danger"
+                                              : ""
+                                          }`}
+                                        >
                                           {firstModulewon?.from_date.slice(
                                             8,
                                             10
@@ -506,8 +565,9 @@ const ProjectPlan = () => {
                                           {firstModulewon?.to_date.slice(8, 10)}
                                           /{firstModulewon?.to_date.slice(5, 7)}
                                           /{firstModulewon?.to_date.slice(0, 4)}
-                                        </b>
+                                        </p>
                                       </td>
+                                     
                                     </tr>
                                   )}
                                   {/* )} */}
@@ -518,12 +578,24 @@ const ProjectPlan = () => {
                                         <tr>
                                           <td>{moduleIndex + 1}</td>
                                           <td colSpan={2}>
-                                            <b className={`text-primary text-capitalize ${module.status == 'scrapped' ? 'text-decoration-line-through' : ''}`}>
+                                            <p
+                                              className={`text-primary text-capitalize ${
+                                                module.status == "scrapped"
+                                                  ? "text-decoration-line-through text-danger"
+                                                  : ""
+                                              }`}
+                                            >
                                               {module.module_name}
-                                            </b>
+                                            </p>
                                           </td>
                                           <td colSpan={1}>
-                                            <b className="text-primary text-capitalize">
+                                            <p
+                                              className={`text-primary text-capitalize ${
+                                                module.status == "scrapped"
+                                                  ? "text-decoration-line-through text-danger"
+                                                  : ""
+                                              }`}
+                                            >
                                               {module.from_date.slice(8, 10)}/
                                               {module.from_date.slice(5, 7)}/
                                               {module.from_date.slice(0, 4)}
@@ -531,8 +603,9 @@ const ProjectPlan = () => {
                                               {module.to_date.slice(8, 10)}/
                                               {module.to_date.slice(5, 7)}/
                                               {module.to_date.slice(0, 4)}
-                                            </b>
+                                            </p>
                                           </td>
+                                         
                                         </tr>
                                       )}
                                       {JSON.parse(module.tasks).map(
@@ -542,9 +615,25 @@ const ProjectPlan = () => {
                                           >
                                             <td></td>
                                             <td colSpan={2}>
-                                              {task.task_name}
+                                              <span
+                                                className={`text-capitalize ${
+                                                  module.status === "scrapped"
+                                                    ? "text-decoration-line-through text-dark"
+                                                    : ""
+                                                }`}
+                                              >
+                                                {task.task_name}
+                                              </span>
                                             </td>
-                                            <td>{task.allocated_time}</td>
+                                            <td
+                                              className={`${
+                                                module.status === "scrapped"
+                                                  ? "text-decoration-line-through text-dark"
+                                                  : ""
+                                              }`}
+                                            >
+                                              {task.allocated_time}
+                                            </td>
                                           </tr>
                                         )
                                       )}
@@ -563,7 +652,7 @@ const ProjectPlan = () => {
                       >
                         <thead>
                           <tr>
-                            <th colSpan={4} className="bg-success-subtle">
+                            <th colSpan={5} className="bg-success-subtle">
                               In Process
                             </th>
                           </tr>
@@ -572,13 +661,14 @@ const ProjectPlan = () => {
                             <th colSpan={1}>Module Name</th>
                             <th colSpan={2}>
                               <div className="d-flex flex-column">
-                                <span>Schd. Start Date</span>
-                                <span>Schd. End Date</span>
+                                <span>Schd. St. Dt.</span>
+                                <span>Schd. End Dt.</span>
                               </div>
                             </th>
+                            <th colSpan={1}>Status</th>
                           </tr>
                           <tr>
-                            <th colSpan={2}>Task</th>
+                            <th colSpan={3}>Task</th>
 
                             <th>Alloc hrs</th>
                           </tr>
@@ -608,12 +698,26 @@ const ProjectPlan = () => {
                                     <tr>
                                       <td>{index}</td>
                                       <td colSpan={1}>
-                                        <b className={`text-primary text-capitalize ${firstModuleinprocess?.status == 'scrapped' ? 'text-decoration-line-through' : ''}`}>
+                                        <p
+                                          className={`text-primary text-capitalize ${
+                                            firstModuleinprocess?.status ==
+                                            "scrapped"
+                                              ? "text-decoration-line-through text-danger"
+                                              : ""
+                                          }`}
+                                        >
                                           {firstModuleinprocess?.module_name}
-                                        </b>
+                                        </p>
                                       </td>
                                       <td colSpan={2}>
-                                        <b className="text-primary text-capitalize">
+                                        <p
+                                          className={`text-primary text-capitalize ${
+                                            firstModuleinprocess?.status ==
+                                            "scrapped"
+                                              ? "text-decoration-line-through text-danger"
+                                              : ""
+                                          }`}
+                                        >
                                           {firstModuleinprocess?.from_date.slice(
                                             8,
                                             10
@@ -643,7 +747,17 @@ const ProjectPlan = () => {
                                             0,
                                             4
                                           )}
-                                        </b>
+                                        </p>
+                                      </td>
+                                      <td colSpan={1}>
+                                        <p className={`text-primary text-capitalize ${
+                                            firstModuleinprocess?.status ==
+                                            "scrapped"
+                                              ? "text-decoration-line-through text-danger"
+                                              : ""
+                                          }`}>
+                                          {firstModuleinprocess?.status}
+                                        </p>
                                       </td>
                                     </tr>
                                   )}
@@ -655,17 +769,39 @@ const ProjectPlan = () => {
                                           <tr>
                                             <td>{moduleIndex + 1}</td>
                                             <td colSpan={2}>
-                                              <b className={`text-primary text-capitalize ${module.status == 'scrapped' ? 'text-decoration-line-through text-red' : ''}`}>
+                                              <p
+                                                className={`text-primary text-capitalize ${
+                                                  module.status == "scrapped"
+                                                    ? "text-decoration-line-through text-red"
+                                                    : ""
+                                                }`}
+                                              >
                                                 {module.module_name}
-                                              </b>
+                                              </p>
                                             </td>
                                             <td colSpan={1}>
-                                              <b className="text-primary text-capitalize">
+                                              <p
+                                                className={`text-primary text-capitalize ${
+                                                  module.status == "scrapped"
+                                                    ? "text-decoration-line-through text-red"
+                                                    : ""
+                                                }`}
+                                              >
                                                 {module.from_date.slice(0, 10)}
                                                 <br />
                                                 {module.to_date.slice(0, 10)}
-                                              </b>
+                                              </p>
                                             </td>
+                                            <td colSpan={1}>
+                                        <p className={`text-primary text-capitalize ${
+                                            module.status ==
+                                            "scrapped"
+                                              ? "text-decoration-line-through text-danger"
+                                              : ""
+                                          }`}>
+                                          {module.status}
+                                        </p>
+                                      </td>
                                           </tr>
                                         )}
                                         {JSON.parse(module.tasks).map(
@@ -674,10 +810,26 @@ const ProjectPlan = () => {
                                               key={`${index}-${moduleIndex}-${taskIndex}`}
                                             >
                                               <td></td>
-                                              <td colSpan={2}>
+                                              <td colSpan={3}>
+                                              <span
+                                                className={`text-capitalize ${
+                                                  module.status === "scrapped"
+                                                    ? "text-decoration-line-through text-dark"
+                                                    : ""
+                                                }`}
+                                              >
                                                 {task.task_name}
-                                              </td>
-                                              <td>{task.allocated_time}</td>
+                                              </span>
+                                            </td>
+                                            <td
+                                              className={`${
+                                                module.status === "scrapped"
+                                                  ? "text-decoration-line-through text-dark"
+                                                  : ""
+                                              }`}
+                                            >
+                                              {task.allocated_time}
+                                            </td>
                                             </tr>
                                           )
                                         )}

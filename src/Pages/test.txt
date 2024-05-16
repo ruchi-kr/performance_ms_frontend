@@ -58,3 +58,48 @@ return (
         </Select>
     </Form.Item>
 );
+
+
+import React, { useState } from 'react';
+
+const NavigationComponent = () => {
+  const [showNestedList, setShowNestedList] = useState(false);
+
+  const toggleNestedList = () => {
+    setShowNestedList(!showNestedList);
+  };
+
+  return (
+    <li className="nav-item btnhovergrey mt-3">
+      <a href="" className="nav-link text-white" onClick={toggleNestedList}>
+        <FontAwesomeIcon className="nav-icon" icon={faFolderOpen} />
+        <p>Reports</p>
+        <i className={`fas fa-angle-left right ${showNestedList ? 'open' : ''}`}></i>
+      </a>
+      {showNestedList && (
+        <ul className="nav nav-treeview mt-3">
+          <div>
+            <li className="nav-item">
+              <Link
+                className={`nav-link text-white ${location.pathname === "/reportproject-wise" ? "bg-cyan" : ""}`}
+                to="/reportproject-wise"
+              >
+                <i className="far fa-circle nav-icon" />
+                <p>Project-wise</p>
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/reportdate-wise"
+                className={`nav-link text-white ${location.pathname === "/reportdate-wise" ? "bg-cyan" : ""}`}
+              >
+                <i className="far fa-circle nav-icon" />
+                <p>Date-wise</p>
+              </Link>
+            </li>
+          </div>
+        </ul>
+      )}
+    </li>
+  );
+};

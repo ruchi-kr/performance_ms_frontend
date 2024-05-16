@@ -61,7 +61,7 @@ export default function Login() {
             }
 
         } catch (error) {
-            toast.error(error);
+            toast.error(error.response.data.error);
         }
         setSubmitting(false);
     };

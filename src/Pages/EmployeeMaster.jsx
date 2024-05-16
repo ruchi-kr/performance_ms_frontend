@@ -15,7 +15,7 @@ import {
 } from "../Config.js";
 import { toast } from "react-toastify";
 import { Col, Form, Input, Modal, Row, Select } from "antd";
-
+import { DatePicker } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
 const { Option } = Select;
@@ -385,7 +385,7 @@ const EmployeeMaster = () => {
                             { required: true, message: "D.O.J is required" },
                           ]}
                         >
-                          <Input type="date" />
+                          < DatePicker format="DD/MM/YYYY"  style={{width:"100%"}}/>
                         </Form.Item>
                       </Col>
                       
@@ -416,7 +416,7 @@ const EmployeeMaster = () => {
                             { required: true, message: "D.O.B is required" },
                           ]}
                         >
-                          <Input type="date" />
+                           < DatePicker format="DD/MM/YYYY"  style={{width:"100%"}}/>
                         </Form.Item>
                       </Col>
                       <Col span={12}>
