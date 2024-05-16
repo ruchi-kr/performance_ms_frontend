@@ -108,7 +108,7 @@ const Employee = () => {
       (module) => module.module_id === moduleId
     );
     setTaskList(tempModule[0]?.tasks);
-    // console.log("temp modules", tempModule);
+    console.log("temp modules", tempModule);
     console.log("temp modules task", tempModule[0]?.tasks);
   };
 
@@ -189,7 +189,7 @@ const Employee = () => {
       user_id: user_id,
       employee_id: employee_id,
       manager_id: "",
-      task: "",
+      task_id: "",
       allocated_time: "",
       actual_time: "",
       task_percent: "",
@@ -333,11 +333,10 @@ const Employee = () => {
       if (
         !task.project_id ||
         !task.module_id ||
-        !task.task ||
-        !task.allocated_time ||
-        !task.status
+        !task.task_id ||
+        !task.allocated_time
       ) {
-        toast.error("Please fill required the fields");
+        toast.error("Please fill required fields");
         // return false
       }
       if (task.id) {
@@ -432,7 +431,7 @@ const Employee = () => {
   // Function to handle changes in manager selection
   const handleTaskChange = (index, value) => {
     const updatedTaskRecords = [...taskRecords];
-    console.log("manager id selected", value);
+    console.log("task id selected", value);
     updatedTaskRecords[index].task_id = value;
     setTaskRecords(updatedTaskRecords);
   };
@@ -588,7 +587,7 @@ const Employee = () => {
                             <Select
                               showSearch
                               allowClear
-                              placeholder="Select"
+                              placeholder="Select Project"
                               optionFilterProp="children"
                               filterOption={(input, option) =>
                                 option.label
@@ -638,7 +637,7 @@ const Employee = () => {
                                     : "100%",
                               }}
                               className="rounded-2"
-                              value={record.module_id}
+                              value={record.module_name}
                               onChange={(value) =>
                                 handleModuleChange(index, value)
                               }
@@ -660,9 +659,9 @@ const Employee = () => {
                               ))}
                             </Select>
                             {!record.project_id ||
-                              (!record.module_id && (
+                              !record.module_id && (
                                 <span className="text-danger">*</span>
-                              ))}
+                              )}
                           </td>
 
                           {showSelect && (
@@ -732,14 +731,17 @@ const Employee = () => {
                                     : "100%",
                               }}
                               className="rounded-2"
-                              value={record.task_id}
+                              value={record.task_name}
                               // defaultValue={projectManagerName}
                               onChange={(value) =>
                                 handleTaskChange(index, value)
                               }
                               required
-                              // disabled
-                              // disabled={record.formDisabled || formDisabled}
+                              disabled={
+                                record.formDisabled ||
+                                formDisabled ||
+                                (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
+                              }
                             >
                               {taskList?.map((task) => (
                                 <Option
@@ -751,6 +753,9 @@ const Employee = () => {
                                 </Option>
                               ))}
                             </Select>
+                            {!record.task_id && (
+                              <span className="text-danger">*</span>
+                            )} 
                           </td>
                           <td>
                             <input
