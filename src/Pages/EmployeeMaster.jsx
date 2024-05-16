@@ -14,10 +14,21 @@ import {
   getJobRoleList,
 } from "../Config.js";
 import { toast } from "react-toastify";
+<<<<<<< HEAD
+import { Col, Form, Input, Modal, Row, Select, Pagination } from "antd";
+import { DatePicker } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  ArrowUpOutlined,
+} from "@ant-design/icons";
+=======
 import dayjs from "dayjs";
 import { Col, Form, Input, Modal, Row, Select } from "antd";
 import { DatePicker } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+>>>>>>> 5009ed485daa27e26b43b0bf043012a8fb99c736
 const { TextArea } = Input;
 const { Option } = Select;
 const { Search } = Input;
@@ -28,38 +39,54 @@ const EmployeeMaster = () => {
   // to hide the reporting manager col
   const [hideManager, setHideManager] = useState(false);
   const [allEmployeeData, setAllEmployeeData] = useState([]);
+  const [pagination, setPagination] = useState({
+    totalRecords: 0,
+    pageSize: 10,
+    totalPages: 0,
+    currentPage: 1,
+    nextPage: null,
+    prevPage: null,
+  });
+  const [sortOrder, setSortOrder] = useState("ASC");
 
-  // for pagination
-  const pageSize = 10; // Number of items per page
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   // get all projects function  &email=${search}
-  const getAllEmployeesHandler = async (page) => {
+  const getAllEmployeesHandler = async () => {
     try {
       const response = await axios.get(
-        `${getAllEmployees}?page=${page}&pageSize=${pageSize}&name=${search}&email=${search}`
+        `${getAllEmployees}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=name&name=${search}&email=${search}`
       );
-      setAllEmployeeData(response.data);
-      setTotalPages(Math.ceil(response.headers["x-total-count"] / pageSize));
-      console.log("employee details data", response.data);
+      setAllEmployeeData(response.data.data);
+      const {
+        totalRecords,
+        totalPages,
+        currentPage,
+        nextPage,
+        prevPage,
+        pageSize,
+      } = response.data.pagination;
+
+      setPagination((prevState) => ({
+        ...prevState,
+        totalRecords: totalRecords,
+        totalPages: totalPages,
+        pageSize: pageSize,
+        currentPage: currentPage,
+        nextPage: nextPage,
+        prevPage: prevPage,
+      }));
     } catch (err) {
       console.log(err);
     }
   };
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
-    getAllEmployeesHandler(pageNumber == 0 ? 1 : pageNumber);
-  };
-
   useEffect(() => {
-    getAllEmployeesHandler(currentPage);
-  }, [currentPage, search]);
+    getAllEmployeesHandler();
+  }, [search, pagination.currentPage, pagination.pageSize, sortOrder]);
 
   const employeeFormSubmit = (values) => {
     employeeForm
       .validateFields()
-      .then(async(values) => {
+      .then(async (values) => {
         try {
           const requestData = {
             ...values,
@@ -78,8 +105,8 @@ const EmployeeMaster = () => {
                   toast.success("Employee Added Successfully!");
                 }
                 employeeForm.resetFields();
-                setModalVisible(false);
-                getAllEmployeesHandler(currentPage);
+                setModalVisible(true);
+                getAllEmployeesHandler();
               }
             })
             .catch((error) => {
@@ -136,8 +163,8 @@ const EmployeeMaster = () => {
     name: "",
     designation_id: "",
     doj: "",
-    dob:"",
-    job_id:"",
+    dob: "",
+    job_id: "",
     experience: "",
     skills: "",
     mobile_no: "",
@@ -159,8 +186,13 @@ const EmployeeMaster = () => {
     employeeForm.setFieldsValue({
       name: employee.name,
       designation_id: employee.designation_id,
+<<<<<<< HEAD
+      doj: employee.doj.slice(0, 10),
+      dob: employee.dob.slice(0, 10),
+=======
       doj: dayjs(employee.doj),
       dob: dayjs(employee.dob),
+>>>>>>> 5009ed485daa27e26b43b0bf043012a8fb99c736
       job_id: employee.job_id,
       experience: employee.experience,
       skills: employee.skills,
@@ -240,8 +272,28 @@ const EmployeeMaster = () => {
   useEffect(() => {
     getJobRole();
   }, []);
-
-
+  //Pagination
+  const handlePageChange = (page) => {
+    setPagination((prevState) => ({
+      ...prevState,
+      currentPage: page,
+    }));
+  };
+  const pageSizeChange = (current, pageSize) => {
+    setPagination((prevState) => ({
+      ...prevState,
+      pageSize: pageSize,
+    }));
+  };
+  const handleSortChange = () => {
+    // Toggle sorting order when the button is clicked
+    setSortOrder((prevOrder) => {
+      if (prevOrder === "ASC") {
+        return "DESC";
+      }
+      return "ASC";
+    });
+  };
   return (
     <>
       <Header />
@@ -386,14 +438,21 @@ const EmployeeMaster = () => {
                             { required: true, message: "D.O.J is required" },
                           ]}
                         >
-                          < DatePicker format="DD/MM/YYYY"  style={{width:"100%"}}/>
+                          <DatePicker
+                            format="DD/MM/YYYY"
+                            style={{ width: "100%" }}
+                          />
                         </Form.Item>
                       </Col>
-                      
+
                       <Col span={12}>
                         <Form.Item
                           name="experience"
-                          label={<span className="text-info">Experience(in years)</span>}
+                          label={
+                            <span className="text-info">
+                              Experience(in years)
+                            </span>
+                          }
                           rules={[
                             {
                               required: true,
@@ -409,7 +468,7 @@ const EmployeeMaster = () => {
                       </Col>
                     </Row>
                     <Row gutter={[8, 1]}>
-                    <Col span={12}>
+                      <Col span={12}>
                         <Form.Item
                           name="dob"
                           label={<span className="text-info">D.O.B</span>}
@@ -417,7 +476,10 @@ const EmployeeMaster = () => {
                             { required: true, message: "D.O.B is required" },
                           ]}
                         >
-                           < DatePicker format="DD/MM/YYYY"  style={{width:"100%"}}/>
+                          <DatePicker
+                            format="DD/MM/YYYY"
+                            style={{ width: "100%" }}
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -451,56 +513,59 @@ const EmployeeMaster = () => {
                           rules={[
                             { required: true, message: "Email is required" },
                           ]}
-
                         >
-                          <Input type="email" placeholder="you@example.com" allowClear/>
+                          <Input
+                            type="email"
+                            placeholder="you@example.com"
+                            allowClear
+                          />
                         </Form.Item>
                       </Col>
-                      
 
                       {!hideManager ? (
                         <>
-                        <Col span={12}>
-                      <Form.Item
-                          name="job_id"
-                          label={<span className="text-info">Job Role</span>}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Job Role is required",
-                            },
-                            {
-                              pattern: /^[&,.\-_\w\s]{1,50}$/,
-                              message:
-                                "Please enter a valid job role Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
-                            },
-                          ]}
-                        >
-                          {/* <Input placeholder='designation' /> */}
-                          <Select
-                            showSearch
-                            allowClear
-                            placeholder="Select"
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            <Option value="">Select</Option>
-
-                            {jobroleList.map((item, index) => (
-                              <Option
-                                key={index}
-                                value={item.job_id}
-                                label={item.job_role_name}
+                          <Col span={12}>
+                            <Form.Item
+                              name="job_id"
+                              label={
+                                <span className="text-info">Job Role</span>
+                              }
+                              rules={[
+                                {
+                                  required: true,
+                                  message: "Job Role is required",
+                                },
+                                {
+                                  pattern: /^[&,.\-_\w\s]{1,50}$/,
+                                  message:
+                                    "Please enter a valid job role Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
+                                },
+                              ]}
+                            >
+                              {/* <Input placeholder='designation' /> */}
+                              <Select
+                                showSearch
+                                allowClear
+                                placeholder="Select"
+                                optionFilterProp="children"
+                                filterOption={filterOption}
+                                style={{ width: "100%" }}
+                                className="rounded-2"
                               >
-                                {item.job_role_name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                        </Col>
+                                <Option value="">Select</Option>
+
+                                {jobroleList.map((item, index) => (
+                                  <Option
+                                    key={index}
+                                    value={item.job_id}
+                                    label={item.job_role_name}
+                                  >
+                                    {item.job_role_name}
+                                  </Option>
+                                ))}
+                              </Select>
+                            </Form.Item>
+                          </Col>
                           <Col span={12}>
                             <Form.Item
                               name="manager_id"
@@ -586,13 +651,23 @@ const EmployeeMaster = () => {
                     <tr>
                       <th scope="col">S.No.</th>
                       {/* <th scope="col">Id</th> */}
-                      <th scope="col">Name</th>
+                      <th scope="col">
+                        <div className="d-flex">
+                          <div>Name</div>
+
+                          <ArrowUpOutlined
+                            style={{ marginLeft: 18, fontSize: "1rem" }}
+                            onClick={handleSortChange}
+                            rotate={sortOrder === "ASC" ? 0 : 180}
+                          />
+                        </div>
+                      </th>
                       {/* <th scope="col">Designation</th> */}
                       <th scope="col">D.O.J</th>
                       <th scope="col">D.O.B</th>
-                      <th scope="col">Experience(in years)</th>
+                      {/* <th scope="col">Exp. (yrs)</th> */}
                       {/* <th scope="col">Job Role</th> */}
-                      <th scope="col">Skills</th>
+                      {/* <th scope="col">Skills</th> */}
                       <th scope="col">Email</th>
                       <th scope="col">Contact No.</th>
                       <th scope="col">Reporting Manager</th>
@@ -603,7 +678,12 @@ const EmployeeMaster = () => {
                     {allEmployeeData.map((data, index) => {
                       return (
                         <tr key={data.employee_id}>
-                          <th scope="row">{index + 1}</th>
+                          <th scope="row">
+                            {(pagination.currentPage - 1) *
+                              pagination.pageSize +
+                              index +
+                              1}
+                          </th>
                           {/* <td>{data.employee_id}</td> */}
                           <td className="text-capitalize">{data.name}</td>
                           {/* <td className='text-capitalize'>{data.designation_id}</td> */}
@@ -612,12 +692,13 @@ const EmployeeMaster = () => {
                             {data.doj.slice(0, 4)}
                           </td>
                           {/* <td></td> */}
-                           <td>
-                            {data.dob.slice(8, 10)}/{data.dob.slice(5, 7)}/{data.dob.slice(0,4)}
-                          </td> 
-                          <td>{data.experience}</td>
+                          <td>
+                            {data.dob.slice(8, 10)}/{data.dob.slice(5, 7)}/
+                            {data.dob.slice(0, 4)}
+                          </td>
+                          {/* <td>{data.experience}</td> */}
                           {/* <td>{data.job_id}</td> */}
-                          <td className="text-wrap">{data.skills}</td>
+                          {/* <td className="text-wrap">{data.skills}</td> */}
                           <td>{data.email}</td>
                           <td>{data.mobile_no}</td>
                           <td>{data.manager_name}</td>
@@ -647,8 +728,28 @@ const EmployeeMaster = () => {
                     })}
                   </tbody>
                 </table>
+                <Row align={"end"}>
+                  <Col>
+                    <Pagination
+                      current={pagination.currentPage}
+                      total={pagination.totalRecords}
+                      pageSize={pagination.pageSize}
+                      onChange={handlePageChange}
+                      showLessItems={true}
+                      onShowSizeChange={pageSizeChange}
+                      showQuickJumper={false}
+                      showPrevNextJumpers={true}
+                      showSizeChanger={true}
+                      onPrev={() => handlePageChange(pagination.prevPage)}
+                      onNext={() => handlePageChange(pagination.nextPage)}
+                      style={{
+                        marginBottom: "2rem",
+                      }}
+                    />
+                  </Col>
+                </Row>
                 <div className="row float-right">
-                  <nav
+                  {/* <nav
                     aria-label="Page navigation example"
                     className="d-flex align-self-end mt-3"
                   >
@@ -690,7 +791,7 @@ const EmployeeMaster = () => {
                         </a>
                       </li>
                     </ul>
-                  </nav>
+                  </nav> */}
                 </div>
               </div>
             </div>

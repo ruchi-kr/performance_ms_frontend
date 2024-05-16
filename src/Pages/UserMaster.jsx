@@ -1,95 +1,128 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios';
-import { getAllUsers, createUser, editUser, deleteUser, getEmployerList,EmployeeList } from '../Config.js';
-import SideNavbar from '../Components/SideNavbar'
-import Header from '../Components/Header'
-import Footer from '../Components/Footer'
-import { toast } from 'react-toastify';
-import { Col, Form, Input, Modal, Row, Select } from 'antd';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  getAllUsers,
+  createUser,
+  editUser,
+  deleteUser,
+  getEmployerList,
+} from "../Config.js";
+import SideNavbar from "../Components/SideNavbar";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
+import { toast } from "react-toastify";
+import { Col, Form, Input, Modal, Row, Select, Pagination } from "antd";
 
-import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  ArrowUpOutlined,
+} from "@ant-design/icons";
 const { Option } = Select;
 const { Search } = Input;
 
 const UserMaster = () => {
+  // for search
+  const [search, setSearch] = useState("");
 
-    // for search 
-    const[search, setSearch] = useState("")
+  const [allUserData, setAllUserData] = useState([]);
 
+  const [pagination, setPagination] = useState({
+    totalRecords: 0,
+    pageSize: 10,
+    totalPages: 0,
+    currentPage: 1,
+    nextPage: null,
+    prevPage: null,
+  });
+  const [sortOrder, setSortOrder] = useState("ASC");
 
-    const [allUserData, setAllUserData] = useState([])
-    // for pagination
-    const pageSize = 10; // Number of items per page
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    // get all projects function
-    const getAllUsersHandler = async (page) => {
+  // get all projects function
+  const getAllUsersHandler = async () => {
+    try {
+      const response = await axios.get(
+        `${getAllUsers}?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=username&name=${search}&email=${search}&role=${search}`
+      );
+      setAllUserData(response.data.data);
+      console.log("user details data", response.data);
+      const {
+        totalRecords,
+        totalPages,
+        currentPage,
+        nextPage,
+        prevPage,
+        pageSize,
+      } = response.data.pagination;
 
-        try {
-            const response = await axios.get(`${getAllUsers}?page=${page}&pageSize=${pageSize}&name=${search}&email=${search}&role=${search}`);
-            setAllUserData(response.data)
-            console.log("user details data", response.data);
-            setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));
-        } catch (err) {
-            console.log(err);
-        }
+      setPagination((prevState) => ({
+        ...prevState,
+        totalRecords: totalRecords,
+        totalPages: totalPages,
+        pageSize: pageSize,
+        currentPage: currentPage,
+        nextPage: nextPage,
+        prevPage: prevPage,
+      }));
+    } catch (err) {
+      console.log(err);
     }
-    useEffect(() => {
-        getAllUsersHandler(currentPage);
-    }, [currentPage,search]);
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
-        getAllUsersHandler(pageNumber == 0 ? 1 : pageNumber);
-    };
+  };
+  useEffect(() => {
+    getAllUsersHandler();
+  }, [search, pagination.currentPage, pagination.pageSize, sortOrder]);
 
-
-
-    // create project
-    const userFormSubmit = (values) => {
-        userForm.validateFields()
-            .then(async(values) => {
-                try {
-                    const requestData = { ...values, id: editingUser ? editingUser.user_id : null };
-                    const url = editingUser ? `${editUser}/${editingUser.user_id}` : `${createUser}`;
-                    const response = await axios.post(url, requestData);
-                    if (response.status) {
-                        if (editingUser && editingUser.user_id !== null) {
-                            toast.success('User Details Updated Successfully!');
-                        } else {
-                            toast.success('User Added Successfully!');
-                        }
-                        userForm.resetFields();
-                        setModalVisible(false);
-                        window.location.reload()
-
-                        getAllUsersHandler();
-                    } else {
-                        // console.log(response.data.message);
-                        // toast.error(response.data.message);
-                    }
-                } catch (error) {
-                    console.log(error);
-                    toast.error(error.response.data.error);
-
-                }
-            })
-            .catch((errorInfo) => {
-                console.log('Validation failed user:', errorInfo);
-            });
-    };
-
-
-    // delete projects function
-    const deleteUserHandler = async (id) => {                            //creating a function for deleting data
+  // create project
+  const userFormSubmit = (values) => {
+    userForm
+      .validateFields()
+      .then(async (values) => {
         try {
-            await axios.delete(`${deleteUser}` + id)          // deleting data from server
-            window.location.reload()                             //reloading the page
-            // setEmployer('');
-        } catch (err) {
-            console.log("error deleting user", err);                                 //if error occurs then log it
+          const requestData = {
+            ...values,
+            id: editingUser ? editingUser.user_id : null,
+          };
+          const url = editingUser
+            ? `${editUser}/${editingUser.user_id}`
+            : `${createUser}`;
+          const response = await axios.post(url, requestData);
+          if (response.status) {
+            if (editingUser && editingUser.user_id !== null) {
+              toast.success("User Details Updated Successfully!");
+            } else {
+              toast.success("User Added Successfully!");
+            }
+            userForm.resetFields();
+            setModalVisible(false);
+            window.location.reload();
+
+            getAllUsersHandler();
+          } else {
+            // console.log(response.data.message);
+            // toast.error(response.data.message);
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error(error.response.data.error);
         }
+      })
+      .catch((errorInfo) => {
+        console.log("Validation failed user:", errorInfo);
+      });
+  };
+
+  // delete projects function
+  const deleteUserHandler = async (id) => {
+    //creating a function for deleting data
+    try {
+      await axios.delete(`${deleteUser}` + id); // deleting data from server
+      window.location.reload(); //reloading the page
+      // setEmployer('');
+    } catch (err) {
+      console.log("error deleting user", err); //if error occurs then log it
     }
-    // edit projects function
+  };
+  // edit projects function
 
     const [userForm] = Form.useForm();
     let [managerId, setManagerId] = useState(null);
@@ -98,24 +131,24 @@ const UserMaster = () => {
     const [editingUser, setEditingUser] = useState(null);
 
 
-    const userData = {
-        employee_id: '',
-        user_type: '',
-        status: '',
-        username: '',
-        password: '',
-        // email_id:'',
-        role: ''
-    };
+  const userData = {
+    employee_id: "",
+    user_type: "",
+    status: "",
+    username: "",
+    password: "",
+    // email_id:'',
+    role: "",
+  };
 
-    const openUserAdd = () => {
-        window.scrollTo(0, 0);
-        setModalVisible(true);
-        setEditingUser(null);
-        // SetProjectId(null);
-        userForm.setFieldsValue(userData);
-        setFormDisabled(false);
-    }
+  const openUserAdd = () => {
+    window.scrollTo(0, 0);
+    setModalVisible(true);
+    setEditingUser(null);
+    // SetProjectId(null);
+    userForm.setFieldsValue(userData);
+    setFormDisabled(false);
+  };
 
     const openUserView = async (user) => {
         setModalVisible(true);
@@ -161,26 +194,50 @@ const UserMaster = () => {
             console.log('Error fetching employer list data', error)
         }
     }
-    useEffect(() => {
-        getEmployers();
-    }, []);
-    const handleUserTypeSearch = (value) => {
-        setUserType(value)
-    }
-    const handleEmployerSearch = (value) => {
-        setEmployer(value)
-    }
-    return (
-        <>
-            <Header />
-            <SideNavbar />
-            <div className="content-wrapper bg-white">
-                <div className="content">
-                    <div className="container-bg-white">
-                        {/* 3rd row */}
-                        <div className="row my-5">
-                            <div className="col-11 mx-auto">
-                                {/* user master detailed table */}
+  };
+  useEffect(() => {
+    getEmployers();
+  }, []);
+  const handleUserTypeSearch = (value) => {
+    setUserType(value);
+  };
+  const handleEmployerSearch = (value) => {
+    setEmployer(value);
+  };
+
+  //Pagination
+  const handlePageChange = (page) => {
+    setPagination((prevState) => ({
+      ...prevState,
+      currentPage: page,
+    }));
+  };
+  const pageSizeChange = (current, pageSize) => {
+    setPagination((prevState) => ({
+      ...prevState,
+      pageSize: pageSize,
+    }));
+  };
+  const handleSortChange = () => {
+    // Toggle sorting order when the button is clicked
+    setSortOrder((prevOrder) => {
+      if (prevOrder === "ASC") {
+        return "DESC";
+      }
+      return "ASC";
+    });
+  };
+  return (
+    <>
+      <Header />
+      <SideNavbar />
+      <div className="content-wrapper bg-white">
+        <div className="content">
+          <div className="container-bg-white">
+            {/* 3rd row */}
+            <div className="row my-5">
+              <div className="col-11 mx-auto">
+                {/* user master detailed table */}
 
                                 <div className='d-flex justify-content-between'>
                                     <h3 className='text-primary'>User Details</h3>
@@ -240,19 +297,19 @@ const UserMaster = () => {
 
                                                         <Option value="" disabled>Select</Option>
 
-                                                        {employerList.map((employer, index) => (
-                                                            <Option
-                                                                key={index}
-                                                                value={employer.employee_id}
-                                                                label={employer.name}
-                                                            >
-                                                                {employer.name}
-                                                            </Option>
-                                                        ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col>
-                                            {/* <Col span={12}>
+                            {employerList.map((employer, index) => (
+                              <Option
+                                key={index}
+                                value={employer.employee_id}
+                                label={employer.name}
+                              >
+                                {employer.name}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      {/* <Col span={12}>
                                                 <Form.Item name="email_id" label={<span className='text-info'>Email</span>}
 
                                                     rules={[
@@ -413,49 +470,99 @@ const UserMaster = () => {
                                                         <td className=''>
                                                             {/* <button className="btn btn-primary btn-sm" onClick={() => openUserEdit(data)} >Edit</button>
                                                             <button className="btn btn-danger btn-sm" onClick={() => deleteUserHandler(data.user_id)}>Delete</button> */}
-                                                            <EyeOutlined onClick={() => openUserView(data)} style={{ color: "blue", marginRight: "1rem" }} />
-                                                            <EditOutlined onClick={() => openUserEdit(data)} style={{ color: "blue", marginRight: "1rem" }} />
-                                                            <DeleteOutlined onClick={() => deleteUserHandler(data.user_id)} style={{ color: "red", marginRight: "1rem" }} />
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })
-                                        }
-                                    </tbody>
-                                </table>
-                                {/* pagination */}
-                                <div className="row float-right">
-                                    <nav aria-label="Page navigation example" className='d-flex align-self-end mt-3'>
-                                        <ul className="pagination">
-                                            <li className="page-item">
-                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => handlePageChange(currentPage - 1)}>
-                                                    <span aria-hidden="true">«</span>
-                                                </a>
-                                            </li>
-                                            {Array.from({ length: totalPages }, (_, index) => (
-                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                    <a className="page-link" href="#" onClick={() => handlePageChange(index + 1)}>
-                                                        {index + 1}
-                                                    </a>
-                                                </li>
-                                            ))}
-                                            <li className="page-item">
-                                                <a className="page-link" href="#" aria-label="Next" onClick={() => handlePageChange(currentPage + 1)}>
-                                                    <span aria-hidden="true">»</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
+                            <EyeOutlined
+                              onClick={() => openUserView(data)}
+                              style={{ color: "blue", marginRight: "1rem" }}
+                            />
+                            <EditOutlined
+                              onClick={() => openUserEdit(data)}
+                              style={{ color: "blue", marginRight: "1rem" }}
+                            />
+                            <DeleteOutlined
+                              onClick={() => deleteUserHandler(data.user_id)}
+                              style={{ color: "red", marginRight: "1rem" }}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <Row align={"end"}>
+                  <Col>
+                    <Pagination
+                      current={pagination.currentPage}
+                      total={pagination.totalRecords}
+                      pageSize={pagination.pageSize}
+                      onChange={handlePageChange}
+                      showLessItems={true}
+                      onShowSizeChange={pageSizeChange}
+                      showQuickJumper={false}
+                      showPrevNextJumpers={true}
+                      showSizeChanger={true}
+                      onPrev={() => handlePageChange(pagination.prevPage)}
+                      onNext={() => handlePageChange(pagination.nextPage)}
+                      style={{
+                        marginBottom: "2rem",
+                      }}
+                    />
+                  </Col>
+                </Row>
 
-                            </div>
-                        </div>
-                    </div>
+                {/* pagination */}
+                <div className="row float-right">
+                  {/* <nav
+                    aria-label="Page navigation example"
+                    className="d-flex align-self-end mt-3"
+                  >
+                    <ul className="pagination">
+                      <li className="page-item">
+                        <a
+                          className="page-link"
+                          href="#"
+                          aria-label="Previous"
+                          onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                          <span aria-hidden="true">«</span>
+                        </a>
+                      </li>
+                      {Array.from({ length: totalPages }, (_, index) => (
+                        <li
+                          key={index}
+                          className={`page-item ${
+                            currentPage === index + 1 ? "active" : ""
+                          }`}
+                        >
+                          <a
+                            className="page-link"
+                            href="#"
+                            onClick={() => handlePageChange(index + 1)}
+                          >
+                            {index + 1}
+                          </a>
+                        </li>
+                      ))}
+                      <li className="page-item">
+                        <a
+                          className="page-link"
+                          href="#"
+                          aria-label="Next"
+                          onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                          <span aria-hidden="true">»</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav> */}
                 </div>
+              </div>
             </div>
-            <Footer />
-        </>
-    )
-}
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
+  );
+};
 
-export default UserMaster
+export default UserMaster;
