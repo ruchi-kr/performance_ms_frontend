@@ -58,7 +58,7 @@ const ProjectMaster = () => {
     nextPage: null,
     prevPage: null,
   });
-  const [sortOrder, setSortOrder] = useState("DESC");
+  const [sortOrder, setSortOrder] = useState("ASC");
 
   // get all projects function
   const getAllProjectsHandler = async (page) => {
@@ -576,23 +576,27 @@ const ProjectMaster = () => {
                     })}
                   </tbody>
                 </table>
+                <Row align="end">
+                  <Col>
+                    <Pagination
+                      current={pagination.currentPage}
+                      total={pagination.totalRecords}
+                      pageSize={pagination.pageSize}
+                      onChange={handlePageChange}
+                      showLessItems={true}
+                      onShowSizeChange={pageSizeChange}
+                      showQuickJumper={false}
+                      showPrevNextJumpers={true}
+                      showSizeChanger={true}
+                      onPrev={() => handlePageChange(pagination.prevPage)}
+                      onNext={() => handlePageChange(pagination.nextPage)}
+                      style={{
+                        marginBottom: "2rem",
+                      }}
+                    />
+                  </Col>
+                </Row>
 
-                <Pagination
-                  current={pagination.currentPage}
-                  total={pagination.totalRecords}
-                  pageSize={pagination.pageSize}
-                  onChange={handlePageChange}
-                  showLessItems={true}
-                  onShowSizeChange={pageSizeChange}
-                  showQuickJumper={false}
-                  showPrevNextJumpers={true}
-                  showSizeChanger={true}
-                  onPrev={() => handlePageChange(pagination.prevPage)}
-                  onNext={() => handlePageChange(pagination.nextPage)}
-                  style={{
-                    marginBottom: "2rem",
-                  }}
-                />
                 <div className="row float-right"></div>
               </div>
             </div>
