@@ -366,7 +366,7 @@ const Employee = () => {
           setTaskSaved(true);
           setFormDisabled(true);
           setAdhoc(0);
-          toast.success("Task Updated Successfully");
+          toast.success(response1.data.msg);
         } else {
           toast.error("Task Not Updated");
         }
@@ -389,7 +389,7 @@ const Employee = () => {
           setTaskSaved(true);
           setFormDisabled(true);
           setAdhoc(1);
-          toast.success("Task added Successfully");
+          toast.success(response2.data.msg);
           setFormDisabled(true);
 
           console.log("form disabled", formDisabled);
@@ -401,6 +401,7 @@ const Employee = () => {
       fetchTasks();
     } catch (error) {
       console.error("Error saving task:", error);
+      toast.error(error.response.data.error);
     }
   };
 

@@ -173,7 +173,8 @@ const SideNavbar = () => {
                 <>
                   {role === "employee" ? (
                     <>
-                      <li className="nav-item btnhovergrey mt-3">
+                    
+                      <li className="nav-item btnhovergrey mt-3" >
                         <Link
                           className={`nav-link text-white ${
                             window.location.pathname === "/plan"
@@ -212,8 +213,8 @@ const SideNavbar = () => {
                             icon={faFolderOpen}
                           />
                           <p>Reports</p>
-                          {/* <i className="fas fa-angle-left right"></i> */}
-                          <FontAwesomeIcon icon={faChevronRight} className="right" />
+                          <i class="fas fa-angle-left right"></i>
+                          {/* <FontAwesomeIcon icon={faChevronRight} className="right" /> */}
                         </a>
                         <ul className="nav nav-treeview mt-3">
                           <div>

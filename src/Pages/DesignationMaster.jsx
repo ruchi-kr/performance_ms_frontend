@@ -11,7 +11,17 @@ import {
 } from "../Config.js";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Col, Form, Input, Modal, Row, Select, Pagination } from "antd";
+import {
+  Col,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Pagination,
+  Spin,
+  Button,
+} from "antd";
 import {
   ArrowUpOutlined,
   EditOutlined,
@@ -105,9 +115,56 @@ const DesignationMaster = () => {
     }
   };
 
+  // const [loading, setLoading] = useState(false);
+  // useEffect(() => {
+  //   setLoading(false);
+  //   const timer = setTimeout(() => {
+  //     onSearch();
+  //   }, 3000);
+
+  //   return () => {
+  //     clearTimeout(timer);
+  //   };
+  // }, [designation]);
+
+  // const onSearch = async () => {
+  //   if (designation === null || designation === undefined) {
+  //     getAllDesignationHandler(currentPage);
+  //     setLoading(false);
+  //   } else {
+  //     setLoading(true);
+  //   }
+  // };
   useEffect(() => {
     getAllDesignationHandler(currentPage);
   }, [designation, pagination.currentPage, pagination.pageSize, sortOrder]);
+
+  // for adding another
+  const handleAddAnother = () => {
+    managerForm.validateFields().then(async (values) => {
+      console.log(values);
+      try {
+        const requestData = {
+          ...values,
+        };
+        const url = `${createDesignation}`;
+        const response = await axios.post(url, requestData);
+        if (response.status === 200) {
+          toast.success("Designation Added Successfully!");
+
+          console.log("response added", response.data);
+          managerForm.resetFields();
+          setModalVisible(true);
+          getAllDesignationHandler();
+        } else {
+          console.log(response.data.message);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error.response.data.error);
+      }
+    });
+  };
 
   // create manager
   const managerFormSubmit = (values) => {
@@ -131,7 +188,7 @@ const DesignationMaster = () => {
             }
             console.log("response added", response.data);
             managerForm.resetFields();
-            setModalVisible(true);
+            setModalVisible(false);
             getAllDesignationHandler();
           } else {
             console.log(response.data.message);
@@ -139,6 +196,7 @@ const DesignationMaster = () => {
           }
         } catch (error) {
           console.log(error);
+          toast.error(error.response.data.error);
         }
       })
       .catch((errorInfo) => {
@@ -152,6 +210,7 @@ const DesignationMaster = () => {
       if (response.status === 200) {
         // Manager deleted successfully
         console.log(response.data);
+        toast.success(response.data.msg);
         window.location.reload();
       } else if (response.status === 400) {
         // Manager is assigned to an employee
@@ -161,9 +220,7 @@ const DesignationMaster = () => {
     } catch (err) {
       console.log("error deleting Designation", err);
       // Display a generic error message if there's an unexpected error
-      toast.error(
-        "Designation cannot be deleted as it is assigned to an employee"
-      );
+      toast.error(err.response.data.error);
       // toast.error(response.data.error);
     }
   };
@@ -175,6 +232,7 @@ const DesignationMaster = () => {
   let [modalVisible, setModalVisible] = useState(false);
   const [formDisabled, setFormDisabled] = useState(false);
   const [editingManager, setEditingManager] = useState(null);
+  const [viewManager, setViewManager] = useState(null);
 
   const managerData = {
     designation_id: "",
@@ -185,12 +243,14 @@ const DesignationMaster = () => {
     window.scrollTo(0, 0);
     setModalVisible(true);
     setEditingManager(null);
+    setViewManager(null);
     // SetProjectId(null);
     managerForm.setFieldsValue(managerData);
     setFormDisabled(false);
   };
 
   const openManagerView = async (manager) => {
+    setViewManager(manager);
     setModalVisible(true);
     setFormDisabled(true);
     managerForm.setFieldsValue({
@@ -268,20 +328,26 @@ const DesignationMaster = () => {
                     value={designation}
                     onChange={(e) => setDesignation(e.target.value)}
                   />
+                  {/* {loading ? <Spin fullscreen /> : null} */}
                 </div>
 
                 {/* modal */}
                 <Modal
                   title={
-                    editingManager ? "Edit Designation" : "Add Designation"
+                    editingManager
+                      ? "Edit Designation"
+                      : viewManager
+                      ? "View Designation"
+                      : "Add Designation"
                   }
                   visible={modalVisible}
                   onOk={managerFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingManager(null);
+                    setViewManager(null);
                   }}
-                  okText="Submit"
+                  okText="Submit & Close"
                   okButtonProps={{
                     style: { display: formDisabled ? "none" : "" },
                   }}
@@ -307,9 +373,9 @@ const DesignationMaster = () => {
                               message: "Designation is required",
                             },
                             {
-                              pattern: /^[&,.\-_\w\s]{1,50}$/,
+                              pattern: /^[/&,.\-_\w\s]{1,50}$/,
                               message:
-                                "Please enter a valid Designation Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
+                                "Please enter a valid Designation Name (up to 50 characters, only /, &, , ., -, _ special characters are allowed)",
                             },
                           ]}
                         >
@@ -318,6 +384,15 @@ const DesignationMaster = () => {
                       </Col>
                     </Row>
                   </Form>
+                  {!editingManager && !viewManager ? (
+                    <>
+                      <Button onClick={handleAddAnother} type="primary">
+                        Add Another
+                      </Button>
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </Modal>
                 {/* table */}
                 <table className="table table-striped table-hover mt-5">
@@ -356,35 +431,48 @@ const DesignationMaster = () => {
                             {data.designation_name}
                           </td>
                           {/* <td className='text-capitalize'>{data.department}</td> */}
-                          {index !== 0 && index !== 1 ? (
-                            <>
-                              <td className="">
-                                <EyeOutlined
-                                  onClick={() => openManagerView(data)}
-                                  style={{ color: "blue", marginRight: "1rem" }}
-                                />
-                                <EditOutlined
-                                  onClick={() => openManagerEdit(data)}
-                                  style={{ color: "blue", marginRight: "1rem" }}
-                                />
-                                <DeleteOutlined
-                                  onClick={() =>
-                                    deleteManagerHandler(data.designation_id)
-                                  }
-                                  style={{ color: "red", marginRight: "1rem" }}
-                                />
-                              </td>
-                            </>
-                          ) : (
-                            <>
-                              <td className="">
-                                <EyeOutlined
-                                  onClick={() => openManagerView(data)}
-                                  style={{ color: "blue" }}
-                                />
-                              </td>
-                            </>
-                          )}
+                          {
+                            //  index !== 0 && index !== 1 ? (
+                            data.designation_name !== "ceo" &&
+                            data.designation_name !== "project manager" ? (
+                              <>
+                                <td className="">
+                                  <EyeOutlined
+                                    onClick={() => openManagerView(data)}
+                                    style={{
+                                      color: "blue",
+                                      marginRight: "1rem",
+                                    }}
+                                  />
+                                  <EditOutlined
+                                    onClick={() => openManagerEdit(data)}
+                                    style={{
+                                      color: "blue",
+                                      marginRight: "1rem",
+                                    }}
+                                  />
+                                  <DeleteOutlined
+                                    onClick={() =>
+                                      deleteManagerHandler(data.designation_id)
+                                    }
+                                    style={{
+                                      color: "red",
+                                      marginRight: "1rem",
+                                    }}
+                                  />
+                                </td>
+                              </>
+                            ) : (
+                              <>
+                                <td className="">
+                                  <EyeOutlined
+                                    onClick={() => openManagerView(data)}
+                                    style={{ color: "blue" }}
+                                  />
+                                </td>
+                              </>
+                            )
+                          }
                         </tr>
                       );
                     })}

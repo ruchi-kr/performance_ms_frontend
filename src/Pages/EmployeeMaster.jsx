@@ -15,7 +15,7 @@ import {
 } from "../Config.js";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
-import { Col, Form, Input, Modal, Row, Select } from "antd";
+import {AutoComplete, Col, Form, Input, Modal, Row, Select } from "antd";
 import { DatePicker ,Pagination} from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined,ArrowUpOutlined } from "@ant-design/icons";
 const { TextArea } = Input;
@@ -38,6 +38,20 @@ const EmployeeMaster = () => {
   });
   const [sortOrder, setSortOrder] = useState("ASC");
 
+  // for email autocomplete
+  const [options, setOptions] = React.useState([]);
+
+  const handleSearch = (value) => {
+    setOptions(() => {
+      if (!value || value.includes('@')) {
+        return [];
+      }
+      return ['gmail.com', 'intileo.com', 'qmoniqs.com'].map((domain) => ({
+        label: `${value}@${domain}`,
+        value: `${value}@${domain}`,
+      }));
+    });
+  };
   // get all projects function  &email=${search}
   const getAllEmployeesHandler = async () => {
     try {
@@ -94,7 +108,7 @@ const EmployeeMaster = () => {
                   toast.success("Employee Added Successfully!");
                 }
                 employeeForm.resetFields();
-                setModalVisible(true);
+                setModalVisible(false);
                 getAllEmployeesHandler();
               }
             })
@@ -147,6 +161,7 @@ const EmployeeMaster = () => {
   let [modalVisible, setModalVisible] = useState(false);
   const [formDisabled, setFormDisabled] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [viewEmployee, setViewEmployee] = useState(null);
 
   const employeeData = {
     name: "",
@@ -165,6 +180,7 @@ const EmployeeMaster = () => {
     window.scrollTo(0, 0);
     setModalVisible(true);
     setEditingEmployee(null);
+    setViewEmployee(null);
     // SetProjectId(null);
     employeeForm.setFieldsValue(employeeData);
     setFormDisabled(false);
@@ -172,6 +188,7 @@ const EmployeeMaster = () => {
   const openEmployeeView = async (employee) => {
     setModalVisible(true);
     setFormDisabled(true);
+    setViewEmployee(employee);
     employeeForm.setFieldsValue({
       name: employee.name,
       designation_id: employee.designation_id,
@@ -319,12 +336,13 @@ const EmployeeMaster = () => {
                 </div>
                 {/* modal */}
                 <Modal
-                  title={editingEmployee ? "Edit Employee" : "Add Employee"}
+                  title={editingEmployee ? "Edit Employee" : viewEmployee ? "View Employee" : "Add Employee"}
                   visible={modalVisible}
                   onOk={employeeFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingEmployee(null);
+                    setViewEmployee(null);
                   }}
                   okText="Submit"
                   okButtonProps={{
@@ -499,9 +517,11 @@ const EmployeeMaster = () => {
                             { type: "email", message: "Invalid email" },
                           ]}
                         >
-                          <Input
+                          <AutoComplete
+                           onSearch={handleSearch}
                             type="email"
                             placeholder="you@example.com"
+                            options={options}
                             allowClear
                           />
                         </Form.Item>
@@ -649,11 +669,13 @@ const EmployeeMaster = () => {
                       </th>
                       {/* <th scope="col">Designation</th> */}
                       <th scope="col">D.O.J</th>
-                      <th scope="col">D.O.B</th>
+                      {/* <th scope="col">D.O.B</th> */}
                       {/* <th scope="col">Exp. (yrs)</th> */}
                       {/* <th scope="col">Job Role</th> */}
                       {/* <th scope="col">Skills</th> */}
                       <th scope="col">Email</th>
+                      <th scope="col">Designation</th>
+                      <th scope="col">Job Role</th>
                       <th scope="col">Contact No.</th>
                       <th scope="col">Reporting Manager</th>
                       <th scope="col">Action</th>
@@ -677,16 +699,18 @@ const EmployeeMaster = () => {
                             {data.doj.slice(0, 4)}
                           </td>
                           {/* <td></td> */}
-                          <td>
+                          {/* <td>
                             {data.dob.slice(8, 10)}/{data.dob.slice(5, 7)}/
                             {data.dob.slice(0, 4)}
-                          </td>
+                          </td> */}
                           {/* <td>{data.experience}</td> */}
                           {/* <td>{data.job_id}</td> */}
                           {/* <td className="text-wrap">{data.skills}</td> */}
                           <td>{data.email}</td>
+                          <td className="text-capitalize">{data.designation_name}</td>
+                          <td className="text-capitalize">{data.job_role_name}</td>
                           <td>{data.mobile_no}</td>
-                          <td>{data.manager_name}</td>
+                          <td className="text-capitalize">{data.manager_name}</td>
                           {/* <td>{manager}</td> */}
                           <td className="">
                             {/* <button className="btn btn-primary btn-sm" onClick={() => openEmployeeEdit(data)} >Edit</button>

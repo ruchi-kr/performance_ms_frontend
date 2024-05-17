@@ -284,7 +284,7 @@ const AddProjectPlan = () => {
       centered: true,
       async onOk() {
         try {
-          await axios.delete(
+          const response =await axios.delete(
             `http://localhost:8000/api/module/task/${record.task_id}`
           );
           notification.success({
@@ -296,7 +296,7 @@ const AddProjectPlan = () => {
           // console.error("Error Adding project:", error);
           notification.error({
             message: "Failed",
-            description: `${error}`,
+            description: `${error.response.data.error}`,
           });
         }
       },
@@ -550,14 +550,20 @@ const AddProjectPlan = () => {
       ),
       dataIndex: "module_name",
       key: "module_name",
-      render: (text) => <p className="text-capitalize fs-6 fw-medium">{text}</p>,
+      render: (text) => (
+        <p className="text-capitalize fs-6 fw-medium">{text}</p>
+      ),
     },
 
     {
       title: "Schd. St. Dt.",
       dataIndex: "from_date",
       key: "from_date",
-      render: (text) => <span className="fs-6 fw-medium">{moment(text).utcOffset("+05:30").format("DD/MM/YYYY")}</span>,
+      render: (text) => (
+        <span className="fs-6 fw-medium">
+          {moment(text).utcOffset("+05:30").format("DD/MM/YYYY")}
+        </span>
+      ),
       // render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
       width: "10%",
     },
@@ -565,7 +571,11 @@ const AddProjectPlan = () => {
       title: "Schd. End Dt.",
       dataIndex: "to_date",
       key: "to_date",
-      render: (text) => <span className="fs-6 fw-medium">{moment(text).utcOffset("+05:30").format("DD/MM/YYYY")}</span>,
+      render: (text) => (
+        <span className="fs-6 fw-medium">
+          {moment(text).utcOffset("+05:30").format("DD/MM/YYYY")}
+        </span>
+      ),
 
       // render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
       width: "10%",
@@ -584,28 +594,30 @@ const AddProjectPlan = () => {
       dataIndex: "status",
       key: "status",
       render: (text) => {
-          let color = '';
-          switch (text) {
-              case "ongoing":
-                  color = 'text-primary';
-                  break;
-              case "notstarted":
-                  color = 'text-warning';
-                  break;
-              case "completed":
-                  color = 'text-success';
-                  break;
-              case "scrapped":
-                  color = 'text-danger';
-                  break;
-              default:
-                  color = 'text-dark';
-                  break;
-          }
-          return <p className={`text-capitalize ${color} fs-6 fw-medium`}>{text}</p>;
+        let color = "";
+        switch (text) {
+          case "ongoing":
+            color = "text-primary";
+            break;
+          case "notstarted":
+            color = "text-warning";
+            break;
+          case "completed":
+            color = "text-success";
+            break;
+          case "scrapped":
+            color = "text-danger";
+            break;
+          default:
+            color = "text-dark";
+            break;
+        }
+        return (
+          <p className={`text-capitalize ${color} fs-6 fw-medium`}>{text}</p>
+        );
       },
       width: "10%",
-  },
+    },
     {
       title: "Action",
       dataIndex: "action",
@@ -675,7 +687,9 @@ const AddProjectPlan = () => {
       title: <div className="text-primary">Task Name</div>,
       dataIndex: "task_name",
       key: "task_name",
-      render: (text) => <span className="text-capitalize">{text ? text : "-"}</span>,
+      render: (text) => (
+        <span className="text-capitalize">{text ? text : "-"}</span>
+      ),
       // render: (text) => `${text ? text : "-"}`,
     },
 
@@ -756,7 +770,6 @@ const AddProjectPlan = () => {
     },
   ];
 
-  const [status, setStatus] = useState("notstarted");
   return (
     <>
       <Header />
@@ -767,8 +780,11 @@ const AddProjectPlan = () => {
             <div className="row my-5">
               <Row justify={"start"} style={{ marginBottom: "3rem" }}>
                 <Col style={{ paddingBottom: "0" }}>
-                  <Title level={3} >
-                    Project - <span className="text-info text-capitalize">{projectName}</span>
+                  <Title level={3}>
+                    Project -{" "}
+                    <span className="text-info text-capitalize">
+                      {projectName}
+                    </span>
                   </Title>
                 </Col>
               </Row>
@@ -814,9 +830,11 @@ const AddProjectPlan = () => {
                 <Col>
                   <NavLink
                     to={`/projectplan`}
-                   className=" d-flex align-items-center" 
+                    className=" d-flex align-items-center"
                   >
-<ArrowLeftOutlined style={{ fontSize: '1.5rem' }} />&nbsp; Back                </NavLink>
+                    <ArrowLeftOutlined style={{ fontSize: "1.5rem" }} />
+                    &nbsp; Back{" "}
+                  </NavLink>
                 </Col>
                 <Col>
                   {/* <label className="text-info" style={{ marginBottom: "10px" }}>
@@ -908,7 +926,6 @@ const AddProjectPlan = () => {
                 </Col>
                 <Col align="left" style={{ width: "100%" }}>
                   {(isAdding || isEditing) && (
-                  
                     <Card>
                       {isAdding ? (
                         <h4 className="text-info">Add Module</h4>
@@ -1050,10 +1067,8 @@ const AddProjectPlan = () => {
                                     message: "Please select Status !",
                                   },
                                 ]}
-                               
                               >
                                 <Select
-                                
                                   options={[
                                     {
                                       value: "notstarted",
@@ -1075,11 +1090,17 @@ const AddProjectPlan = () => {
                                     {
                                       value: "completed",
                                       label: (
-                                        <span className={stage === "rfp" ? "text-secondary-subtle" : "text-success"}>
-                                        completed
+                                        <span
+                                          className={
+                                            stage === "rfp"
+                                              ? "text-secondary-subtle"
+                                              : "text-success"
+                                          }
+                                        >
+                                          completed
                                         </span>
                                       ),
-                                      disabled: stage ==="rfp"
+                                      disabled: stage === "rfp",
                                     },
                                     {
                                       value: "scrapped",
@@ -1088,10 +1109,8 @@ const AddProjectPlan = () => {
                                           scrapped
                                         </span>
                                       ),
-                                      
                                     },
                                   ]}
-                                 
                                   placeholder="Status "
                                 />
                               </Form.Item>
@@ -1108,15 +1127,10 @@ const AddProjectPlan = () => {
                                     htmlType="button"
                                     onClick={handleReset}
                                     className="me-3"
-                                   
                                   >
                                     Cancel
                                   </Button>
-                                  <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                  
-                                  >
+                                  <Button type="primary" htmlType="submit">
                                     {isAdding ? "Submit" : "Update"}
                                   </Button>
                                 </div>
@@ -1129,148 +1143,132 @@ const AddProjectPlan = () => {
                   )}
                 </Col>
                 <Col align="left" style={{ width: "100%" }}>
-                  {
-                  
-                    (isAddingTask || isEditingTask) && (
-                      <Card>
-                        {isAddingTask ? (
-                          <h4 className="text-info">Add Task</h4>
-                        ) : (
-                          <h4 className="text-info">Edit Task</h4>
-                        )}
-                        {(isAddingTask || isEditingTask) && (
-                          <Form
-                            colon={false}
-                            layout="vertical"
-                            labelAlign="left"
-                            form={formTask}
-                            name="basic"
-                            onFinish={onFinishTask}
-                            onFinishFailed={onFinishFailedTask}
-                            autoComplete="on"
-                            style={{ paddingTop: "2rem" }}
-                          >
-                            <Row gutter={16}>
-                              <Col span={24}>
-                                <Form.Item
-                                  label="Task Id"
-                                  name="task_id"
-                                  hidden
+                  {(isAddingTask || isEditingTask) && (
+                    <Card>
+                      {isAddingTask ? (
+                        <h4 className="text-info">Add Task</h4>
+                      ) : (
+                        <h4 className="text-info">Edit Task</h4>
+                      )}
+                      {(isAddingTask || isEditingTask) && (
+                        <Form
+                          colon={false}
+                          layout="vertical"
+                          labelAlign="left"
+                          form={formTask}
+                          name="basic"
+                          onFinish={onFinishTask}
+                          onFinishFailed={onFinishFailedTask}
+                          autoComplete="on"
+                          style={{ paddingTop: "2rem" }}
+                        >
+                          <Row gutter={16}>
+                            <Col span={24}>
+                              <Form.Item label="Task Id" name="task_id" hidden>
+                                <Input />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row gutter={24}>
+                            <Col span={8}>
+                              <Form.Item
+                                label="Module"
+                                name="module_id"
+                                // style={{ maxWidth: "50%" }}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Please select module !",
+                                  },
+                                ]}
+                              >
+                                <Select
+                                  disabled
+                                  placeholder="Select Module"
+                                  allowClear={true} // Disable the clear button
                                 >
-                                  <Input />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24}>
-                              <Col span={8}>
-                                <Form.Item
-                                  label="Module"
-                                  name="module_id"
-                                  // style={{ maxWidth: "50%" }}
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Please select module !",
-                                    },
-                                  ]}
-                                >
-                                  <Select
-                                    disabled
-                                    placeholder="Select Module"
-                                    allowClear={true} // Disable the clear button
-                                  
-                                  >
-                                    {moduleList.map((module) => (
-                                      <Option
-                                        key={module.module_id}
-                                        value={module.module_id}
-                                        disabled={
-                                          module.status === "scrapped" ||
-                                          module.status === "completed"
-                                        }
-                                      >
-                                        {module.module_name}
-                                      </Option>
-                                    ))}
-                                  </Select>
-                                </Form.Item>
-                              </Col>
-                              <Col span={8}>
-                                <Form.Item
-                                  label="Task Name"
-                                  name="task_name"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Please input task name!",
-                                    },
-                                    {
-                                      pattern: /^[&,.\-_\w\s]{1,50}$/,
-                                      message:
-                                        "Please enter a valid Task Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
-                                    },
-                                  ]}
-                                 
-                                >
-                                  <Input
-                                    maxLength={100}
-                                    placeholder="task name"
-                                    style={{ marginLeft: "4" }}
-                                  />
-                                </Form.Item>
-                              </Col>
-                              <Col span={4}>
-                                <Form.Item
-                                  label="Allocated Time (hrs)"
-                                  name="allocated_time"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Please input allocated time!",
-                                    },
-                                  ]}
-                                
-                                >
-                                  <InputNumber
-                                    min={0}
-                                    max={500}
-                                    style={{width:"100%"}}
-                                  
-                                  />
-                                </Form.Item>
-                              </Col>
-                            </Row>
+                                  {moduleList.map((module) => (
+                                    <Option
+                                      key={module.module_id}
+                                      value={module.module_id}
+                                      disabled={
+                                        module.status === "scrapped" ||
+                                        module.status === "completed"
+                                      }
+                                    >
+                                      {module.module_name}
+                                    </Option>
+                                  ))}
+                                </Select>
+                              </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                              <Form.Item
+                                label="Task Name"
+                                name="task_name"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Please input task name!",
+                                  },
+                                  {
+                                    pattern: /^[&,.\-_\w\s]{1,50}$/,
+                                    message:
+                                      "Please enter a valid Task Name (up to 50 characters, only &, , ., -, _ special characters are allowed)",
+                                  },
+                                ]}
+                              >
+                                <Input
+                                  maxLength={100}
+                                  placeholder="task name"
+                                  style={{ marginLeft: "4" }}
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col span={4}>
+                              <Form.Item
+                                label="Allocated Time (hrs)"
+                                name="allocated_time"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Please input allocated time!",
+                                  },
+                                ]}
+                              >
+                                <InputNumber
+                                  min={0}
+                                  max={500}
+                                  style={{ width: "100%" }}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
 
-                            <Row justify="start">
-                              <Col>
-                                <Form.Item>
-                                  <div className={styles.buttonStyle2}>
-                                    <Button
-                                      type="primary"
-                                      danger
-                                      htmlType="button"
-                                      onClick={handleReset}
-                                      className="me-3"
-                                     
-                                    >
-                                      Cancel
-                                    </Button>
-                                    <Button
-                                      type="primary"
-                                      htmlType="submit"
-                                    
-                                    >
-                                      {isAddingTask ? "Submit" : "Update"}
-                                    </Button>
-                                  </div>
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </Form>
-                        )}
-                      </Card>
-                    )
-                  }
+                          <Row justify="start">
+                            <Col>
+                              <Form.Item>
+                                <div className={styles.buttonStyle2}>
+                                  <Button
+                                    type="primary"
+                                    danger
+                                    htmlType="button"
+                                    onClick={handleReset}
+                                    className="me-3"
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button type="primary" htmlType="submit">
+                                    {isAddingTask ? "Submit" : "Update"}
+                                  </Button>
+                                </div>
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        </Form>
+                      )}
+                    </Card>
+                  )}
                 </Col>
               </Row>
             </div>

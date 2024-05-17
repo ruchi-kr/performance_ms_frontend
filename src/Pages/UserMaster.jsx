@@ -24,6 +24,13 @@ const { Option } = Select;
 const { Search } = Input;
 
 const UserMaster = () => {
+// for admin role options
+  const [adminList, setAdminList] = useState(false);
+
+  // for autofill username and password
+  const[autousername, setAutousername] = useState("");
+  const[autopassword, setAutopassword] = useState("");
+
   // for search
   const [search, setSearch] = useState("");
   const [allUserData, setAllUserData] = useState([]);
@@ -114,11 +121,15 @@ const UserMaster = () => {
   const deleteUserHandler = async (id) => {
     //creating a function for deleting data
     try {
-      await axios.delete(`${deleteUser}` + id); // deleting data from server
-      window.location.reload(); //reloading the page
-      // setEmployer('');
+      const response = await axios.delete(`${deleteUser}` + id); // deleting data from server
+      if(response.status===200){
+        toast.success(response.data.msg);
+        window.location.reload();
+      }
+    
     } catch (err) {
       console.log("error deleting user", err); //if error occurs then log it
+      toast.error(err.response.data.error);
     }
   };
   // edit projects function
@@ -128,6 +139,7 @@ const UserMaster = () => {
   let [modalVisible, setModalVisible] = useState(false);
   const [formDisabled, setFormDisabled] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [viewUser, setViewUser] = useState(null);
 
   const userData = {
     employee_id: "",
@@ -143,6 +155,8 @@ const UserMaster = () => {
     window.scrollTo(0, 0);
     setModalVisible(true);
     setEditingUser(null);
+    setViewUser(null);
+    setAdminList(false);
     // SetProjectId(null);
     userForm.setFieldsValue(userData);
     setFormDisabled(false);
@@ -151,6 +165,8 @@ const UserMaster = () => {
   const openUserView = async (user) => {
     setModalVisible(true);
     setFormDisabled(true);
+    setViewUser(user);
+    setAdminList(true);
     userForm.setFieldsValue({
       username: user.username,
       password: user.password,
@@ -166,6 +182,7 @@ const UserMaster = () => {
     setEditingUser(user);
     setModalVisible(true);
     setFormDisabled(false);
+    setAdminList(false);
     userForm.setFieldsValue({
       username: user.username,
       password: user.password,
@@ -264,12 +281,13 @@ const UserMaster = () => {
                 </div>
                 {/* modal */}
                 <Modal
-                  title={editingUser ? "Edit User" : "Add User"}
+                  title={editingUser ? "Edit User" : viewUser ? "View User" : "Add User"}
                   visible={modalVisible}
                   onOk={userFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingUser(null);
+                    setViewUser(null);
                   }}
                   okText="Submit"
                   okButtonProps={{
@@ -305,7 +323,8 @@ const UserMaster = () => {
                             placeholder="Select"
                             optionFilterProp="children"
                             filterOption={filterOption}
-                            onChange={handleEmployerSearch}
+                            // onChange={handleEmployerSearch}
+                            onChange={(value) => setAutousername(value)}
                             style={{ width: "100%" }}
                             className="rounded-2"
                             disabled={editingUser}
@@ -326,6 +345,8 @@ const UserMaster = () => {
                           </Select>
                         </Form.Item>
                       </Col>
+                     
+
                       {/* <Col span={12}>
                                                 <Form.Item name="email_id" label={<span className='text-info'>Email</span>}
 
@@ -358,34 +379,7 @@ const UserMaster = () => {
                                                     </Select>
                                                 </Form.Item>
                                             </Col> */}
-                      <Col span={12}>
-                        <Form.Item
-                          name="role"
-                          label={<span className="text-info">Role</span>}
-                        >
-                          <Select
-                            showSearch
-                            allowClear
-                            placeholder="Select"
-                            optionFilterProp="children"
-                            filterOption={filterOption}
-                            onChange={handleUserTypeSearch}
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            <Option value="">Select</Option>
-                            <Option value="manager" className="text-info">
-                              Manager
-                            </Option>
-                            <Option value="employee" className="text-info">
-                              Employee
-                            </Option>
-                            <Option value="management" className="text-info">
-                              Management
-                            </Option>
-                          </Select>
-                        </Form.Item>
-                      </Col>
+                     
                       <Col span={12}>
                         <Form.Item
                           name="user_type"
@@ -403,7 +397,14 @@ const UserMaster = () => {
                             placeholder="Select"
                             optionFilterProp="children"
                             filterOption={filterOption}
-                            onChange={handleUserTypeSearch}
+                            onChange={(value) => {
+                              if (value == "1") {
+                                setAdminList(true);
+                              }         
+                              else{
+                                setAdminList(false);
+                              }
+                            }}
                             style={{ width: "100%" }}
                             className="rounded-2"
                           >
@@ -412,6 +413,36 @@ const UserMaster = () => {
                             </Option>
                             <Option value="1">Admin</Option>
                             <Option value="0">General</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          name="role"
+                          label={<span className="text-info">Role</span>}
+                        >
+                          <Select
+                            showSearch
+                            allowClear
+                            placeholder="Select"
+                            optionFilterProp="children"
+                            filterOption={filterOption}
+                            onChange={handleUserTypeSearch}
+                            style={{ width: "100%" }}
+                            className="rounded-2"
+                            disabled={adminList}
+                            // ||(editingUser && value == "1")
+                          >
+                            <Option value="" disabled>Select</Option>
+                            <Option value="manager" className={ adminList ? "text-grey":"text-info "} disabled={adminList}>
+                              Manager
+                            </Option>
+                            <Option value="employee" className={ adminList ? "text-grey":"text-info "} disabled={adminList}>
+                              Employee
+                            </Option>
+                            <Option value="management" className={ adminList ? "text-grey":"text-info "} disabled={adminList}>
+                              Management
+                            </Option>
                           </Select>
                         </Form.Item>
                       </Col>
@@ -458,7 +489,7 @@ const UserMaster = () => {
                             },
                           ]}
                         >
-                          <Input type="text" placeholder="username" />
+                          <Input type="text" placeholder="username" value={autousername} />
                         </Form.Item>
                       </Col>
                       <Col span={12}>

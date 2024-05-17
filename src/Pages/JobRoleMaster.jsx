@@ -98,7 +98,7 @@ const JobRoleMaster = () => {
             }
             console.log("response added", response.data);
             jobroleForm.resetFields();
-            setModalVisible(true);
+            setModalVisible(false);
             getAllJobRolesHandler();
           }
           // else {
@@ -120,6 +120,7 @@ const JobRoleMaster = () => {
       const response = await axios.delete(`${deleteJobRole}` + id);
       if (response.status === 200) {
         // Manager deleted successfully
+        toast.success(response.data.msg)
         console.log(response.data);
         window.location.reload();
       } else if (response.status === 400) {
@@ -129,11 +130,8 @@ const JobRoleMaster = () => {
       }
     } catch (err) {
       console.log("error deleting Job role", err);
-      // Display a generic error message if there's an unexpected error
-      toast.error(
-        "Job role cannot be deleted as it is assigned to an employee"
-      );
-      // toast.error(response.data.error);
+    
+      toast.error(err.response.data.error);
     }
   };
 
@@ -144,6 +142,7 @@ const JobRoleMaster = () => {
   let [modalVisible, setModalVisible] = useState(false);
   const [formDisabled, setFormDisabled] = useState(false);
   const [editingManager, setEditingManager] = useState(null);
+  const[viewJobRole,setViewJobRole]=useState(null);
 
   const jobData = {
     job_id: "",
@@ -154,6 +153,7 @@ const JobRoleMaster = () => {
     window.scrollTo(0, 0);
     setModalVisible(true);
     setEditingManager(null);
+    setViewJobRole(null);
     // SetProjectId(null);
     jobroleForm.setFieldsValue(jobData);
     setFormDisabled(false);
@@ -161,6 +161,7 @@ const JobRoleMaster = () => {
 
   const openJobView = async (job) => {
     setModalVisible(true);
+    setViewJobRole(job);
     setFormDisabled(true);
     jobroleForm.setFieldsValue({
       job_id: job.job_id,
@@ -241,12 +242,13 @@ const JobRoleMaster = () => {
 
                 {/* modal */}
                 <Modal
-                  title={editingManager ? "Edit Job Role" : "Add Job Role"}
+                  title={editingManager ? "Edit Job Role" : viewJobRole ? "View Job Role" : "Add Job Role"}
                   visible={modalVisible}
                   onOk={jobroleFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingManager(null);
+                    setViewJobRole(null);
                   }}
                   okText="Submit"
                   okButtonProps={{

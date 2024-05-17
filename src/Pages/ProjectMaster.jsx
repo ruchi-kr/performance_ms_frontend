@@ -149,8 +149,11 @@ const ProjectMaster = () => {
   const deleteProjectHandler = async (id) => {
     //creating a function for deleting data
     try {
-      await axios.delete(`${deleteProject}` + id, CONFIG_OBJ); // deleting data from server
-      window.location.reload(); //reloading the page
+      const response =await axios.delete(`${deleteProject}` + id, CONFIG_OBJ); // deleting data from server
+      if (response.status === 200) {
+        toast.success(response.data.msg);
+        window.location.reload(); //reloading the page
+      }
     } catch (err) {
       console.log("error deleting project", err); //if error occurs then log it
       toast.error(err.response.data.error);
@@ -163,6 +166,7 @@ const ProjectMaster = () => {
   let [modalVisible, setModalVisible] = useState(false);
   const [formDisabled, setFormDisabled] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
+  const [viewProject, setViewProject] = useState(null);
 
   const projectData = {
     project_name: "",
@@ -175,6 +179,7 @@ const ProjectMaster = () => {
     window.scrollTo(0, 0);
     setModalVisible(true);
     setEditingProject(null);
+    setViewProject(null);
     // SetProjectId(null);
     projectForm.setFieldsValue(projectData);
     setFormDisabled(false);
@@ -183,6 +188,7 @@ const ProjectMaster = () => {
   const openProjectView = async (project) => {
     setModalVisible(true);
     setFormDisabled(true);
+    setViewProject(project);
     projectForm.setFieldsValue({
       project_name: project.project_name,
       stage: project.stage,
@@ -324,9 +330,9 @@ const ProjectMaster = () => {
                     onChange={(e) => setProject(e.target.value)}
                   />
                 </div>
-                <div className="row d-flex justify-content-end">
+                <div className="row d-flex justify-content-end my-4">
                   <div className="col-1 me-2">
-                    <div className="mb-2 mt-4 d-flex gap-3">
+                    {/* <div className="mb-2 mt-4 d-flex gap-3">
                       <FontAwesomeIcon
                         icon={faFileExcel}
                         size="xl"
@@ -339,16 +345,17 @@ const ProjectMaster = () => {
                         size="xl"
                         onClick={exportToPDF}
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <Modal
-                  title={editingProject ? "Edit Project" : "Add Project"}
+                  title={editingProject ? "Edit Project" :viewProject ? "View Project" : "Add Project"}
                   visible={modalVisible}
                   onOk={projectFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingProject(null);
+                    setViewProject(null);
                   }}
                   okText="Submit"
                   okButtonProps={{
