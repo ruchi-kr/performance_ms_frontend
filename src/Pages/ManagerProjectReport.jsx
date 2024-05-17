@@ -228,7 +228,7 @@ const ManagerProjectReport = () => {
                         <RangePicker
                           disabledDate={disabledDate}
                           onChange={handleDateRangeChange}
-                          defaultValue={[dayjs().subtract(30, "day"), dayjs()]}
+                          defaultValue={[dayjs().subtract(28, "day"), dayjs()]}
                           placeholder="From Date"
                           style={{
                             width: "100%",
@@ -388,7 +388,7 @@ const ManagerProjectReport = () => {
                 </table>
                 {/* pagination */}
                 <div className="row float-right">
-                  <nav
+                  {/* <nav
                     aria-label="Page navigation example"
                     className="d-flex align-self-end mt-3"
                   >
@@ -430,7 +430,7 @@ const ManagerProjectReport = () => {
                         </a>
                       </li>
                     </ul>
-                  </nav>
+                  </nav> */}
                 </div>
               </div>
             </div>

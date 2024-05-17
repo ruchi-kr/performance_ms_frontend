@@ -4,7 +4,7 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { getEmployeeReport } from "../Config";
-import { Input, DatePicker, Button, Tag } from "antd";
+import { Input, DatePicker, Button, Tag, Progress, Flex } from "antd";
 import moment from "moment";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
@@ -239,6 +239,7 @@ const ManagerEmployeeReport = () => {
                           }}
                           className="rounded-2"
                           format={dateFormat}
+                          defaultValue={[dayjs().subtract(28, "day"), dayjs()]}
                           showTime={false}
                         />
                       </div>
@@ -275,8 +276,8 @@ const ManagerEmployeeReport = () => {
                     <tr className="table-info">
                       <th scope="col">S.No.</th>
                       <th scope="col">Employee Name</th>
-                      <th scope="col">Alloc hrs</th>
-                      <th scope="col">Man hrs</th>
+                      <th scope="col">Allocated Time</th>
+                      <th scope="col">Man Hours</th>
                     </tr>
                   </thead>
 
@@ -293,21 +294,22 @@ const ManagerEmployeeReport = () => {
                                 <Tag color={"blue"}>{item.name}</Tag>
                               </NavLink>
                             </td>
-                            <td>{item.total_allocated_time}</td>
-                            <td>{item.total_actual_time}</td>
+                            <td>{item.total_allocated_time} hrs.</td>
+                            <td>{item.total_actual_time} hrs.</td>
                           </tr>
                           {expandedRow === index && (
                             <tr>
                               <td colSpan="12">
-                                <table className="col-11 mx-auto">
+                                <table className="col-12 mx-auto">
                                   <thead>
                                     <tr>
                                       <th>Project Name</th>
                                       <th>Task</th>
-                                      <th>Date</th>
+                                      <th>End Date</th>
                                       <th>Status</th>
                                       <th>Allocated Time</th>
                                       <th>Actual Time</th>
+                                      <th>%&nbsp;Work Done</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -315,14 +317,16 @@ const ManagerEmployeeReport = () => {
                                       item?.tasks_details.map(
                                         (task, taskIndex) => (
                                           <tr key={taskIndex}>
-                                            <td>{task.project_name}</td>
+                                            <td className="text-capitalize">
+                                              {task.project_name}
+                                            </td>
                                             <td>{task.task}</td>
                                             <td>
                                               {moment
                                                 .utc(task.created_at)
                                                 .format("DD/MM/YYYY")}
                                             </td>
-                                            {task.status === "completed" ? (
+                                            {/* {task.status === "completed" ? (
                                               <td>
                                                 <Tag color="green">
                                                   {task.status}
@@ -334,9 +338,37 @@ const ManagerEmployeeReport = () => {
                                                   {task.status}
                                                 </Tag>
                                               </td>
+                                            )} */}
+                                            {task.status === "completed" ? (
+                                              <td className="text-success text-capitalize text-small">
+                                                {task.status}
+                                              </td>
+                                            ) : (
+                                              <td className="text-warning text-capitalize">
+                                                {task.status}
+                                              </td>
                                             )}
-                                            <td>{task.allocated_time}</td>
-                                            <td>{task.actual_time}</td>
+                                            <td>{task.allocated_time} hrs.</td>
+                                            <td>{task.actual_time} hrs.</td>
+                                            <td>
+                                              {/* {task.task_percent} % */}
+                                              <Flex vertical gap="middle">
+                                                <Flex
+                                                  vertical
+                                                  gap="small"
+                                                  style={{
+                                                    width: 120,
+                                                  }}
+                                                >
+                                                  <Progress
+                                                    percent={Number(
+                                                      task.task_percent
+                                                    )}
+                                                    size={[120, 15]}
+                                                  />
+                                                </Flex>
+                                              </Flex>
+                                            </td>
                                           </tr>
                                         )
                                       )}
@@ -351,7 +383,7 @@ const ManagerEmployeeReport = () => {
                 </table>
                 {/* pagination */}
                 <div className="row float-right">
-                  <nav
+                  {/* <nav
                     aria-label="Page navigation example"
                     className="d-flex align-self-end mt-3"
                   >
@@ -393,7 +425,7 @@ const ManagerEmployeeReport = () => {
                         </a>
                       </li>
                     </ul>
-                  </nav>
+                  </nav> */}
                 </div>
               </div>
             </div>
