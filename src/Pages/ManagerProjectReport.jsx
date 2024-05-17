@@ -304,10 +304,10 @@ const ManagerProjectReport = () => {
                               {item.project_name}
                             </td>
                             <td className="font-weight-bold">
-                              {item.total_allocated_time}
+                              {item.total_allocated_time} hrs.
                             </td>
                             <td className="font-weight-bold">
-                              {item.total_actual_time}
+                              {item.total_actual_time} hrs.
                             </td>
                           </tr>
                           {(expandedRows.includes(index) ||
@@ -318,6 +318,7 @@ const ManagerProjectReport = () => {
                                   <thead className="table-info">
                                     <tr>
                                       <th>Employee Name</th>
+                                      <th>Module Name</th>
                                       <th>Task</th>
                                       <th>Date</th>
                                       <th>Status</th>
@@ -333,6 +334,9 @@ const ManagerProjectReport = () => {
                                           <tr key={taskIndex}>
                                             <td className="text-capitalize">
                                               {task.name}
+                                            </td>
+                                            <td className="text-capitalize">
+                                              {task.module_name}
                                             </td>
                                             <td>
                                               <p className="text-justify">
