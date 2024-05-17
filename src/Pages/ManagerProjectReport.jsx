@@ -4,7 +4,7 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { getEmployeeReport } from "../Config";
-import { Input, DatePicker, Button, Tag } from "antd";
+import { Input, DatePicker, Button, Tag, Flex, Progress } from "antd";
 import moment from "moment";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
@@ -29,7 +29,7 @@ const ManagerProjectReport = () => {
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user.employee_id;
   console.log("manager id", manager_id);
-console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
+  console.log("dates", dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"));
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
   //        try {
   //            const response = await axios.get(
@@ -200,7 +200,7 @@ console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">Project Detailed Report</h3>
+                <h3 className="text-primary">Projects Detailed Report</h3>
                 <hr className="bg-primary border-4" />
                 <div className="d-flex justify-content-between">
                   <div className="col-2">
@@ -228,7 +228,7 @@ console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
                         <RangePicker
                           disabledDate={disabledDate}
                           onChange={handleDateRangeChange}
-                          defaultValue={[dayjs().subtract(1, "D"), dayjs()]}
+                          defaultValue={[dayjs().subtract(28, "day"), dayjs()]}
                           placeholder="From Date"
                           style={{
                             width: "100%",
@@ -304,10 +304,10 @@ console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
                               {item.project_name}
                             </td>
                             <td className="font-weight-bold">
-                              {item.total_allocated_time}
+                              {item.total_allocated_time} hrs.
                             </td>
                             <td className="font-weight-bold">
-                              {item.total_actual_time}
+                              {item.total_actual_time} hrs.
                             </td>
                           </tr>
                           {(expandedRows.includes(index) ||
@@ -316,13 +316,15 @@ console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
                               <td colSpan="12">
                                 <table className="col-11 mx-auto">
                                   <thead className="table-info">
-                                    <tr >
+                                    <tr>
                                       <th>Employee Name</th>
+                                      <th>Module Name</th>
                                       <th>Task</th>
                                       <th>Date</th>
                                       <th>Status</th>
                                       <th>Allocated Time</th>
                                       <th>Actual Time</th>
+                                      <th>%&nbsp;Work Done</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -330,7 +332,12 @@ console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
                                       item?.tasks_details.map(
                                         (task, taskIndex) => (
                                           <tr key={taskIndex}>
-                                            <td>{task.name}</td>
+                                            <td className="text-capitalize">
+                                              {task.name}
+                                            </td>
+                                            <td className="text-capitalize">
+                                              {task.module_name}
+                                            </td>
                                             <td>
                                               <p className="text-justify">
                                                 {task.task}
@@ -343,19 +350,34 @@ console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
                                             </td>
                                             {task.status === "completed" ? (
                                               <td className="text-success text-capitalize">
-                                                
-                                                  {task.status}
-                                               
+                                                {task.status}
                                               </td>
                                             ) : (
                                               <td className="text-warning text-capitalize">
-                                             
-                                                  {task.status}
-                                             
+                                                {task.status}
                                               </td>
                                             )}
-                                            <td>{task.allocated_time}</td>
-                                            <td>{task.actual_time}</td>
+                                            <td>{task.allocated_time} hrs.</td>
+                                            <td>{task.actual_time} hrs.</td>
+                                            <td>
+                                              {/* {task.task_percent} % */}
+                                              <Flex vertical gap="middle">
+                                                <Flex
+                                                  vertical
+                                                  gap="small"
+                                                  style={{
+                                                    width: 120,
+                                                  }}
+                                                >
+                                                  <Progress
+                                                    percent={Number(
+                                                      task.task_percent
+                                                    )}
+                                                    size={[120, 15]}
+                                                  />
+                                                </Flex>
+                                              </Flex>
+                                            </td>
                                           </tr>
                                         )
                                       )}
@@ -370,7 +392,7 @@ console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
                 </table>
                 {/* pagination */}
                 <div className="row float-right">
-                  <nav
+                  {/* <nav
                     aria-label="Page navigation example"
                     className="d-flex align-self-end mt-3"
                   >
@@ -412,7 +434,7 @@ console.log("dates",dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"))
                         </a>
                       </li>
                     </ul>
-                  </nav>
+                  </nav> */}
                 </div>
               </div>
             </div>

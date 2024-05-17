@@ -109,76 +109,70 @@ const ProjectReport = () => {
   };
 
   const exportToPDF = () => {
-  //   const unit = "pt";
-  //   const size = "A4"; // Use A1, A2, A3 or A4
-  //   const orientation = "landscape"; // 'portrait' or 'landscape'
-
-  //   const marginLeft = 40;
-  //   const doc = new jsPDF(orientation, unit, size);
-
-  //   doc.setFontSize(15);
-  //   const title = "Employee Report Project-Wise";
-  //   const headers = [
-  //     [
-  //       "S.No.",
-  //       "Project Name",
-  //       "Schd. Start Date",
-  //       "Schd. End Date",
-  //       "Alloc hrs",
-  //       "Man hrs",
-  //     ],
-  //   ];
-
-
-  //   let data = [];
-  //   reportData.forEach((item, index) => {
-  //     const row = [
-  //       index + 1,
-  //       item.project_name,
-  //       `${item.schedule_start_date.slice(
-  //         8,
-  //         10
-  //       )}/${item.schedule_start_date.slice(
-  //         5,
-  //         7
-  //       )}/${item.schedule_start_date.slice(0, 4)}`,
-  //       `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(
-  //         5,
-  //         7
-  //       )}/${item.schedule_end_date.slice(0, 4)}`,
-  //       item.total_allocated_hours,
-  //       item.total_actual_hours,
-  //       "", // Placeholder for tasks
-  //     ];
-  //     data.push(row);
-  //     if (expandedRow === index) {
-  //       JSON.parse(item.tasks).forEach((task) => {
-  //         const taskRow = [
-  //           // { content: task.task, styles: { color: 'blue' } },
-  //           task.task, // Task
-  //           `${task.created_at.slice(8, 10)}/${task.created_at.slice(
-  //             5,
-  //             7
-  //           )}/${task.created_at.slice(0, 4)}`,
-  //           task.status,
-  //           task.allocated_time,
-  //           task.actual_time,
-  //         ];
-  //         data.push(taskRow);
-  //       });
-  //     }
-  //   });
-
-  //   let content = {
-  //     startY: 50,
-  //     head: headers,
-  //     body: data,
-  //   };
-
-  //   doc.text(title, marginLeft, 40);
-  //   doc.autoTable(content); // Ensure you're using autoTable correctly here
-  //   doc.save("employee_reportPW.pdf");
-   };
+    //   const unit = "pt";
+    //   const size = "A4"; // Use A1, A2, A3 or A4
+    //   const orientation = "landscape"; // 'portrait' or 'landscape'
+    //   const marginLeft = 40;
+    //   const doc = new jsPDF(orientation, unit, size);
+    //   doc.setFontSize(15);
+    //   const title = "Employee Report Project-Wise";
+    //   const headers = [
+    //     [
+    //       "S.No.",
+    //       "Project Name",
+    //       "Schd. Start Date",
+    //       "Schd. End Date",
+    //       "Alloc hrs",
+    //       "Man hrs",
+    //     ],
+    //   ];
+    //   let data = [];
+    //   reportData.forEach((item, index) => {
+    //     const row = [
+    //       index + 1,
+    //       item.project_name,
+    //       `${item.schedule_start_date.slice(
+    //         8,
+    //         10
+    //       )}/${item.schedule_start_date.slice(
+    //         5,
+    //         7
+    //       )}/${item.schedule_start_date.slice(0, 4)}`,
+    //       `${item.schedule_end_date.slice(8, 10)}/${item.schedule_end_date.slice(
+    //         5,
+    //         7
+    //       )}/${item.schedule_end_date.slice(0, 4)}`,
+    //       item.total_allocated_hours,
+    //       item.total_actual_hours,
+    //       "", // Placeholder for tasks
+    //     ];
+    //     data.push(row);
+    //     if (expandedRow === index) {
+    //       JSON.parse(item.tasks).forEach((task) => {
+    //         const taskRow = [
+    //           // { content: task.task, styles: { color: 'blue' } },
+    //           task.task, // Task
+    //           `${task.created_at.slice(8, 10)}/${task.created_at.slice(
+    //             5,
+    //             7
+    //           )}/${task.created_at.slice(0, 4)}`,
+    //           task.status,
+    //           task.allocated_time,
+    //           task.actual_time,
+    //         ];
+    //         data.push(taskRow);
+    //       });
+    //     }
+    //   });
+    //   let content = {
+    //     startY: 50,
+    //     head: headers,
+    //     body: data,
+    //   };
+    //   doc.text(title, marginLeft, 40);
+    //   doc.autoTable(content); // Ensure you're using autoTable correctly here
+    //   doc.save("employee_reportPW.pdf");
+  };
   return (
     <>
       <Header />
@@ -204,7 +198,6 @@ const ProjectReport = () => {
                         width: 200,
                         // boxShadow: "3px 3px 3px rgba(0, 0, 0, 0.2)",
                       }}
-                     
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -224,11 +217,11 @@ const ProjectReport = () => {
                           }}
                           className="rounded-2"
                           format={"DD/MM/YYYY"}
+                          defaultValue={[dayjs().subtract(28, "day"), dayjs()]}
                           showTime={false}
                         />
                       </div>
                     </div>
-                   
 
                     {/* <div className="col-sm-4 col-md-1 col-lg-1 ">
                       <Button
@@ -240,21 +233,21 @@ const ProjectReport = () => {
                     </div> */}
                   </div>
                   <div className="col-2 mt-4 d-flex justify-content-end">
-                      <div className=" d-flex gap-3">
-                        <FontAwesomeIcon
-                          icon={faFileExcel}
-                          size="2xl"
-                          style={{ color: "#74C0FC" }}
-                          onClick={exportToExcel}
-                        />
-                        <FontAwesomeIcon
-                          icon={faFilePdf}
-                          style={{ color: "#ee445e" }}
-                          size="2xl"
-                          onClick={exportToPDF}
-                        />
-                      </div>
+                    <div className=" d-flex gap-3">
+                      <FontAwesomeIcon
+                        icon={faFileExcel}
+                        size="2xl"
+                        style={{ color: "#74C0FC" }}
+                        onClick={exportToExcel}
+                      />
+                      <FontAwesomeIcon
+                        icon={faFilePdf}
+                        style={{ color: "#ee445e" }}
+                        size="2xl"
+                        onClick={exportToPDF}
+                      />
                     </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -340,14 +333,16 @@ const ProjectReport = () => {
                                   i.name !== null ? (
                                     <tr className="">
                                       <th scope="row" className="text-center">
-                                        {index + 1}
+                                        {index}
                                       </th>
-                                      <td>{i.name} </td>
-                                      <td className="text-center">
-                                        {i.total_allocated_time}
+                                      <td className="text-capitalize">
+                                        {i.name}{" "}
                                       </td>
                                       <td className="text-center">
-                                        {i.total_actual_time}
+                                        {i.total_allocated_time} hrs.
+                                      </td>
+                                      <td className="text-center">
+                                        {i.total_actual_time} hrs.
                                       </td>
                                     </tr>
                                   ) : (
@@ -363,12 +358,12 @@ const ProjectReport = () => {
                                     </td>
                                     <td className="text-center">
                                       <span style={{ fontWeight: "bolder" }}>
-                                        {totalAllocatedTime}
+                                        {totalAllocatedTime} hrs.
                                       </span>
                                     </td>
                                     <td className="text-center">
                                       <span style={{ fontWeight: "bolder" }}>
-                                        {totalActualTime}
+                                        {totalActualTime} hrs.
                                       </span>
                                     </td>
                                   </tr>
@@ -401,7 +396,7 @@ const ProjectReport = () => {
                 </table>
                 {/* pagination */}
                 <div className="row float-right">
-                  <nav
+                  {/* <nav
                     aria-label="Page navigation example"
                     className="d-flex align-self-end mt-3"
                   >
@@ -443,7 +438,7 @@ const ProjectReport = () => {
                         </a>
                       </li>
                     </ul>
-                  </nav>
+                  </nav> */}
                 </div>
               </div>
             </div>
