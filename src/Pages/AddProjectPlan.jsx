@@ -675,7 +675,8 @@ const AddProjectPlan = () => {
       title: <div className="text-primary">Task Name</div>,
       dataIndex: "task_name",
       key: "task_name",
-      render: (text) => `${text ? text : "-"}`,
+      render: (text) => <span className="text-capitalize">{text ? text : "-"}</span>,
+      // render: (text) => `${text ? text : "-"}`,
     },
 
     {
