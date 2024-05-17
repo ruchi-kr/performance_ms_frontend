@@ -653,7 +653,7 @@ const Employee = () => {
                               className="rounded-2"
                               // value={record.module_id}
                               value={
-                                isEditing && index === editingIndex
+                                isEditing && !formDisabled && index === editingIndex
                                   ? record.module_id
                                   : record.module_name
                               }
@@ -759,7 +759,7 @@ const Employee = () => {
                               className="rounded-2"
                               // value={record.task_id}
                               value={
-                                isEditing && index === editingIndex
+                                isEditing && !formDisabled && index === editingIndex
                                   ? record.task_id
                                   : record.task_name
                               }

@@ -496,6 +496,7 @@ const EmployeeMaster = () => {
                           label={<span className="text-info">Email</span>}
                           rules={[
                             { required: true, message: "Email is required" },
+                            { type: "email", message: "Invalid email" },
                           ]}
                         >
                           <Input
