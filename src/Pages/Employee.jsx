@@ -637,7 +637,7 @@ const Employee = () => {
                                     : "100%",
                               }}
                               className="rounded-2"
-                              value={task.id ? record.module_id : record.module_name}
+                              value={record.module_name}
                               onChange={(value) =>
                                 handleModuleChange(index, value)
                               }

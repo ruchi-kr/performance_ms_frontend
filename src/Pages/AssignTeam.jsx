@@ -344,7 +344,7 @@ const AssignTeam = () => {
                           <td className="text-capitalize">
                             {data?.employee_details?.map((item) => (
                               <NavLink
-                                to={`/view/teammember/tasks/${item?.employee_id}`}
+                                to={`/view/teammember/tasks/${item?.employee_id}/`}
                               >
                                 <Tag color={"blue"} key={item?.index}>
                                   {item?.name}
