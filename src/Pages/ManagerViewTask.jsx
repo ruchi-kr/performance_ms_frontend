@@ -284,7 +284,7 @@ const ManagerViewTask = () => {
               </Col>
             </Row>
             <div className="row my-5">
-              <div className="col-11 mx-auto">
+              <div className="col-12 mx-auto">
                 <div className="d-flex justify-content-between">
                   <h3 className="text-primary text-capitalize">
                     {taskRecords[0]?.name} Daily Task Sheet

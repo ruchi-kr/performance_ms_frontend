@@ -216,7 +216,7 @@ const SideNavbar = () => {
                           <i class="fas fa-angle-left right"></i>
                           {/* <FontAwesomeIcon icon={faChevronRight} className="right" /> */}
                         </a>
-                        <ul className="nav nav-treeview mt-3">
+                        {/* <ul className="nav nav-treeview mt-3"> */}
                           <div>
                             <li className="nav-item">
                               <Link
@@ -247,7 +247,7 @@ const SideNavbar = () => {
                               </Link>
                             </li>
                           </div>
-                        </ul>
+                        {/* </ul> */}
                       </li>
                       <li className="nav-item fixed-bottom ">
                         <button

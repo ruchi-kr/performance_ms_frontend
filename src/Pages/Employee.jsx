@@ -342,7 +342,10 @@ const Employee = () => {
         !task.allocated_time
       ) {
         toast.error("Please fill required fields");
-        // return false
+        return false
+      }
+      if(!task.status){
+        task.status = "notstarted"
       }
       if (task.id) {
         // If the task already has an ID, it's an existing task, so update it
@@ -515,7 +518,7 @@ const Employee = () => {
                 </div>
                 <hr className="bg-primary border-4" />
                 <table className="table table-bordered table-hover table-responsive-sm table-responsive-md mt-5">
-                  <thead>
+                  <thead className="sticky-top">
                     <tr>
                       <th className="form-label text-info fs-6 text-center">
                         S.No.
@@ -546,12 +549,12 @@ const Employee = () => {
                       {window.location.pathname !== "/plan" &&
                       dayjs(currentTime).hour() > 12 ? (
                         <>
-                          <th className="form-label text-info fs-6 text-center">
+                          <th className="form-label text-info fs-6 text-center lh-0">
                             Act.hrs
                             <span style={{ color: "red", width: "3rem" }}>
                               *
                             </span>
-                            <br />
+                            <hr className="bg-primary" />
                             Percent
                           </th>
 
@@ -879,12 +882,13 @@ const Employee = () => {
                                 <select
                                   name="status"
                                   className="form-control"
-                                  value={record.status}
+                                  value={record.status || "notstarted"}
                                   onChange={(e) =>
                                     handleStatusChange(index, e.target.value)
                                   }
                                   required
                                   disabled={record.formDisabled || formDisabled}
+                                  
                                 >
                                   <option value="" disabled>
                                     Select

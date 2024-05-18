@@ -315,7 +315,7 @@ const ProjectPlan = () => {
                         className="table table-bordered p-0"
                         // style={{ borderCollapse: "collapse" }}
                       >
-                        <thead>
+                        <thead className="sticky-top">
                           <tr>
                             <th colSpan={4} className="bg-warning-subtle">
                               RFP
@@ -480,7 +480,7 @@ const ProjectPlan = () => {
                         className="table table-bordered p-0"
                         // style={{ borderCollapse: "collapse" }}
                       >
-                        <thead>
+                        <thead className="sticky-top">
                           <tr>
                             <th colSpan={4} className="bg-primary-subtle">
                               Contract Signed
@@ -650,7 +650,7 @@ const ProjectPlan = () => {
                         className="table table-bordered p-0"
                         // style={{ borderCollapse: "collapse" }}
                       >
-                        <thead>
+                        <thead className="sticky-top">
                           <tr>
                             <th colSpan={5} className="bg-success-subtle">
                               In Process
