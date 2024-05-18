@@ -214,16 +214,20 @@ const EmployeeReportDateWise = () => {
             <div className="row">
               <div className="col-11 mx-auto">
                 <table id='reportTable' className="table table-bordered" style={{ borderCollapse: 'collapse' }}>
-                  <thead>
+                  <thead className='sticky-top'>
                     <tr>
-                      <th rowSpan={3}>S.No.</th>
-                      <th rowSpan={3}>Date</th>
+                      <th rowSpan={4}>S.No.</th>
+                      <th rowSpan={4}>Date</th>
 
                       <th colSpan={5}>Activities</th> {/* Spanning 5 columns */}
                     </tr>
                     <tr>
 
-                      <th colSpan={5}>Project Name</th> {/* Spanning 5 columns */}
+                      <th colSpan={5} className='text-primary'>Project Name</th> {/* Spanning 5 columns */}
+                    </tr>
+                    <tr>
+
+                      <th colSpan={5} className='text-success'>Module Name</th> {/* Spanning 5 columns */}
                     </tr>
                     <tr>
 
@@ -237,7 +241,7 @@ const EmployeeReportDateWise = () => {
 
                   <tbody>
                     {reportData.map((report, index) => {
-                      const projects = JSON.parse(report.projects);
+                      const projects = (report.projects);
                       const firstProject = projects[0];
                       const lastProject = projects[projects.length - 1];
                       const date = report.date.slice(8, 10) + '/' + report.date.slice(5, 7) + '/' + report.date.slice(0, 4);
@@ -264,17 +268,29 @@ const EmployeeReportDateWise = () => {
                                   </td>
                                 </tr>
                               )}
-                              {JSON.parse(project.tasks).map((task, taskIndex) => (
-                                <tr key={`${index}-${projectIndex}-${taskIndex}`}>
+                             
+                              {(project.modules).map((module, moduleIndex) => (
+                                <React.Fragment key={`${index}-${projectIndex}-${moduleIndex}`}>
+                                <tr key={`${index}-${projectIndex}-${moduleIndex}`}>
                                   <td></td>
                                   <td></td>
-                                  <td>{task.task}</td>
+                                  <td colSpan={5} className='text-capitalize text-success'>{module.module_name}</td>                          
+                                </tr>
+                                
+                             
+                              {(module.tasks).map((task, taskIndex) => (
+                                <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
+                                  <td></td>
+                                  <td></td>
+                                  <td>{task.task_name}</td>
                                   {/* <td>{task.status}</td> */}
                                   <td style={task.status === 'inprocess' ? { color: 'orange' } : { color: 'green' }}>{task.status}</td>
-                                  <td>{task.allocated_time}</td>
-                                  <td>{task.actual_time}</td>
+                                  <td>{task.employee_allocated_time}</td>
+                                  <td>{task.employee_actual_time}</td>
                                 </tr>
                               ))}
+                              </React.Fragment>
+                               ))}
                             </React.Fragment>
                           ))}
                         </React.Fragment>
