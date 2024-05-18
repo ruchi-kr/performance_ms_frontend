@@ -29,6 +29,7 @@ import {
   Progress,
   Divider,
   Card,
+  Popover,
 } from "antd";
 import dayjs from "dayjs";
 import {
@@ -457,22 +458,30 @@ const ManagerViewTask = () => {
                           className="text-truncate cap"
                         >
                           {/* {record.remarks} */}
-                          <TextArea
-                            type="text"
-                            name="manager_remarks"
-                            className="form-control"
-                            value={record.remarks}
-                            autoSize={{
-                              minRows: 2,
-                              maxRows: 6,
-                            }}
-                            style={{ width: "12rem" }}
-                            onChange={(e) => handleInputChange(index, e)}
-                            placeholder=""
-                            required
-                            // disabled={record.formDisabled || formDisabled}
-                            disabled
-                          />
+
+                          <Popover
+                            placement="left"
+                            title={"Remarks"}
+                            content={record.remarks ? record.remarks : "No remarks"}
+                            overlayStyle={{ maxWidth: "20rem" }}
+                          >
+                            <TextArea
+                              type="text"
+                              name="manager_remarks"
+                              className="form-control"
+                              value={record.remarks}
+                              autoSize={{
+                                minRows: 2,
+                                maxRows: 4,
+                              }}
+                              style={{ width: "12rem" }}
+                              onChange={(e) => handleInputChange(index, e)}
+                              placeholder=""
+                              required
+                              // disabled={record.formDisabled || formDisabled}
+                              disabled
+                            />
+                          </Popover>
                         </td>
                         <td className="d-flex">
                           <div>

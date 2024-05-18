@@ -904,6 +904,8 @@ const AddProjectPlan = () => {
                         onClick={() => {
                           setIsAdding(true);
                           setIsEditing(false);
+                          setIsAdding(true);
+                          setIsEditing(false);
                           getProjectStartEndDate(Number(project_id));
                           form.setFieldsValue({
                             project_id: Number(project_id),

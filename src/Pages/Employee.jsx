@@ -20,7 +20,7 @@ import {
 } from "../Config.js";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { Select, Modal, Input, Button } from "antd";
+import { Select, Modal, Input, Button, Popover } from "antd";
 import dayjs from "dayjs";
 import {
   getAllModules,
@@ -342,10 +342,10 @@ const Employee = () => {
         !task.allocated_time
       ) {
         toast.error("Please fill required fields");
-        return false
+        return false;
       }
-      if(!task.status){
-        task.status = "notstarted"
+      if (!task.status) {
+        task.status = "notstarted";
       }
       if (task.id) {
         // If the task already has an ID, it's an existing task, so update it
@@ -657,7 +657,9 @@ const Employee = () => {
                               className="rounded-2"
                               // value={record.module_id}
                               value={
-                                isEditing && !formDisabled && index === editingIndex
+                                isEditing &&
+                                !formDisabled &&
+                                index === editingIndex
                                   ? record.module_id
                                   : record.module_name
                               }
@@ -763,7 +765,9 @@ const Employee = () => {
                               className="rounded-2"
                               // value={record.task_id}
                               value={
-                                isEditing && !formDisabled && index === editingIndex
+                                isEditing &&
+                                !formDisabled &&
+                                index === editingIndex
                                   ? record.task_id
                                   : record.task_name
                               }
@@ -888,7 +892,6 @@ const Employee = () => {
                                   }
                                   required
                                   disabled={record.formDisabled || formDisabled}
-                                  
                                 >
                                   <option value="" disabled>
                                     Select
@@ -943,21 +946,30 @@ const Employee = () => {
                                 )}
                               </td>
                               <td>
-                                <TextArea
-                                  type="text"
-                                  name="manager_remarks"
-                                  // rows={5}
-                                  autoSize={{
-                                    minRows: 1,
-                                    maxRows: 6,
-                                  }}
-                                  className="form-control"
-                                  value={record.manager_remarks}
-                                  onChange={(e) => handleInputChange(index, e)}
-                                  placeholder=""
-                                  required
-                                  disabled
-                                />
+                                <Popover
+                                  placement="left"
+                                  title={"Remarks"}
+                                  content={record.manager_remarks?record.manager_remarks:"No Remarks"}
+                                  overlayStyle={{ maxWidth: "20rem" }}
+                                >
+                                  <TextArea
+                                    type="text"
+                                    name="manager_remarks"
+                                    // rows={5}
+                                    autoSize={{
+                                      minRows: 1,
+                                      maxRows: 6,
+                                    }}
+                                    className="form-control"
+                                    value={record.manager_remarks}
+                                    onChange={(e) =>
+                                      handleInputChange(index, e)
+                                    }
+                                    placeholder=""
+                                    required
+                                    disabled
+                                  />
+                                </Popover>
                               </td>
                             </>
                           ) : null}
@@ -1015,7 +1027,10 @@ const Employee = () => {
 </tr> */}
                   {/* Array.isArray(taskRecords) && taskRecords.filter((record) => record.adhoc===1).map((record, index) */}
                 </table>
-                <p> <span className="text-info fs-3">*</span> Additional Tasks</p>
+                <p>
+                  {" "}
+                  <span className="text-info fs-3">*</span> Additional Tasks
+                </p>
               </div>
             </div>
           </div>

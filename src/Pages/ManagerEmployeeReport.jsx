@@ -323,10 +323,10 @@ const ManagerEmployeeReport = () => {
                   <tbody className="table-group-divider">
                     {reportData &&
                       reportData.map((item, index) => {
-                        let totalAllocatedTime = item?.tasks_details?.reduce(
-                          (acc, i) => acc + i.allocated_time,
-                          0
-                        );
+                        // let totalAllocatedTime = item?.tasks_details?.reduce(
+                        //   (acc, i) => acc + i.allocated_time,
+                        //   0
+                        // );
                         console.log("in jsx part", item.tasks_details);
                         let efficiency = calculateEfficiency(
                           item.tasks_details
@@ -370,7 +370,7 @@ const ManagerEmployeeReport = () => {
                                               <td className="text-capitalize">
                                                 {task.project_name}
                                               </td>
-                                              <td>{task.task}</td>
+                                              <td className="text-capitalize">{task.task}</td>
                                               <td>
                                                 {moment
                                                   .utc(task.created_at)
