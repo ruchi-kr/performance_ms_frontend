@@ -95,7 +95,7 @@ const ManagerViewTask = () => {
           project_name: project ? project.project_name : null,
         };
       });
-      console.log("modified task", tasksWithProjectName);
+      console.log("not modified task", response.data.data);
       // setTaskRecords(tasksWithProjectName);
     } catch (error) {
       console.log("Error fetching tasks:", error);
@@ -151,6 +151,7 @@ const ManagerViewTask = () => {
   const getEfficency = () => {
     let totalAllocatedHours = 0;
     let totalWeightedActualHours = 0;
+    let efficency = 0;
     let count = 0;
     let completed = 0;
     let inprocess = 0;
@@ -158,17 +159,22 @@ const ManagerViewTask = () => {
     let notStarted = 0;
 
     taskRecords?.forEach((task) => {
-      const weightedActualHours = (task.actual_time + task.task_percent) / 100;
-      totalAllocatedHours += task.allocated_time;
-      totalWeightedActualHours += weightedActualHours;
+      if (task.status !== "notstarted") {
+        const weightedActualHours =
+          (task.actual_time * task.task_percent) / 100;
+        totalAllocatedHours += task.allocated_time;
+        totalWeightedActualHours += weightedActualHours;
+      }
       count++;
-      console.log("calculating efficency", task.status);
+      //
+
       if (task.status === "completed") completed++;
       else if (task.status === "inprocess") inprocess++;
       else if (task.status === "transfer") transfered++;
-      else if (task.status === "notstared") notStarted++;
+      else if (task.status === "notstarted") notStarted++;
     });
-
+    console.log("total weighted hours", totalWeightedActualHours);
+    console.log("total allocated hours", totalAllocatedHours);
     const efficiency =
       Number(totalWeightedActualHours / totalAllocatedHours) * 100;
     console.log("efficencyyyyyy", efficiency);
@@ -299,6 +305,9 @@ const ManagerViewTask = () => {
                       <th className="form-label lightgreen fs-6 ">
                         <p>Project Name</p>
                       </th>
+                      <th className="form-label lightgreen fs-6 ">
+                        <p>Module Name</p>
+                      </th>
                       <th
                         className="form-label lightgreen fs-6"
                         style={{ width: "100px" }}
@@ -355,7 +364,12 @@ const ManagerViewTask = () => {
                           }
                         </td>
                         <td className="w-4">
-                          <p className="text-justify text-wrap ">
+                          <p className="text-justify text-wrap text-capitalize">
+                            {record.module_name}
+                          </p>
+                        </td>
+                        <td className="w-4">
+                          <p className="text-justify text-wrap text-capitalize ">
                             {record.task_name}
                           </p>
                         </td>
