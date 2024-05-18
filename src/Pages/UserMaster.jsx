@@ -170,7 +170,7 @@ const UserMaster = () => {
     userForm.setFieldsValue({
       username: user.username,
       password: user.password,
-      user_type: user.user_type,
+      user_type: user.user_type === 1 ? "admin" : "general",
       status: user.status,
       employee_id: user.employee_name,
       // email_id: user.email_id,
@@ -186,7 +186,7 @@ const UserMaster = () => {
     userForm.setFieldsValue({
       username: user.username,
       password: user.password,
-      user_type: user.user_type,
+      user_type: user.user_type === 1 ? "admin" : "general",
       status: user.status,
       employee_id: user.employee_name,
       // email_id: user.email_id,
