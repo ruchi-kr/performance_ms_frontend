@@ -348,6 +348,7 @@ const handleExcel = () => {
                                 <table className="col-11 mx-auto">
                                   <thead>
                                     <tr>
+                                      <th>Module Name</th>
                                       <th>Task</th>
                                       <th>Date</th>
                                       <th>Status</th>
@@ -356,22 +357,38 @@ const handleExcel = () => {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {item.tasks &&
-                                      JSON.parse(item.tasks).map(
-                                        (task, taskIndex) => (
-                                          <tr key={taskIndex} className="task-row">
-                                            <td>{task.task}</td>
-                                            <td>
-                                              {task.created_at.slice(8, 10)}/
-                                              {task.created_at.slice(5, 7)}/
-                                              {task.created_at.slice(0, 4)}
-                                            </td>
-                                            <td>{task.status}</td>
-                                            <td>{task.allocated_time}</td>
-                                            <td>{task.actual_time}</td>
+                                   
+                                       {item.modules &&
+                                      (item.modules).map(
+                                        (module, moduleIndex) => (
+                                          <React.Fragment key={moduleIndex}>
+
+                                         
+                                          <tr className="module-row">
+                                            <td className="text-capitalize text-primary" colSpan="6" >{module.module_name}</td>
                                           </tr>
-                                        )
-                                      )}
+                                            {module.tasks && ((module.tasks).map(
+                                              (task, taskIndex) => (
+                                              
+                                                <tr key={taskIndex} className="task-row">
+                                                  <td></td>
+                                                  <td>{task.task_name}</td>
+                                                  <td>
+                                                    {task.created_at.slice(8, 10)}/
+                                                    {task.created_at.slice(5, 7)}/
+                                                    {task.created_at.slice(0, 4)}
+                                                  </td>
+                                                  <td>{task.status}</td>
+                                                  <td>{task.employee_allocated_time}</td>
+                                                  <td>{task.employee_actual_time}</td>
+                                                </tr>
+                                              )
+                                            ))}
+                                           
+                                           </React.Fragment>
+                                        ))}
+                                     
+                                    
                                   </tbody>
                                 </table>
                               </td>

@@ -1011,6 +1011,7 @@ const Employee = () => {
 </tr> */}
                   {/* Array.isArray(taskRecords) && taskRecords.filter((record) => record.adhoc===1).map((record, index) */}
                 </table>
+                <p> <span className="text-info fs-3">*</span> Additional Tasks</p>
               </div>
             </div>
           </div>

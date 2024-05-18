@@ -44,24 +44,24 @@ const HomePage = () => {
             </div>
 
             <div className="row">
-              <div className="col-3">
-                <div className="card">
+              <div className="col-4">
+                <div className="card customcard">
                   <div className="card-header">
                     <h2>{dashProjectData}</h2>
                     <h3 className="card-title">Projects</h3>
                   </div>
                 </div>
               </div>
-              <div className="col-3">
-                <div className="card">
+              <div className="col-4">
+                <div className="card customcard">
                   <div className="card-header">
                     <h2>{dashRMData}</h2>
                     <h3 className="card-title">Reporting Managers</h3>
                   </div>
                 </div>
               </div>
-              <div className="col-3">
-                <div className="card">
+              <div className="col-4">
+                <div className="card customcard">
                   <div className="card-header">
                   <h2>{dashEmployeeData}</h2>
                     <h3 className="card-title">Team Members</h3>

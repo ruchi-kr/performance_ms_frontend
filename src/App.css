@@ -1,5 +1,6 @@
-.custom-table > tbody > tr {
-  background-color: rgb(169, 228, 124);
+.customcard {
+  background-image: linear-gradient(220deg, #96e0f5, #add362);
+
 }
 
 .loginbg {
