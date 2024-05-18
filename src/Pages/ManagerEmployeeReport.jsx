@@ -194,7 +194,45 @@ const ManagerEmployeeReport = () => {
     doc.autoTable(content); // Ensure you're using autoTable correctly here
     doc.save("employee_reportPW.pdf");
   };
+  const calculateEfficiency = (taskRecords) => {
+    console.log("report data for each row", reportData);
+    let totalAllocatedHours = 0;
+    let totalWeightedActualHours = 0;
+    let totalWeightedPercentage = 0;
+    let efficency = 0;
+    let count = 0;
+    let completed = 0;
+    let inprocess = 0;
+    let transfered = 0;
+    let notStarted = 0;
 
+    taskRecords?.forEach((task) => {
+      if (task.status !== "notstarted") {
+        const weightedPercentage =
+          (task.allocated_time / task.actual_time) * task.task_percent;
+        totalWeightedPercentage += weightedPercentage;
+        totalWeightedActualHours += weightedPercentage;
+        count++;
+      }
+      //
+
+      if (task.status === "completed") completed++;
+      else if (task.status === "inprocess") inprocess++;
+      else if (task.status === "transfer") transfered++;
+      else if (task.status === "notstarted") notStarted++;
+    });
+    console.log("total weighted hours", totalWeightedPercentage);
+    console.log("total allocated hours", totalAllocatedHours);
+    const efficiency = totalWeightedPercentage / count;
+    console.log("efficencyyyyyy", efficiency);
+    // setEfficency(Math.ceil(efficiency));
+    // setTotalTasks(count);
+    // setCompletedTasks(completed);
+    // setInprocessTasks(inprocess);
+    // setTransferedTasks(transfered);
+    // setNotStartedTasks(notStarted);
+    return Math.ceil(efficiency);
+  };
   return (
     <>
       <Header />
@@ -278,55 +316,67 @@ const ManagerEmployeeReport = () => {
                       <th scope="col">Employee Name</th>
                       <th scope="col">Allocated Time</th>
                       <th scope="col">Man Hours</th>
+                      <th scope="col">Efficiency</th>
                     </tr>
                   </thead>
 
                   <tbody className="table-group-divider">
                     {reportData &&
-                      reportData.map((item, index) => (
-                        <React.Fragment key={item.employee_id}>
-                          <tr onClick={() => handleRowClick(index)}>
-                            <th scope="row">{index + 1}</th>
-                            <td className="text-capitalize">
-                              <NavLink
-                                to={`/manager/report/employee/${item.employee_id}`}
-                              >
-                                <Tag color={"blue"}>{item.name}</Tag>
-                              </NavLink>
-                            </td>
-                            <td>{item.total_allocated_time} hrs.</td>
-                            <td>{item.total_actual_time} hrs.</td>
-                          </tr>
-                          {expandedRow === index && (
-                            <tr>
-                              <td colSpan="12">
-                                <table className="col-12 mx-auto">
-                                  <thead>
-                                    <tr>
-                                      <th>Project Name</th>
-                                      <th>Task</th>
-                                      <th>End Date</th>
-                                      <th>Status</th>
-                                      <th>Allocated Time</th>
-                                      <th>Actual Time</th>
-                                      <th>%&nbsp;Work Done</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {item?.tasks_details &&
-                                      item?.tasks_details.map(
-                                        (task, taskIndex) => (
-                                          <tr key={taskIndex}>
-                                            <td className="text-capitalize">
-                                              {task.project_name}
-                                            </td>
-                                            <td>{task.task}</td>
-                                            <td>
-                                              {moment
-                                                .utc(task.created_at)
-                                                .format("DD/MM/YYYY")}
-                                            </td>
-                                            {/* {task.status === "completed" ? (
+                      reportData.map((item, index) => {
+                        let totalAllocatedTime = item?.tasks_details?.reduce(
+                          (acc, i) => acc + i.allocated_time,
+                          0
+                        );
+                        console.log("in jsx part", item.tasks_details);
+                        let efficiency = calculateEfficiency(
+                          item.tasks_details
+                        );
+
+                        return (
+                          <React.Fragment key={item.employee_id}>
+                            <tr onClick={() => handleRowClick(index)}>
+                              <th scope="row">{index + 1}</th>
+                              <td className="text-capitalize">
+                                <NavLink
+                                  to={`/manager/report/employee/${item.employee_id}`}
+                                >
+                                  <Tag color={"blue"}>{item.name}</Tag>
+                                </NavLink>
+                              </td>
+                              <td>{item.total_allocated_time} hrs.</td>
+                              <td>{item.total_actual_time} hrs.</td>
+                              <td>{efficiency} %</td>
+                            </tr>
+                            {expandedRow === index && (
+                              <tr>
+                                <td colSpan="12">
+                                  <table className="col-12 mx-auto">
+                                    <thead>
+                                      <tr>
+                                        <th>Project Name</th>
+                                        <th>Task</th>
+                                        <th>End Date</th>
+                                        <th>Status</th>
+                                        <th>Allocated Time</th>
+                                        <th>Actual Time</th>
+                                        <th>%&nbsp;Work Done</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {item?.tasks_details &&
+                                        item?.tasks_details.map(
+                                          (task, taskIndex) => (
+                                            <tr key={taskIndex}>
+                                              <td className="text-capitalize">
+                                                {task.project_name}
+                                              </td>
+                                              <td>{task.task}</td>
+                                              <td>
+                                                {moment
+                                                  .utc(task.created_at)
+                                                  .format("DD/MM/YYYY")}
+                                              </td>
+                                              {/* {task.status === "completed" ? (
                                               <td>
                                                 <Tag color="green">
                                                   {task.status}
@@ -339,46 +389,49 @@ const ManagerEmployeeReport = () => {
                                                 </Tag>
                                               </td>
                                             )} */}
-                                            {task.status === "completed" ? (
-                                              <td className="text-success text-capitalize text-small">
-                                                {task.status}
+                                              {task.status === "completed" ? (
+                                                <td className="text-success text-capitalize text-small">
+                                                  {task.status}
+                                                </td>
+                                              ) : (
+                                                <td className="text-warning text-capitalize">
+                                                  {task.status}
+                                                </td>
+                                              )}
+                                              <td>
+                                                {task.allocated_time} hrs.
                                               </td>
-                                            ) : (
-                                              <td className="text-warning text-capitalize">
-                                                {task.status}
-                                              </td>
-                                            )}
-                                            <td>{task.allocated_time} hrs.</td>
-                                            <td>{task.actual_time} hrs.</td>
-                                            <td>
-                                              {/* {task.task_percent} % */}
-                                              <Flex vertical gap="middle">
-                                                <Flex
-                                                  vertical
-                                                  gap="small"
-                                                  style={{
-                                                    width: 120,
-                                                  }}
-                                                >
-                                                  <Progress
-                                                    percent={Number(
-                                                      task.task_percent
-                                                    )}
-                                                    size={[120, 15]}
-                                                  />
+                                              <td>{task.actual_time} hrs.</td>
+                                              <td>
+                                                {/* {task.task_percent} % */}
+                                                <Flex vertical gap="middle">
+                                                  <Flex
+                                                    vertical
+                                                    gap="small"
+                                                    style={{
+                                                      width: 120,
+                                                    }}
+                                                  >
+                                                    <Progress
+                                                      percent={Number(
+                                                        task.task_percent
+                                                      )}
+                                                      size={[120, 15]}
+                                                    />
+                                                  </Flex>
                                                 </Flex>
-                                              </Flex>
-                                            </td>
-                                          </tr>
-                                        )
-                                      )}
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          )}
-                        </React.Fragment>
-                      ))}
+                                              </td>
+                                            </tr>
+                                          )
+                                        )}
+                                    </tbody>
+                                  </table>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
                   </tbody>
                 </table>
                 {/* pagination */}

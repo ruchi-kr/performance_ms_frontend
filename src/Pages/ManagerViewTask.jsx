@@ -151,6 +151,7 @@ const ManagerViewTask = () => {
   const getEfficency = () => {
     let totalAllocatedHours = 0;
     let totalWeightedActualHours = 0;
+    let totalWeightedPercentage = 0;
     let efficency = 0;
     let count = 0;
     let completed = 0;
@@ -160,12 +161,12 @@ const ManagerViewTask = () => {
 
     taskRecords?.forEach((task) => {
       if (task.status !== "notstarted") {
-        const weightedActualHours =
-          (task.actual_time * task.task_percent) / 100;
-        totalAllocatedHours += task.allocated_time;
-        totalWeightedActualHours += weightedActualHours;
+        const weightedPercentage =
+          (task.allocated_time / task.actual_time) * task.task_percent;
+        totalWeightedPercentage += weightedPercentage;
+        totalWeightedActualHours += weightedPercentage;
+        count++;
       }
-      count++;
       //
 
       if (task.status === "completed") completed++;
@@ -173,10 +174,9 @@ const ManagerViewTask = () => {
       else if (task.status === "transfer") transfered++;
       else if (task.status === "notstarted") notStarted++;
     });
-    console.log("total weighted hours", totalWeightedActualHours);
+    console.log("total weighted hours", totalWeightedPercentage);
     console.log("total allocated hours", totalAllocatedHours);
-    const efficiency =
-      Number(totalWeightedActualHours / totalAllocatedHours) * 100;
+    const efficiency = totalWeightedPercentage / count;
     console.log("efficencyyyyyy", efficiency);
     setEfficency(Math.ceil(efficiency));
     setTotalTasks(count);
@@ -211,7 +211,7 @@ const ManagerViewTask = () => {
                             <Card bordered={false}>
                               <Statistic
                                 title="Today's Efficiency"
-                                value={efficiency}
+                                value={isNaN(efficiency) ? 0 : efficiency}
                                 // precision={2}
                                 valueStyle={{
                                   color: "green",
@@ -219,6 +219,16 @@ const ManagerViewTask = () => {
                                 // prefix={<ArrowDownOutlined />}
                                 suffix="%"
                               />
+                              {/* <Statistic
+                                title="Total Tasks"
+                                value={isNaN(efficiency) ? 0 : efficiency}
+                                // precision={2}
+                                valueStyle={{
+                                  color: "black",
+                                }}
+                                // prefix={<ArrowDownOutlined />}
+                                // suffix="%"
+                              /> */}
                             </Card>
                           </Col>
                           <Col span={4}>

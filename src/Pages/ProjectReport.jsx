@@ -28,7 +28,7 @@ const ProjectReport = () => {
   const [toDate, setToDate] = useState(null);
   const [fromDate, setFromDate] = useState(null);
   const user = JSON.parse(sessionStorage.getItem("user"));
-  const manager_id = user.employee_id;
+  const manager_id = user?.employee_id;
   console.log("manager id", manager_id);
   // get all reports function
   const getEmployeeReportHandler = async (page) => {
@@ -277,11 +277,11 @@ const ProjectReport = () => {
                   </thead>
                   <tbody className="table-group-divider">
                     {reportData?.map((item, index) => {
-                      const totalActualTime = item?.report?.reduce(
+                      let totalActualTime = item?.report?.reduce(
                         (acc, i) => acc + i.total_actual_time,
                         0
                       );
-                      const totalAllocatedTime = item?.report?.reduce(
+                      let totalAllocatedTime = item?.report?.reduce(
                         (acc, i) => acc + i.total_allocated_time,
                         0
                       );
