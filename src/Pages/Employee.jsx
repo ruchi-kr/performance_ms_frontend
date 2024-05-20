@@ -377,9 +377,9 @@ const Employee = () => {
     setProjectManagerName(temp[0]?.reporting_manager_id);
     updatedTaskRecords[index].manager_id = temp[0]?.reporting_manager_id;
     // updatedTaskRecords[index].manager_id = value === "miscellaneous" ? "" : temp[0]?.reporting_manager_id; 
-    // setProject_id(value);
-    setProject_id(value == "1" ? "" : value); 
-    updatedTaskRecords[index].project_id = project_id;
+    setProject_id(value);
+    // setProject_id(value == "1" ? "" : value); 
+    updatedTaskRecords[index].project_id = value;
     updatedTaskRecords[index].module_id = "";
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
