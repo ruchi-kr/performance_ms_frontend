@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
+import { NavLink } from "react-router-dom";
 import {
   deleteProject,
   getAllProjects,
@@ -149,7 +150,7 @@ const ProjectMaster = () => {
   const deleteProjectHandler = async (id) => {
     //creating a function for deleting data
     try {
-      const response =await axios.delete(`${deleteProject}` + id, CONFIG_OBJ); // deleting data from server
+      const response = await axios.delete(`${deleteProject}` + id, CONFIG_OBJ); // deleting data from server
       if (response.status === 200) {
         toast.success(response.data.msg);
         window.location.reload(); //reloading the page
@@ -349,7 +350,13 @@ const ProjectMaster = () => {
                   </div>
                 </div>
                 <Modal
-                  title={editingProject ? "Edit Project" :viewProject ? "View Project" : "Add Project"}
+                  title={
+                    editingProject
+                      ? "Edit Project"
+                      : viewProject
+                      ? "View Project"
+                      : "Add Project"
+                  }
                   visible={modalVisible}
                   onOk={projectFormSubmit}
                   onCancel={() => {
@@ -539,7 +546,12 @@ const ProjectMaster = () => {
                               1}
                           </th>
                           {/* <td>{data.project_id}</td> */}
-                          <td>{data.project_name}</td>
+
+                          <td>
+                            <NavLink to={`/projectplan/?project_id=${data.project_id}`}>
+                              {data.project_name}
+                            </NavLink>
+                          </td>
                           <td>
                             {data.schedule_start_date.slice(8, 10)}/
                             {data.schedule_start_date.slice(5, 7)}/

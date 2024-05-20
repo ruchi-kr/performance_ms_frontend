@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   PlusOutlined,
   CloseOutlined,
   CheckOutlined,
   EditOutlined,
+  PercentageOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
@@ -391,11 +392,12 @@ const Employee = () => {
         if (response2.status === 200) {
           setTaskSaved(true);
           setFormDisabled(true);
-          setAdhoc(1);
+          setAdhoc(0);
           toast.success(response2.data.msg);
           setFormDisabled(true);
 
           console.log("form disabled", formDisabled);
+          console.log("adhoc save task", adhoc);
         } else {
           toast.error("Task Not added");
         }
@@ -429,6 +431,7 @@ const Employee = () => {
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
     setModule_id(value);
+   
   };
 
   // const handleModuleChange = (index, value) => {
@@ -496,6 +499,21 @@ const Employee = () => {
   //     reloadPage();
   //   }
   // }, 60000); // Check every minute
+
+  // for one by one start to end filling of input type
+  const projectRef = useRef(null);
+  const moduleRef = useRef(null);
+  const taskRef = useRef(null);
+  const allocatedTimeRef = useRef(null);
+  // Add more refs as needed for other input elements
+
+  // Function to focus on the next input element
+  const focusNextInput = (nextRef) => {
+    if (nextRef && nextRef.current) {
+      nextRef.current.focus();
+    }
+  };
+
   return (
     <>
       <Header />
@@ -603,6 +621,7 @@ const Employee = () => {
                           </td>
                           <td>
                             <Select
+                            ref={projectRef}
                               showSearch
                               allowClear
                               placeholder="Select Project"
@@ -624,7 +643,9 @@ const Employee = () => {
                               className="rounded-2"
                               value={record.project_id}
                               onChange={(value) =>
-                                handleProjectChange(index, value)
+                                {handleProjectChange(index, value);
+                                  focusNextInput(moduleRef);
+                                }
                               }
                               required
                               disabled={
@@ -644,9 +665,15 @@ const Employee = () => {
                               ))}
                             </Select>
                             <Select
+                            ref={moduleRef}
+                              showSearch
                               allowClear
                               placeholder="Select Module"
-                              // style={{ width: "150px" }}
+                              filterOption={(input, option) =>
+                                option.label
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
                               style={{
                                 width:
                                   window.location.pathname !== "/plan" &&
@@ -664,7 +691,9 @@ const Employee = () => {
                                   : record.module_name
                               }
                               onChange={(value) =>
-                                handleModuleChange(index, value)
+                                {handleModuleChange(index, value);
+                                  focusNextInput(taskRef)
+                                }
                               }
                               //                             value={record.module_name} // Initially set the value to module_name
                               // onChange={(value) => {
@@ -754,8 +783,15 @@ const Employee = () => {
                               <span className="text-danger">*</span>
                             )} */}
                             <Select
+                              showSearch
                               allowClear
+                              ref={taskRef}
                               placeholder="Select Task"
+                              filterOption={(input, option) =>
+                                option.label
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
                               style={{
                                 width:
                                   window.location.pathname !== "/plan"
@@ -773,7 +809,9 @@ const Employee = () => {
                               }
                               // defaultValue={projectManagerName}
                               onChange={(value) =>
-                                handleTaskChange(index, value)
+                                {handleTaskChange(index, value);
+                                  focusNextInput(allocatedTimeRef);
+                                }
                               }
                               required
                               disabled={
@@ -798,6 +836,7 @@ const Employee = () => {
                           </td>
                           <td>
                             <input
+                            ref={allocatedTimeRef}
                               type="number"
                               name="allocated_time"
                               // style={{ width: "70px" }}
@@ -854,6 +893,7 @@ const Employee = () => {
 
                                   {record.status === "transfer" ||
                                   record.status === "inprocess" ? (
+                                    <div className="d-flex">
                                     <input
                                       type="number"
                                       name="task_percent"
@@ -875,6 +915,8 @@ const Employee = () => {
                                         record.formDisabled || formDisabled
                                       }
                                     />
+                                    <PercentageOutlined />
+                                    </div>
                                   ) : null}
                                 </Space>
                                 {!record.actual_time && (

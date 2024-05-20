@@ -786,6 +786,12 @@ const AddProjectPlan = () => {
                       {projectName}
                     </span>
                   </Title>
+                  <Title level={4}>
+                    Stage -{" "}
+                    <span className="text-info text-capitalize">
+                      {stage}
+                    </span>
+                  </Title>
                 </Col>
               </Row>
               {/* <Row>
