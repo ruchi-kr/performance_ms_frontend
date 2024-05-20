@@ -72,7 +72,7 @@ const Employee = () => {
     try {
       const result = await axios.get(`${getAllProjects}`);
       const projectUnderManager = result.data.filter(
-        (project) => project.reporting_manager_id !== null
+        (project) => project.reporting_manager_id !== null || project.project_name === "miscellaneous"
       );
       setProjectList(projectUnderManager);
       console.log("project list", result.data);
@@ -101,8 +101,8 @@ const Employee = () => {
 
   useEffect(() => {
     getProjectPlanData();
-  }, [project_id!=="miscellaneous" ? project_id : null]);
-
+  }, [project_id]);
+  // [project_id!=="miscellaneous" ? project_id : null]
   const getTasks = async (moduleId) => {
     console.log("module id selected----->", moduleId);
     const tempModule = moduleList?.filter(
@@ -285,54 +285,7 @@ const Employee = () => {
     setTaskRecords(updatedTaskRecords);
   };
 
-  // Function to save task changes
-  // const saveTask = async (index) => {
-  //   const task = taskRecords[index];
-  //   try {
-  //     if (task.id) {
-  //       const payload = {
-  //         user_id: user_id,
-  //         employee_id: employee_id,
-  //       };
-  //       // If the task already has an ID, it's an existing task, so update it
-  //       const response1 = await axios.put(
-  //         `${editTask}${task.id}`,
-  //         task,
-  //         payload
-  //       );
-  //       if (response1.status === 200) {
-  //         setTaskSaved(true);
-  //         setFormDisabled(true);
-  //         setAdhoc(0);
-  //         toast.success("Task Updated Successfully");
-  //       } else {
-  //         toast.error("Task Not Updated");
-  //       }
-  //     } else {
-  //       const payload = {
-  //         user_id: user_id,
-  //       };
 
-  //       // If the task doesn't have an ID, it's a new task, so create it
-  //       const response2 = await axios.post(`${addTask}`, task, payload);
-  //       if (response2.status === 200) {
-  //         setTaskSaved(true);
-  //         setFormDisabled(true);
-  //         setAdhoc(1);
-  //         toast.success("Task added Successfully");
-  //         setFormDisabled(true);
-
-  //         console.log("form disabled", formDisabled);
-  //       } else {
-  //         toast.error("Task Not added");
-  //       }
-  //     }
-  //     // Refresh tasks after saving
-  //     fetchTasks();
-  //   } catch (error) {
-  //     console.error("Error saving task:", error);
-  //   }
-  // };
 
   const saveTask = async (index) => {
     const task = taskRecords[index];
@@ -413,42 +366,40 @@ const Employee = () => {
   };
 
   const handleProjectChange = (index, value) => {
+    setMiscellaneous(false);
+    
     console.log("value**********", value);
     const updatedTaskRecords = [...taskRecords];
+    
     const temp = projectList.filter((project) => project.project_id === value);
     console.log("temp", temp);
     console.log("temp manager", temp[0]?.reporting_manager_id);
     setProjectManagerName(temp[0]?.reporting_manager_id);
     updatedTaskRecords[index].manager_id = temp[0]?.reporting_manager_id;
+    // updatedTaskRecords[index].manager_id = value === "miscellaneous" ? "" : temp[0]?.reporting_manager_id; 
     // setProject_id(value);
-    setProject_id(value == "miscellaneous" ? "" : value); 
+    setProject_id(value == "1" ? "" : value); 
     updatedTaskRecords[index].project_id = project_id;
+    updatedTaskRecords[index].module_id = "";
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
     // if(value=="miscellaneous"){
     //   setProject_id("");
     //   // updatedTaskRecords[index].project_id = value;
     // }
-    console.log("project id miscellaneous :", project_id);
+    // console.log("project id miscellaneous :", project_id);
   };
   // Function to handle changes in module selection selectedModule.module_id
   const handleModuleChange = (index, value) => {
     console.log("value**********", value);
     const updatedTaskRecords = [...taskRecords];
     updatedTaskRecords[index].module_id = value;
+    updatedTaskRecords[index].task_id = "";
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
     setModule_id(value);
   };
 
-  // const handleModuleChange = (index, value) => {
-  //   console.log("value**********", value);
-  //   const updatedTaskRecords = [...taskRecords];
-  //   updatedTaskRecords[index].selectedModule.module_id = value;
-  //   setTaskRecords(updatedTaskRecords);
-  //   console.log("task records", taskRecords);
-  //   setModule_id(value);
-  // };
   // Function to handle changes in manager selection
   const handleManagerChange = (index, value) => {
     const updatedTaskRecords = [...taskRecords];
@@ -479,12 +430,6 @@ const Employee = () => {
       setCurrentTime(response.data.currentTimeStamp);
       console.log("current time", response.data.currentTimeStamp);
 
-      //    // Check the current time and reload the page if the desired time is reached
-      // const reloadTime = dayjs(response.data.currentTimeStamp).hour() === 15 && dayjs(response.data.currentTimeStamp).minute() === 50;
-      // console.log("reload time", reloadTime);
-      // if (reloadTime) {
-      //   reloadPage();
-      // }
     } catch (error) {
       console.log(error);
     }
@@ -497,15 +442,7 @@ const Employee = () => {
     window.location.reload();
   };
 
-  // Check the current time and reload the page if the desired time is reached
-  // setInterval(() => {
-  //   // const currentTime = new Date();
-  //   // const reloadTime = dayjs(currentTime).hour() === 12;
-  //   const reloadTime = dayjs(currentTime).hour() === 15 && dayjs(currentTime).minute() === 55;
-  //   if (reloadTime) {
-  //     reloadPage();
-  //   }
-  // }, 60000); // Check every minute
+  
 
   // for one by one start to end filling of input type
   const projectRef = useRef(null);
@@ -514,7 +451,9 @@ const Employee = () => {
   const allocatedTimeRef = useRef(null);
   const actualTimeRef = useRef(null);
   const statusRef = useRef(null);
+  const taskPercentRef = useRef(null);
   const remarksRef = useRef(null);
+
   // Add more refs as needed for other input elements
 
   // Function to focus on the next input element
@@ -658,9 +597,11 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               onChange={(value) => {
                                 handleProjectChange(index, value);
                                 focusNextInput(moduleRef)
-                                if(value === "miscellaneous"){
+                                if(value == "1"){
                                   setMiscellaneous(true);
-                                  
+                                 record.module_id ="";
+                                 record.task_id="";
+                                 
                                 };
                               }}
                               required
@@ -670,12 +611,12 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                 (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
                               }
                             >
-                              <Option
+                              {/* <Option
                                 value="miscellaneous"
                                 label="Miscellaneous"
                               >
                                 Miscellaneous
-                              </Option>
+                              </Option> */}
                               {projectList.map((project) => (
                                 <Option
                                   key={project.project_id}
@@ -838,7 +779,8 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               }}
                               required
                               disabled={
-                               miscellaneous || record.formDisabled ||
+                               miscellaneous || 
+                               record.formDisabled ||
                                 formDisabled ||
                                 (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
                               }
@@ -909,7 +851,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                     value={record.actual_time}
                                     onChange={(e) =>
                                       {handleInputChange(index, e);
-                                        focusNextInput(statusRef);
+                                       focusNextInput(statusRef);                                       
                                       }
                                     }
                                     required
@@ -923,6 +865,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                   record.status === "inprocess" ? (
                                     <div className="d-flex">
                                       <input
+                                        ref={taskPercentRef}
                                         type="number"
                                         name="task_percent"
                                         style={{
@@ -934,8 +877,11 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                         defaultValue={0}
                                         className="form-control"
                                         value={record.task_percent}
-                                        onChange={(e) =>
-                                          handleInputChange(index, e)
+                                        onChange={(e) =>{
+                                          handleInputChange(index, e);
+                                         focusNextInput(remarksRef);
+                                        }
+                                        
                                         }
                                         required
                                         min={0}
@@ -960,7 +906,12 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                   value={record.status || "notstarted"}
                                   onChange={(e) =>
                                     {handleStatusChange(index, e.target.value);
-                                      focusNextInput(remarksRef);
+                                      if( record.status==="transfer" || record.status==="inprocess"){
+                                        focusNextInput(taskPercentRef);
+                                      }
+                                      else{
+                                        focusNextInput(remarksRef);
+                                      }
                                     }
                                   }
                                   required

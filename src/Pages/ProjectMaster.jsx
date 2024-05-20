@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import { NavLink} from "react-router-dom";
+import { NavLink } from "react-router-dom";
 // import { useHistory } from "react-router-dom";
 import {
   deleteProject,
@@ -369,17 +369,19 @@ const ProjectMaster = () => {
                   }
                   visible={modalVisible}
                   // onOk={projectFormSubmit}
-                  onOk={()=>{
+                  onOk={() => {
                     projectFormSubmit();
-                    {(!editingProject && !viewProject) ? setSecondModalVisible(true): setSecondModalVisible(false)}
+                    {
+                      !editingProject && !viewProject
+                        ? setSecondModalVisible(true)
+                        : setSecondModalVisible(false);
+                    }
                     // setSecondModalVisible(true);
-                    
                   }}
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingProject(null);
                     setViewProject(null);
-
                   }}
                   okText="Submit"
                   okButtonProps={{
@@ -413,7 +415,7 @@ const ProjectMaster = () => {
                             },
                           ]}
                         >
-                          <Input placeholder="Project Name"/>
+                          <Input placeholder="Project Name" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -527,16 +529,19 @@ const ProjectMaster = () => {
                     </Row>
                     <Row gutter={[8, 4]}>
                       <Col span={24}>
-                      <Form.Item
-                      name="project_details"
-                      label={
-                        <span className="text-info text-capitalize">
-                          Project Description
-                        </span>
-                      }
-                      >
-                        <TextArea placeholder="Project Description" autoSize/>
-                      </Form.Item>
+                        <Form.Item
+                          name="project_details"
+                          label={
+                            <span className="text-info text-capitalize">
+                              Project Description
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            placeholder="Project Description"
+                            autoSize
+                          />
+                        </Form.Item>
                       </Col>
                     </Row>
                   </Form>
@@ -545,9 +550,8 @@ const ProjectMaster = () => {
                 <Modal
                   title=""
                   visible={secondModalVisible}
-                  onOk={()=> {
+                  onOk={() => {
                     setSecondModalVisible(false);
-                   
 
                     setModalVisible(false);
                     setEditingProject(null);
@@ -557,9 +561,8 @@ const ProjectMaster = () => {
                   }}
                   okText="yes"
                   cancelText="No"
-                  onCancel={()=>{
+                  onCancel={() => {
                     setSecondModalVisible(false);
-                    
 
                     setModalVisible(false);
                     setEditingProject(null);
@@ -633,22 +636,26 @@ const ProjectMaster = () => {
                             {data.stage}
                           </td>
                           <td className="">
-                            <EyeOutlined
-                              onClick={() => openProjectView(data)}
-                              style={{ color: "blue", marginRight: "1rem" }}
-                            />
-                            {/* <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button> */}
-                            <EditOutlined
-                              onClick={() => openProjectEdit(data)}
-                              style={{ color: "blue", marginRight: "1rem" }}
-                            />
-                            {/* <button className="btn btn-danger btn-sm" onClick={() => deleteProjectHandler(data.project_id)}>Delete</button> */}
-                            <DeleteOutlined
-                              onClick={() =>
-                                deleteProjectHandler(data.project_id)
-                              }
-                              style={{ color: "red", marginRight: "1rem" }}
-                            />
+                            {data.project_id !== 1 && (
+                              <>
+                                <EyeOutlined
+                                  onClick={() => openProjectView(data)}
+                                  style={{ color: "blue", marginRight: "1rem" }}
+                                />
+                                {/* <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button> */}
+                                <EditOutlined
+                                  onClick={() => openProjectEdit(data)}
+                                  style={{ color: "blue", marginRight: "1rem" }}
+                                />
+                                {/* <button className="btn btn-danger btn-sm" onClick={() => deleteProjectHandler(data.project_id)}>Delete</button> */}
+                                <DeleteOutlined
+                                  onClick={() =>
+                                    deleteProjectHandler(data.project_id)
+                                  }
+                                  style={{ color: "red", marginRight: "1rem" }}
+                                />
+                              </>
+                            )}
                           </td>
                         </tr>
                       );
