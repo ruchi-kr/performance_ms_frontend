@@ -296,7 +296,7 @@ const Employee = () => {
         !task.module_id ||
         !task.task_id ||
         !task.allocated_time
-      ) && project_id!=""){
+      ) && project_id!="1"){
         toast.error("Please fill required fields");
         return false;
       }
