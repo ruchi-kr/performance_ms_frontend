@@ -34,6 +34,7 @@ import {
   notification,
   Typography,
   InputNumber,
+  Space,
 } from "antd";
 import axios from "axios";
 import moment from "moment";
@@ -85,6 +86,7 @@ const AddProjectPlan = () => {
   const [projectEndDate, setProjectEndDate] = useState("");
   const [projectName, setProjectName] = useState("");
   const [moduleList, setModuleList] = useState([]);
+  const [totalManHours, setTotalmanHours] = useState(0);
   const [pagination, setPagination] = useState({
     totalRecords: 0,
     pageSize: 10,
@@ -378,10 +380,13 @@ const AddProjectPlan = () => {
     if (isAddingTask && !isEditingTask) {
       try {
         console.log("onFinish before sending values adding", values);
+        // console.log("values inside edit!!!!", values);
+        console.log("get field values all", formTask.getFieldsValue());
+
         await axios.post("http://localhost:8000/api/module/task", {
-          ...values,
-          stage: stage,
-        });
+            ...values,
+            stage: stage,
+          });
         formTask.resetFields(["task_name", "allocated_time"]);
         getModuleListWithTasks();
         // handleReset();
@@ -401,6 +406,8 @@ const AddProjectPlan = () => {
 
     if (isEditingTask && !isAddingTask) {
       console.log("values inside edit!!!!", values);
+      console.log("get field values", formTask.getFieldsValue());
+
       try {
         await axios.patch(
           `http://localhost:8000/api/module/task/${values.task_id}`,
@@ -500,6 +507,46 @@ const AddProjectPlan = () => {
       ((startDate && current < startDate.startOf("day")) ||
         (endDate && current > endDate.endOf("day")))
     );
+  };
+
+  //Man hours
+
+  useEffect(() => {
+    const frontend = formTask.getFieldsValue(["frontend"]);
+    console.log("front end", frontend.count);
+  }, [formTask]);
+
+  const getManHours = () => {
+    console.log("man hours", formTask.getFieldsValue());
+
+    const fullstack = formTask.getFieldsValue(["fullstack"]);
+    const backend = formTask.getFieldsValue(["backend"]);
+    const frontend = formTask.getFieldsValue(["frontend"]);
+    const design = formTask.getFieldsValue(["design"]);
+    const qa = formTask.getFieldsValue(["qa"]);
+    const pm = formTask.getFieldsValue(["pm"]);
+    const special = formTask.getFieldsValue(["special"]);
+
+    const fullstackmanhrs =
+      fullstack.fullstack.count * fullstack.fullstack.days * 8;
+    const frontendmanhrs = frontend.frontend.count * frontend.frontend.days * 8;
+    const backendmanhrs = backend.backend.count * backend.backend.days * 8;
+    const designmanhrs = design.design.count * design.design.days * 8;
+    const qamanhrs = qa.qa.count * qa.qa.days * 8;
+    const pmmanhrs = pm.pm.count * pm.pm.days * 8;
+    const specialmanhrs = special.special.count * special.special.days * 8;
+    const totalManHours =
+      fullstackmanhrs +
+      frontendmanhrs +
+      backendmanhrs +
+      designmanhrs +
+      qamanhrs +
+      pmmanhrs +
+      specialmanhrs;
+    console.log("total", totalManHours);
+    formTask.setFieldValue("manhours",totalManHours)
+    formTask.setFieldValue("allocated_time",totalManHours)
+    setTotalmanHours(totalManHours);
   };
 
   const disabledEndDate = (current, from_dateValue) => {
@@ -1163,6 +1210,16 @@ const AddProjectPlan = () => {
                           onFinishFailed={onFinishFailedTask}
                           autoComplete="on"
                           style={{ paddingTop: "2rem" }}
+                          initialValues={{
+                            fullstack: { count: 0, days: 0 },
+                            frontend: { count: 0, days: 0 },
+                            backend: { count: 0, days: 0 },
+                            qa: { count: 0, days: 0 },
+                            pm: { count: 0, days: 0 },
+                            design: { count: 0, days: 0 },
+                            special: { count: 0, days: 0 },
+                           
+                          }}
                         >
                           <Row gutter={16}>
                             <Col span={24}>
@@ -1227,23 +1284,531 @@ const AddProjectPlan = () => {
                                 />
                               </Form.Item>
                             </Col>
-                            <Col span={4}>
+                            <Col span={6}>
                               <Form.Item
-                                label="Allocated Time (hrs)"
+                                label="Allocated Time (Man Hrs.)"
                                 name="allocated_time"
                                 rules={[
                                   {
                                     required: true,
-                                    message: "Please input allocated time!",
+                                    message: "Please provide allocated time!",
                                   },
                                 ]}
                               >
                                 <InputNumber
                                   min={0}
                                   max={500}
-                                  style={{ width: "100%" }}
+                                  style={{ width: "80%" }}
+                                  disabled
                                 />
                               </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row>
+                            {/* <Form.Item
+                              label="Team Members"
+                              name="team"
+                              rules={[
+                                {
+                                  required: false,
+                                  message:
+                                    "Please enter number of fullstack devlopers!",
+                                },
+                              ]}
+                            > */}
+                            <Row gutter={12}>
+                              <Col span={3}>
+                                <Form.Item
+                                  label="Full-stack"
+                                  name={["team", "fullstack"]}
+                                >
+                                  <Space.Compact>
+                                    <Form.Item
+                                      name={["fullstack", "count"]}
+                                      label="No."
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const days = getFieldValue([
+                                              "fullstack",
+                                              "days",
+                                            ]);
+
+                                            if (
+                                              (days !== null ||
+                                                days !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error(
+                                                  "Enter no. of members !"
+                                                )
+                                              );
+                                            }
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber
+                                        style={{ width: "50%" }}
+                                        placeholder="No."
+                                      />
+                                    </Form.Item>
+                                    <Form.Item
+                                      name={["fullstack", "days"]}
+                                      label="days"
+                                      noStyle
+                                      dependencies={[["fullstack", "count"]]}
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const count = getFieldValue([
+                                              "fullstack",
+                                              "count",
+                                            ]);
+                                            if (
+                                              (count !== null ||
+                                                count !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error("Enter no. of days !")
+                                              );
+                                            }
+
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber
+                                        style={{ width: "50%" }}
+                                        placeholder="Days"
+                                      />
+                                    </Form.Item>
+                                  </Space.Compact>
+                                </Form.Item>
+                              </Col>
+                              <Col span={3}>
+                                <Form.Item
+                                  label="Front-end"
+                                  name={["team", "frontend"]}
+                                >
+                                  <Space.Compact>
+                                    <Form.Item
+                                      name={["frontend", "count"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const days = getFieldValue([
+                                              "frontend",
+                                              "days",
+                                            ]);
+
+                                            if (
+                                              (days !== null ||
+                                                days !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error(
+                                                  "Enter no. of members !"
+                                                )
+                                              );
+                                            }
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                    <Form.Item
+                                      name={["frontend", "days"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const count = getFieldValue([
+                                              "frontend",
+                                              "count",
+                                            ]);
+                                            if (
+                                              (count !== null ||
+                                                count !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error("Enter no. of days !")
+                                              );
+                                            }
+
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                  </Space.Compact>
+                                </Form.Item>
+                              </Col>
+                              <Col span={3}>
+                                <Form.Item
+                                  label="Back-end"
+                                  name={["team", "backend"]}
+                                >
+                                  <Space.Compact>
+                                    <Form.Item
+                                      name={["backend", "count"]}
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const days = getFieldValue([
+                                              "backend",
+                                              "days",
+                                            ]);
+
+                                            if (
+                                              (days !== null ||
+                                                days !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error(
+                                                  "Enter no. of members !"
+                                                )
+                                              );
+                                            }
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                      noStyle
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                    <Form.Item
+                                      name={["backend", "days"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const count = getFieldValue([
+                                              "backend",
+                                              "count",
+                                            ]);
+                                            if (
+                                              (count !== null ||
+                                                count !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error("Enter no. of days !")
+                                              );
+                                            }
+
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                  </Space.Compact>
+                                </Form.Item>
+                              </Col>
+                              <Col span={3}>
+                                <Form.Item
+                                  label="Design"
+                                  name={["team", "design"]}
+                                >
+                                  <Space.Compact>
+                                    <Form.Item
+                                      name={["design", "count"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const days = getFieldValue([
+                                              "design",
+                                              "days",
+                                            ]);
+
+                                            if (
+                                              (days !== null ||
+                                                days !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error(
+                                                  "Enter no. of members !"
+                                                )
+                                              );
+                                            }
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                    <Form.Item
+                                      name={["design", "days"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const count = getFieldValue([
+                                              "design",
+                                              "count",
+                                            ]);
+                                            if (
+                                              (count !== null ||
+                                                count !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error("Enter no. of days !")
+                                              );
+                                            }
+
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                  </Space.Compact>
+                                </Form.Item>
+                              </Col>
+                              <Col span={3}>
+                                <Form.Item label="P.M." name={["team", "pm"]}>
+                                  <Space.Compact>
+                                    <Form.Item
+                                      name={["pm", "count"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const days = getFieldValue([
+                                              "pm",
+                                              "days",
+                                            ]);
+
+                                            if (
+                                              (days !== null ||
+                                                days !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error(
+                                                  "Enter no. of members !"
+                                                )
+                                              );
+                                            }
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                    <Form.Item
+                                      name={["pm", "days"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const count = getFieldValue([
+                                              "pm",
+                                              "count",
+                                            ]);
+                                            if (
+                                              (count !== null ||
+                                                count !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error("Enter no. of days !")
+                                              );
+                                            }
+
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                  </Space.Compact>
+                                </Form.Item>
+                              </Col>
+                              <Col span={3}>
+                                <Form.Item label="Q.A." name={["team", "qa"]}>
+                                  <Space.Compact>
+                                    <Form.Item
+                                      name={["qa", "count"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const days = getFieldValue([
+                                              "qa",
+                                              "days",
+                                            ]);
+
+                                            if (
+                                              (days !== null ||
+                                                days !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error(
+                                                  "Enter no. of members !"
+                                                )
+                                              );
+                                            }
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                    <Form.Item
+                                      name={["qa", "days"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const count = getFieldValue([
+                                              "qa",
+                                              "count",
+                                            ]);
+                                            if (
+                                              (count !== null ||
+                                                count !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error("Enter no. of days !")
+                                              );
+                                            }
+
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                  </Space.Compact>
+                                </Form.Item>
+                              </Col>
+                              <Col span={3}>
+                                <Form.Item
+                                  label="Special"
+                                  name={["team", "special"]}
+                                >
+                                  <Space.Compact>
+                                    <Form.Item
+                                      name={["special", "count"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const days = getFieldValue([
+                                              "special",
+                                              "days",
+                                            ]);
+
+                                            if (
+                                              (days !== null ||
+                                                days !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error(
+                                                  "Enter no. of members !"
+                                                )
+                                              );
+                                            }
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                    <Form.Item
+                                      name={["special", "days"]}
+                                      noStyle
+                                      rules={[
+                                        ({ getFieldValue }) => ({
+                                          validator(_, value) {
+                                            const count = getFieldValue([
+                                              "special",
+                                              "count",
+                                            ]);
+                                            if (
+                                              (count !== null ||
+                                                count !== undefined) &&
+                                              (value === null ||
+                                                value === undefined)
+                                            ) {
+                                              return Promise.reject(
+                                                new Error("Enter no. of days !")
+                                              );
+                                            }
+
+                                            return Promise.resolve();
+                                          },
+                                        }),
+                                      ]}
+                                    >
+                                      <InputNumber style={{ width: "50%" }} />
+                                    </Form.Item>
+                                  </Space.Compact>
+                                </Form.Item>
+                              </Col>
+                            </Row>
+                            {/* </Form.Item> */}
+                          </Row>
+                          <Row gutter={8}>
+                            <Col span={4}>
+                              <Form.Item
+                                label="Man hours"
+                                name="manhours"
+                                disabled
+                              >
+                                <Input disabled />
+                              </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                              <Button
+                                onClick={getManHours}
+                                style={{ marginTop: "1.8rem" }}
+                              >
+                                Calculate Man Hours
+                              </Button>
                             </Col>
                           </Row>
 
