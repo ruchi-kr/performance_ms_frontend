@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import SideNavbar from "../Components/SideNavbar.jsx";
 import Header from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
-import { NavLink } from "react-router-dom";
+import {
+  NavLink,
+  useParams,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import {} from "../Config.js";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -52,10 +57,12 @@ const ProjectPlan = () => {
 
   const [allData, setAllData] = useState("");
   const [projectList, setProjectList] = useState([]);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [selectedProjectStage, setSelectedProjectStage] = useState(null);
   const [projectStage, setProjectStage] = useState(null);
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const project_id = JSON.parse(queryParams.get("project_id")); 
+  const [selectedProjectId, setSelectedProjectId] = useState(project_id);
   const [moduleStage, setModuleStage] = useState("");
 
   const getProjects = async (value) => {
@@ -171,8 +178,9 @@ const ProjectPlan = () => {
   };
 
   useEffect(() => {
+    console.log("inside use effect", project_id);
     getProjectPlanData();
-  }, [selectedProjectId]);
+  }, [selectedProjectId, project_id]);
 
   // function for excel pdf
   // const generatePDF = async () => {
@@ -258,6 +266,7 @@ const ProjectPlan = () => {
                   </label>
                   <Select
                     allowClear={true}
+                    defaultValue={project_id}
                     onChange={projectChangeHandler}
                     placeholder="Select Project"
                     style={{ width: "20rem" }}
@@ -291,16 +300,20 @@ const ProjectPlan = () => {
                     {/* add project row */}
                     <div className="row my-4 d-flex align-items-center justify-content-between">
                       <div className="col-2">
-                       
-                          <button className="btn btn-sm btn-info" disabled={selectedProjectStage === "completed"}>
-                          <NavLink
-                          to={`/addprojectplan/?project_id=${selectedProjectId}&stage=${selectedProjectStage}`}
-                          className="text-decoration-none text-white d-flex align-items-center justify-content-center"
+                        <button
+                          className="btn btn-sm btn-info"
+                          disabled={selectedProjectStage === "completed"}
                         >
-                          <span className="fs-4"> + </span>&nbsp;{selectedProjectStage==="rfp" ? "Add Plan" : "Edit Plan"}
+                          <NavLink
+                            to={`/addprojectplan/?project_id=${selectedProjectId}&stage=${selectedProjectStage}`}
+                            className="text-decoration-none text-white d-flex align-items-center justify-content-center"
+                          >
+                            <span className="fs-4"> + </span>&nbsp;
+                            {selectedProjectStage === "rfp"
+                              ? "Add Plan"
+                              : "Edit Plan"}
                           </NavLink>
-                          </button>
-                        
+                        </button>
                       </div>
                       {/* <div className="col-2 d-flex align-items-center gap-2">
                         <Button onClick={downloadPDF} size="small" type="primary" className="d-flex align-items-center"><ArrowDownOutlined /><FilePdfOutlined />PDF</Button>
@@ -567,7 +580,6 @@ const ProjectPlan = () => {
                                           /{firstModulewon?.to_date.slice(0, 4)}
                                         </p>
                                       </td>
-                                     
                                     </tr>
                                   )}
                                   {/* )} */}
@@ -605,7 +617,6 @@ const ProjectPlan = () => {
                                               {module.to_date.slice(0, 4)}
                                             </p>
                                           </td>
-                                         
                                         </tr>
                                       )}
                                       {JSON.parse(module.tasks).map(
@@ -750,12 +761,14 @@ const ProjectPlan = () => {
                                         </p>
                                       </td>
                                       <td colSpan={1}>
-                                        <p className={`text-primary text-capitalize ${
+                                        <p
+                                          className={`text-primary text-capitalize ${
                                             firstModuleinprocess?.status ==
                                             "scrapped"
                                               ? "text-decoration-line-through text-danger"
                                               : ""
-                                          }`}>
+                                          }`}
+                                        >
                                           {firstModuleinprocess?.status}
                                         </p>
                                       </td>
@@ -793,15 +806,16 @@ const ProjectPlan = () => {
                                               </p>
                                             </td>
                                             <td colSpan={1}>
-                                        <p className={`text-primary text-capitalize ${
-                                            module.status ==
-                                            "scrapped"
-                                              ? "text-decoration-line-through text-danger"
-                                              : ""
-                                          }`}>
-                                          {module.status}
-                                        </p>
-                                      </td>
+                                              <p
+                                                className={`text-primary text-capitalize ${
+                                                  module.status == "scrapped"
+                                                    ? "text-decoration-line-through text-danger"
+                                                    : ""
+                                                }`}
+                                              >
+                                                {module.status}
+                                              </p>
+                                            </td>
                                           </tr>
                                         )}
                                         {JSON.parse(module.tasks).map(
@@ -811,25 +825,25 @@ const ProjectPlan = () => {
                                             >
                                               <td></td>
                                               <td colSpan={3}>
-                                              <span
-                                                className={`text-capitalize ${
+                                                <span
+                                                  className={`text-capitalize ${
+                                                    module.status === "scrapped"
+                                                      ? "text-decoration-line-through text-dark"
+                                                      : ""
+                                                  }`}
+                                                >
+                                                  {task.task_name}
+                                                </span>
+                                              </td>
+                                              <td
+                                                className={`${
                                                   module.status === "scrapped"
                                                     ? "text-decoration-line-through text-dark"
                                                     : ""
                                                 }`}
                                               >
-                                                {task.task_name}
-                                              </span>
-                                            </td>
-                                            <td
-                                              className={`${
-                                                module.status === "scrapped"
-                                                  ? "text-decoration-line-through text-dark"
-                                                  : ""
-                                              }`}
-                                            >
-                                              {task.allocated_time}
-                                            </td>
+                                                {task.allocated_time}
+                                              </td>
                                             </tr>
                                           )
                                         )}

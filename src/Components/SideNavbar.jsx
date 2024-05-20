@@ -118,7 +118,7 @@ const SideNavbar = () => {
                       <p>User Master</p>
                     </Link>
                   </li>
-                  
+
                   {/* <li className="nav-item btnhovergrey mt-3">
                     <Link
                       className={`nav-link text-white ${
@@ -155,11 +155,12 @@ const SideNavbar = () => {
                   <li className="nav-item btnhovergrey mt-3">
                     <Link
                       className={`nav-link text-white ${
-                        window.location.pathname === "/projectplan"
+                        window.location.pathname ===
+                        `/projectplan/:project_id=null`
                           ? "bg-cyan"
                           : ""
                       }`}
-                      to="/projectplan"
+                      to="/projectplan/?project_id=null"
                     >
                       <FontAwesomeIcon
                         className="nav-icon"
@@ -173,8 +174,7 @@ const SideNavbar = () => {
                 <>
                   {role === "employee" ? (
                     <>
-                    
-                      <li className="nav-item btnhovergrey mt-3" >
+                      <li className="nav-item btnhovergrey mt-3">
                         <Link
                           className={`nav-link text-white ${
                             window.location.pathname === "/plan"
@@ -217,36 +217,35 @@ const SideNavbar = () => {
                           {/* <FontAwesomeIcon icon={faChevronRight} className="right" /> */}
                         </a>
                         {/* <ul className="nav nav-treeview mt-3"> */}
-                          <div>
-                            <li className="nav-item">
-                              <Link
-                                className={`nav-link text-white ${
-                                  window.location.pathname ===
-                                  "/reportproject-wise"
-                                    ? "bg-cyan"
-                                    : ""
-                                }`}
-                                to="/reportproject-wise"
-                              >
-                                <i className="far fa-circle nav-icon" />
-                                <p>Project-wise</p>
-                              </Link>
-                            </li>
-                            <li className="nav-item">
-                              <Link
-                                to="/reportdate-wise"
-                                className={`nav-link text-white ${
-                                  window.location.pathname ===
-                                  "/reportdate-wise"
-                                    ? "bg-cyan"
-                                    : ""
-                                }`}
-                              >
-                                <i className="far fa-circle nav-icon" />
-                                <p>Date-wise</p>
-                              </Link>
-                            </li>
-                          </div>
+                        <div>
+                          <li className="nav-item">
+                            <Link
+                              className={`nav-link text-white ${
+                                window.location.pathname ===
+                                "/reportproject-wise"
+                                  ? "bg-cyan"
+                                  : ""
+                              }`}
+                              to="/reportproject-wise"
+                            >
+                              <i className="far fa-circle nav-icon" />
+                              <p>Project-wise</p>
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link
+                              to="/reportdate-wise"
+                              className={`nav-link text-white ${
+                                window.location.pathname === "/reportdate-wise"
+                                  ? "bg-cyan"
+                                  : ""
+                              }`}
+                            >
+                              <i className="far fa-circle nav-icon" />
+                              <p>Date-wise</p>
+                            </Link>
+                          </li>
+                        </div>
                         {/* </ul> */}
                       </li>
                       <li className="nav-item fixed-bottom ">

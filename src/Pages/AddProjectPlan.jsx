@@ -284,7 +284,7 @@ const AddProjectPlan = () => {
       centered: true,
       async onOk() {
         try {
-          const response =await axios.delete(
+          const response = await axios.delete(
             `http://localhost:8000/api/module/task/${record.task_id}`
           );
           notification.success({
@@ -829,7 +829,7 @@ const AddProjectPlan = () => {
 
                 <Col>
                   <NavLink
-                    to={`/projectplan`}
+                    to={`/projectplan/?project_id=${project_id}`}
                     className=" d-flex align-items-center"
                   >
                     <ArrowLeftOutlined style={{ fontSize: "1.5rem" }} />

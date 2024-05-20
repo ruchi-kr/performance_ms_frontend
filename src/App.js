@@ -92,8 +92,8 @@ function App() {
             <Route path="/accessdenied" element={<AccessDenied />} />
 
             {/* project plan route */}
-            <Route path="/projectplan" element={<ProjectPlan2 />} />
-            <Route path='/projectplan2' element={<ProjectPlan/>}/>
+            <Route path="/projectplan/" element={<ProjectPlan2 />} />
+            <Route path='/projectplan2/' element={<ProjectPlan/>}/>
 
             <Route path="/test" element={<Test />} />
           </Routes>
