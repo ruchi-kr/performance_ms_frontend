@@ -338,6 +338,7 @@ const AddProjectPlan = () => {
       module_id: record.module_id,
       task_name: record.task_name,
       allocated_time: record.allocated_time,
+      description: record.description,
     });
     setIsEditingTask(true);
   };
@@ -612,7 +613,7 @@ const AddProjectPlan = () => {
     {
       title: (
         <div>
-          <p style={{marginTop:"1rem"}}>S.No.</p>
+          <p style={{ marginTop: "1rem" }}>S.No.</p>
           {expandedRowKeys.length === 0 ? (
             <PlusCircleOutlined
               onClick={handleExpandAll}
@@ -812,6 +813,13 @@ const AddProjectPlan = () => {
       ),
       // render: (text) => `${text ? text : "-"}`,
     },
+    {
+      title: <div className="text-primary">Description</div>,
+      dataIndex: "description",
+      key: "description",
+
+      // render: (text) => `${text ? text : "-"}`,
+    },
 
     {
       title: <div className="text-primary">Allocated Time (hrs)</div>,
@@ -974,7 +982,7 @@ const AddProjectPlan = () => {
                   />
                 </Col>
               </Row>
-             
+
               {/* <Table
                 rowKey={(record) => record.module_id}
                 columns={columns}
@@ -1325,15 +1333,15 @@ const AddProjectPlan = () => {
                           onFinishFailed={onFinishFailedTask}
                           autoComplete="on"
                           style={{ paddingTop: "2rem" }}
-                          initialValues={{
-                            fullstack: { count: 0, days: 0 },
-                            frontend: { count: 0, days: 0 },
-                            backend: { count: 0, days: 0 },
-                            qa: { count: 0, days: 0 },
-                            pm: { count: 0, days: 0 },
-                            design: { count: 0, days: 0 },
-                            special: { count: 0, days: 0 },
-                          }}
+                          // initialValues={{
+                          //   fullstack: { count: 0, days: 0 },
+                          //   frontend: { count: 0, days: 0 },
+                          //   backend: { count: 0, days: 0 },
+                          //   qa: { count: 0, days: 0 },
+                          //   pm: { count: 0, days: 0 },
+                          //   design: { count: 0, days: 0 },
+                          //   special: { count: 0, days: 0 },
+                          // }}
                         >
                           <Row gutter={16}>
                             <Col span={24}>
@@ -1413,7 +1421,6 @@ const AddProjectPlan = () => {
                                   min={0}
                                   max={500}
                                   style={{ width: "80%" }}
-                                  disabled
                                 />
                               </Form.Item>
                             </Col>
@@ -1426,7 +1433,7 @@ const AddProjectPlan = () => {
                                 rules={[
                                   {
                                     required: false,
-                                    message: "Please provide description!",
+                                    message: "Please provide task description!",
                                   },
                                 ]}
                               >
@@ -1442,21 +1449,8 @@ const AddProjectPlan = () => {
                               </Form.Item>
                             </Col>
                           </Row>
-                          <Text strong>
-                            Add Team Members (Number of employees / Days )
-                          </Text>
-                          <Row>
-                            {/* <Form.Item
-                              label="Team Members"
-                              name="team"
-                              rules={[
-                                {
-                                  required: false,
-                                  message:
-                                    "Please enter number of fullstack devlopers!",
-                                },
-                              ]}
-                            > */}
+
+                          {/* <Row>
                             <Row gutter={12}>
                               <Col span={3}>
                                 <Form.Item
@@ -1931,9 +1925,8 @@ const AddProjectPlan = () => {
                                 </Form.Item>
                               </Col>
                             </Row>
-                            {/* </Form.Item> */}
-                          </Row>
-                          <Row gutter={8}>
+                          </Row> */}
+                          {/* <Row gutter={8}>
                             <Col span={4}>
                               <Form.Item
                                 label="Man hours"
@@ -1951,7 +1944,7 @@ const AddProjectPlan = () => {
                                 Calculate Man Hours
                               </Button>
                             </Col>
-                          </Row>
+                          </Row> */}
 
                           <Row justify="start">
                             <Col>
@@ -1966,13 +1959,7 @@ const AddProjectPlan = () => {
                                   >
                                     Cancel
                                   </Button>
-                                  <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    disabled={
-                                      totalManHours === 0 || !totalManHours
-                                    }
-                                  >
+                                  <Button type="primary" htmlType="submit">
                                     {isAddingTask ? "Submit" : "Update"}
                                   </Button>
                                 </div>
