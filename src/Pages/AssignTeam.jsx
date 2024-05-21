@@ -1,21 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import SideNavbar from "../Components/SideNavbar.jsx";
 import Header from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
 import { getAllEmployees } from "../Config.js";
 import { toast } from "react-toastify";
-import { Col, Form, Input, Modal, Row, Table, Select, Button, Tag } from "antd";
+import {
+  Col,
+  Form,
+  Typography,
+  Input,
+  Modal,
+  Row,
+  Table,
+  Select,
+  Button,
+  Tag,
+  Space,
+} from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
+  
+  SearchOutlined,
   ExclamationCircleFilled,
   PlusOutlined,
 } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import { formatDate } from "../utils/dateFormatter.js";
+import Highlighter from 'react-highlight-words';
 const { Option } = Select;
 const { confirm } = Modal;
+const { Title } = Typography;
 
 const AssignTeam = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -29,11 +45,27 @@ const AssignTeam = () => {
   const [formDisabled, setFormDisabled] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isAdding, setIsAdding] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [managerList, setManagerList] = useState([]);
   const user = JSON.parse(sessionStorage.getItem("user"));
   const managerEmployeeId = user.employee_id;
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  //States for searching in table
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText("");
+  };
 
   const fetchAll = async () => {
     const resp = await axios.get(
@@ -98,13 +130,69 @@ const AssignTeam = () => {
     setModalVisible(true);
     setIsEditing(true);
     setIsAdding(false);
+    setSelectedRowKeys(employee.employee_id);
     console.log("data for editing", employee);
     form.setFieldsValue({
       project_id: employee.project_id,
       employee_id: employee.employee_id,
     });
   };
+  const onFinish = (values) => {
+    console.log("form values", { ...values, employee_id: selectedRowKeys });
+    if (isAdding && !isEditing) {
+      console.log("Adding values");
+      form
+        .validateFields()
+        .then((values) => {
+          try {
+            console.log("form data", values);
+            axios.post(
+              `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
+              { ...values, employee_id: selectedRowKeys }
+            );
+            setIsAdding(true);
+            setSelectedRowKeys([]);
 
+            setModalVisible(false);
+            form.resetFields();
+            fetchAll();
+          } catch (error) {
+            console.log(error);
+          }
+        })
+        .catch((errorInfo) => {
+          console.log("Validation failed:", errorInfo);
+        });
+    } else if (!isAdding && isEditing) {
+      console.log("editing values", values.team_id);
+      form
+        .validateFields()
+        .then((values) => {
+          try {
+            console.log("team id", editingId);
+            console.log("form data", values);
+            axios.patch(
+              `http://localhost:8000/api/user/project/teams/${editingId}`,
+              {
+                ...values,
+                reporting_manager_id: managerEmployeeId,
+                employee_id: selectedRowKeys,
+              }
+            );
+            fetchAll();
+            setIsEditing(false);
+            form.resetFields();
+            setSelectedRowKeys([]);
+            setModalVisible(false);
+          } catch (error) {
+            console.log(error);
+          }
+        })
+        .catch((errorInfo) => {
+          console.log("Validation failed:", errorInfo);
+        });
+    }
+  };
   // create project
   const teamFormSubmit = (values) => {
     if (isAdding && !isEditing) {
@@ -178,9 +266,8 @@ const AssignTeam = () => {
         onCancel() {},
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-   
   };
 
   const openTeamAdd = () => {
@@ -192,6 +279,155 @@ const AssignTeam = () => {
     // SetProjectId(null);
     setFormDisabled(false);
   };
+  //handle search in table
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: "block",
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1677ff" : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: "#ffc069",
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ""}
+        />
+      ) : (
+        text
+      ),
+  });
+
+  //Table column
+  const columns = [
+   
+    {
+      title: "Name",
+      dataIndex: "name",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      ...getColumnSearchProps('name'),
+      render: (text) => <span className="text-capitalize">{text}</span>,
+    },
+    {
+      title: "Job Role",
+      dataIndex: "job_role_name",
+      sorter: (a, b) => a.job_role_name.localeCompare(b.job_role_name),
+      ...getColumnSearchProps('job_role_name'),
+      render: (text) => <p className="text-capitalize">{text}</p>,
+    },
+    {
+      title: "Year of Exp.",
+      dataIndex: "experience",
+      sorter: {
+        compare: (a, b) => a.experience - b.experience,
+        multiple: 1,
+      },
+    //   sortDirections: ['descend', 'ascend'],
+    },
+  ];
+
+  const onSelectChange = (newSelectedRowKeys) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const start = () => {
+    // ajax request after empty completing
+    console.log("employees selected", selectedRowKeys);
+    setTimeout(() => {
+      setSelectedRowKeys([]);
+    }, 1000);
+  };
+  const hasSelected = selectedRowKeys.length > 0;
 
   return (
     <>
@@ -204,7 +440,7 @@ const AssignTeam = () => {
             <div className="row my-5">
               <div className="col-12 mx-auto">
                 <div className="d-flex justify-content-between">
-                  <h3 className="text-primary">Teams Details</h3>
+                  <h3 className="text-primary">Teams Details New</h3>
 
                   <button
                     className="btn btn-sm btn-info d-flex align-items-center"
@@ -215,7 +451,7 @@ const AssignTeam = () => {
                 </div>
                 <hr className="bg-primary border-4" />
                 {/* modal */}
-                <Modal
+                {/* <Modal
                   title={
                     editingEmployee ? "Edit Team Members" : "Add Team Members"
                   }
@@ -296,9 +532,8 @@ const AssignTeam = () => {
                                 key={emp.employee_id}
                                 value={emp.employee_id}
                                 label={emp.name}
-                                
                               >
-                                {emp.name}-({emp.job_role_name})
+                                {emp.name}
                               </Option>
                             ))}
                           </Select>
@@ -306,7 +541,7 @@ const AssignTeam = () => {
                       </Col>
                     </Row>
                   </Form>
-                </Modal>
+                </Modal> */}
                 <table className="table table-striped table-hover mt-5">
                   <thead>
                     <tr>
@@ -374,6 +609,103 @@ const AssignTeam = () => {
                     })}
                   </tbody>
                 </table>
+                <div>
+                  <Title level={3} className="text-primary">
+                    {isEditing ? "Edit Team Members" : "Add Team Members"}
+                  </Title>
+                  <Form onFinish={onFinish} form={form} layout="vertical">
+                    <Row>
+                      <Col span={8}>
+                        <Form.Item
+                          name="project_id"
+                          label={<span className="text-info">Project</span>}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Project Name is required",
+                            },
+                          ]}
+                        >
+                          <Select
+                            allowClear
+                            placeholder="Select"
+                            style={{ width: "100%" }}
+                            className="rounded-2"
+                          >
+                            {projectData.map((project) => (
+                              <Option
+                                key={project.project_id}
+                                value={project.project_id}
+                                label={project.project_name}
+                              >
+                                {project.project_name}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+
+                    <Form.Item label={<span className="text-info">Select Employees</span>}>
+                      <Table
+                        rowKey="employee_id"
+                        rowSelection={rowSelection}
+                        columns={columns}
+                        
+                        size={"small"}
+                        dataSource={allEmployeeData}
+                        // style={{ width: '60%',margin:"auto" }}
+
+                      />
+                    </Form.Item>
+                    <Form.Item>
+                      <Row>
+                        <span
+                          style={{
+                            marginLeft: 0,
+                            marginBottom: "0.2rem",
+                          }}
+                        >
+                          {hasSelected
+                            ? `Selected ${selectedRowKeys.length} items`
+                            : ""}
+                        </span>
+                      </Row>
+                      <Row>
+                        <Button
+                          type="primary"
+                          htmlType="submit"
+                          disabled={!hasSelected}
+                        >
+                          Submit
+                        </Button>
+                        <Button
+                          type="primary"
+                          danger
+                          style={{ marginLeft: "1rem" }}
+                          //   disabled={!hasSelected}
+                          onClick={() => {
+                            if (isEditing) {
+                              console.log("cancelling editing form");
+                              setSelectedRowKeys([]);
+                              setIsEditing(false);
+                              setIsAdding(true);
+                              form.resetFields();
+                            } else {
+                              console.log("cancelling adding form");
+                              setSelectedRowKeys([]);
+                              setIsEditing(false);
+                              setIsAdding(true);
+                              form.resetFields();
+                            }
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </Row>
+                    </Form.Item>
+                  </Form>
+                </div>
               </div>
             </div>
           </div>

@@ -53,7 +53,6 @@ function App() {
 
             <Route path="/modulemaster" element={<ModuleMaster />} />
             <Route path="/assignteam" element={<AssignTeam />}></Route>
-            <Route path="/assignteam/new" element={<AssignTeamNew />}></Route>
             <Route
               path="/view/teammember/tasks/:employee_id"
               element={<ManagerViewTask />}
