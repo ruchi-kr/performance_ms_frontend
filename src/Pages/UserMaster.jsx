@@ -19,6 +19,7 @@ import {
   DeleteOutlined,
   EyeOutlined,
   ArrowUpOutlined,
+  EyeInvisibleOutlined, EyeTwoTone 
 } from "@ant-design/icons";
 const { Option } = Select;
 const { Search } = Input;
@@ -189,7 +190,8 @@ const UserMaster = () => {
       status: user.status,
       employee_id: user.employee_name,
       email_id: user.email_id,
-      role: user.role,
+      role: user.user_type === 1 ? "" : user.role,
+      // role: user.role,
     });
   };
 
@@ -264,11 +266,11 @@ const UserMaster = () => {
                 <hr className="bg-primary border-4" />
                 <div className=" col-2 flex-end">
                   <label className="text-capitalize fw-bold text-info">
-                    Search by email
+                    Search by email or role
                   </label>
 
                   <Search
-                    placeholder="search by username, email or role"
+                    placeholder="search by email or role"
                     allowClear
                     // onSearch={onSearch}
                     style={{
@@ -455,6 +457,7 @@ const UserMaster = () => {
                             onChange={(value) => {
                               if (value == "1") {
                                 setAdminList(true);
+                                userForm.setFieldsValue({ role: "" });
                               } else {
                                 setAdminList(false);
                               }
@@ -573,7 +576,7 @@ const UserMaster = () => {
                             },
                           ]}
                         >
-                          <Input type="password" placeholder="password" />
+                          <Input.Password  placeholder="password"  iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}/>
                         </Form.Item>
                       </Col>
                     </Row>
