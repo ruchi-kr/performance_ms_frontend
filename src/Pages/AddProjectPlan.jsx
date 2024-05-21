@@ -57,7 +57,8 @@ const timezone = require("dayjs/plugin/timezone");
 const { Search } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
-const { Title } = Typography;
+const { Title, Text } = Typography;
+const { TextArea } = Input;
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const AddProjectPlan = () => {
@@ -384,9 +385,9 @@ const AddProjectPlan = () => {
         console.log("get field values all", formTask.getFieldsValue());
 
         await axios.post("http://localhost:8000/api/module/task", {
-            ...values,
-            stage: stage,
-          });
+          ...values,
+          stage: stage,
+        });
         formTask.resetFields(["task_name", "allocated_time"]);
         getModuleListWithTasks();
         // handleReset();
@@ -544,8 +545,8 @@ const AddProjectPlan = () => {
       pmmanhrs +
       specialmanhrs;
     console.log("total", totalManHours);
-    formTask.setFieldValue("manhours",totalManHours)
-    formTask.setFieldValue("allocated_time",totalManHours)
+    formTask.setFieldValue("manhours", totalManHours);
+    formTask.setFieldValue("allocated_time", totalManHours);
     setTotalmanHours(totalManHours);
   };
 
@@ -835,9 +836,7 @@ const AddProjectPlan = () => {
                   </Title>
                   <Title level={4}>
                     Stage -{" "}
-                    <span className="text-info text-capitalize">
-                      {stage}
-                    </span>
+                    <span className="text-info text-capitalize">{stage}</span>
                   </Title>
                 </Col>
               </Row>
@@ -1224,7 +1223,6 @@ const AddProjectPlan = () => {
                             pm: { count: 0, days: 0 },
                             design: { count: 0, days: 0 },
                             special: { count: 0, days: 0 },
-                           
                           }}
                         >
                           <Row gutter={16}>
@@ -1310,6 +1308,33 @@ const AddProjectPlan = () => {
                               </Form.Item>
                             </Col>
                           </Row>
+                          <Row>
+                            <Col span={12}>
+                              <Form.Item
+                                label="Description"
+                                name="description"
+                                rules={[
+                                  {
+                                    required: false,
+                                    message: "Please provide description!",
+                                  },
+                                ]}
+                              >
+                                <TextArea
+                                  showCount
+                                  maxLength={500}
+                                  placeholder="Enter description"
+                                  style={{
+                                    height: 120,
+                                    resize: "none",
+                                  }}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Text strong>
+                            Add Team Members (Number of employees / Days )
+                          </Text>
                           <Row>
                             {/* <Form.Item
                               label="Team Members"
@@ -1831,7 +1856,13 @@ const AddProjectPlan = () => {
                                   >
                                     Cancel
                                   </Button>
-                                  <Button type="primary" htmlType="submit">
+                                  <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    disabled={
+                                      totalManHours === 0 || !totalManHours
+                                    }
+                                  >
                                     {isAddingTask ? "Submit" : "Update"}
                                   </Button>
                                 </div>

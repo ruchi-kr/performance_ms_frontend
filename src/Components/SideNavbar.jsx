@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
@@ -153,7 +153,7 @@ const SideNavbar = () => {
                   </li>
 
                   <li className="nav-item btnhovergrey mt-3">
-                    <Link
+                    <NavLink
                       className={`nav-link text-white ${
                         window.location.pathname ===
                         `/projectplan/:project_id=null`
@@ -161,13 +161,14 @@ const SideNavbar = () => {
                           : ""
                       }`}
                       to="/projectplan/?project_id=null"
+                      onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
                     >
                       <FontAwesomeIcon
                         className="nav-icon"
                         icon={faFolderOpen}
                       />
                       <p>Project Plan</p>
-                    </Link>
+                    </NavLink>
                   </li>
                 </>
               ) : (
