@@ -521,7 +521,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                         All.hrs<span style={{ color: "red" }}>*</span>
                       </th>
                       {window.location.pathname !== "/plan" &&
-                      dayjs(currentTime).hour() > 12 ? (
+                      dayjs(currentTime).hour() >= 12 ? (
                         <>
                           <th className="form-label text-info fs-6 text-center lh-0">
                             Act.hrs
