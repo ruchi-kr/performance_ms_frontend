@@ -6,6 +6,8 @@ import {
   EditOutlined,
   DeleteOutlined,
   InfoCircleOutlined,
+  PlusCircleOutlined,
+  MinusCircleOutlined,
   PlusOutlined,
   SettingOutlined,
   ExclamationCircleFilled,
@@ -52,6 +54,7 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import styles from "./AddProjectPlan.module.css";
+import { render } from "@testing-library/react";
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
 const { Search } = Input;
@@ -88,6 +91,7 @@ const AddProjectPlan = () => {
   const [projectName, setProjectName] = useState("");
   const [moduleList, setModuleList] = useState([]);
   const [totalManHours, setTotalmanHours] = useState(0);
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [pagination, setPagination] = useState({
     totalRecords: 0,
     pageSize: 10,
@@ -101,6 +105,16 @@ const AddProjectPlan = () => {
   const queryParams = new URLSearchParams(location.search);
   const project_id = queryParams.get("project_id");
   const stage = queryParams.get("stage");
+
+  //Epand all module cols
+  const handleExpandAll = () => {
+    const allRowKeys = moduleList.map((record) => record.module_id);
+    setExpandedRowKeys(allRowKeys);
+  };
+
+  const handleCollapseAll = () => {
+    setExpandedRowKeys([]);
+  };
 
   const getProjects = async (value) => {
     try {
@@ -572,8 +586,56 @@ const AddProjectPlan = () => {
   };
 
   const columns = [
+    // {
+    //   title: (
+    //     <div>
+    //       <Button
+    //         onClick={handleExpandAll}
+    //         style={{
+    //           position: "absolute",
+    //           top: "50%",
+    //           left: "50%",
+    //           transform: "translate(-10rem )",
+    //         }}
+    //       >
+    //         Expand All
+    //       </Button>
+    //       <Button onClick={handleCollapseAll}>Collapse All</Button>
+    //     </div>
+    //   ),
+    //   dataIndex: "expandCollapseButtons", // Data index that doesn't exist in dataSource
+    //   key: "expandCollapseButtons",
+    //   render: () => null, // Ensure this column renders nothing in the rows
+    //   width: "20%", // Adjust the width as needed
+    //   align: "center",
+    // },
     {
-      title: "S.No.",
+      title: (
+        <div>
+          <p style={{marginTop:"1rem"}}>S.No.</p>
+          {expandedRowKeys.length === 0 ? (
+            <PlusCircleOutlined
+              onClick={handleExpandAll}
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-4rem,-0.5rem )",
+              }}
+            />
+          ) : (
+            <MinusCircleOutlined
+              onClick={handleCollapseAll}
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-4rem,-0.5rem )",
+              }}
+            />
+          )}
+        </div>
+      ),
       dataIndex: "module_id",
       key: "module_id",
       render: (_, record, index) => {
@@ -715,7 +777,7 @@ const AddProjectPlan = () => {
       ),
     },
   ];
-
+  const taskCounters = {};
   const taskColumn = [
     {
       title: <div className="text-primary">S.No</div>,
@@ -723,12 +785,22 @@ const AddProjectPlan = () => {
       key: "task_id",
       align: "center",
       width: "5%",
+      // render: (_, record, index) => {
+      //   // Calculate the serial number based on the current page and the index of the item
+      //   if (record.task_id === null) {
+      //     return "-";
+      //   }
+      //   return index + 1;
+      // },
       render: (_, record, index) => {
-        // Calculate the serial number based on the current page and the index of the item
-        if (record.task_id === null) {
-          return "-";
-        }
-        return index + 1;
+        // Get the module serial number (S.No.) from the index of the record in the module list
+        const moduleNumber =
+          moduleList.findIndex(
+            (module) => module.module_id === record.module_id
+          ) + 1;
+        // Increment the task counter for the current module
+        const taskNumber = index + 1;
+        return `${moduleNumber}.${taskNumber}`;
       },
     },
     {
@@ -902,6 +974,32 @@ const AddProjectPlan = () => {
                   />
                 </Col>
               </Row>
+             
+              {/* <Table
+                rowKey={(record) => record.module_id}
+                columns={columns}
+                dataSource={moduleList}
+                loading={loading}
+                bordered
+                size="large"
+                pagination={false}
+                style={{
+                  marginBottom: "1rem",
+                }}
+                className="custom-table"
+                expandable={{
+                  expandedRowRender: (record) => (
+                    <Table
+                      rowKey={(task) => task.task_id}
+                      columns={taskColumn}
+                      dataSource={record.tasks} // Use the tasks array from the record
+                      pagination={false} // Disable pagination for nested table
+                      size="small"
+                      style={{ width: "90%" }}
+                    />
+                  ),
+                }}
+              /> */}
               <Table
                 rowKey={(record) => record.module_id}
                 columns={columns}
@@ -925,6 +1023,18 @@ const AddProjectPlan = () => {
                       style={{ width: "90%" }}
                     />
                   ),
+                  expandedRowKeys: expandedRowKeys,
+                  onExpand: (expanded, record) => {
+                    setExpandedRowKeys((prevExpandedRowKeys) => {
+                      if (expanded) {
+                        return [...prevExpandedRowKeys, record.module_id];
+                      } else {
+                        return prevExpandedRowKeys.filter(
+                          (key) => key !== record.module_id
+                        );
+                      }
+                    });
+                  },
                 }}
               />
 
