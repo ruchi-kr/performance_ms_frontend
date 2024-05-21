@@ -98,7 +98,7 @@ export default function Forgot() {
           >
                   <div className="d-flex justify-content-center">
                   </div>
-                  <p className='text-center text-info' style={{ fontSize: '25px', fontWeight: '600', lineHeight: '40px' }}><span className='textcolorblue'>Recover your</span><br /><span className='textcolor'>account</span></p>
+                  <p className='text-center' style={{ fontSize: '25px', fontWeight: '600', lineHeight: '40px' }}><span className='text-info'>Recover your</span><br /><span className='text-dark'>Account</span></p>
                   {/* <p className='textgrey text-center'>Upon entering the registered email address you will receive an OTP to recover your account.</p> */}
                  
                   <Form layout="vertical">
