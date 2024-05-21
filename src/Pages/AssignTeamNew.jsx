@@ -33,7 +33,7 @@ const { Option } = Select;
 const { confirm } = Modal;
 const { Title } = Typography;
 
-const AssignTeam = () => {
+const AssignTeamNew = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [teamsData, setTeamsData] = useState(null);
   const [modifiedTeamsData, setModifiedTeamsData] = useState(null);
@@ -717,4 +717,4 @@ const AssignTeam = () => {
   );
 };
 
-export default AssignTeam;
+export default AssignTeamNew;

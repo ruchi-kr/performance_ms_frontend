@@ -28,6 +28,7 @@ import AddProjectPlan from "./Pages/AddProjectPlan";
 import ProjectPlan from "./PlanPages/ProjectPlan";
 import ProjectPlan2 from "./PlanPages/ProjectPlan2";
 import AddModuleTasks from "./Pages/AddModuleTasks";
+import AssignTeamNew from "./Pages/AssignTeamNew";
 
 function App() {
   const status = sessionStorage.getItem("status");
@@ -93,7 +94,7 @@ function App() {
 
             {/* project plan route */}
             <Route path="/projectplan/" element={<ProjectPlan2 />} />
-            <Route path='/projectplan2/' element={<ProjectPlan/>}/>
+            <Route path="/projectplan2/" element={<ProjectPlan />} />
 
             <Route path="/test" element={<Test />} />
           </Routes>

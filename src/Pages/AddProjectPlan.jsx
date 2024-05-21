@@ -808,6 +808,7 @@ const AddProjectPlan = () => {
       title: <div className="text-primary">Task Name</div>,
       dataIndex: "task_name",
       key: "task_name",
+      width:"20%",
       render: (text) => (
         <span className="text-capitalize">{text ? text : "-"}</span>
       ),
@@ -825,9 +826,10 @@ const AddProjectPlan = () => {
       title: <div className="text-primary">Allocated Time (hrs)</div>,
       dataIndex: "allocated_time",
       key: "allocated_time",
-      width: "15%",
-      align: "center",
+      width: "10%",
+      align: "left",
       render: (text) => `${text ? `${text} hrs` : "-"}`,
+      
     },
     {
       title: "Module_id",
@@ -841,7 +843,7 @@ const AddProjectPlan = () => {
       dataIndex: "action",
       align: "center",
       key: "action",
-      width: "20%",
+      width: "15%",
       // render: (_, record) => (
       //   <div>
 
@@ -1028,6 +1030,7 @@ const AddProjectPlan = () => {
                       dataSource={record.tasks} // Use the tasks array from the record
                       pagination={false} // Disable pagination for nested table
                       size="small"
+                      bordered  
                       style={{ width: "90%" }}
                     />
                   ),
