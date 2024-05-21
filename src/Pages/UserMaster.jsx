@@ -24,12 +24,12 @@ const { Option } = Select;
 const { Search } = Input;
 
 const UserMaster = () => {
-// for admin role options
+  // for admin role options
   const [adminList, setAdminList] = useState(false);
 
   // for autofill username and password
-  const[autousername, setAutousername] = useState("");
-  const[autopassword, setAutopassword] = useState("");
+  const [autousername, setAutousername] = useState("");
+  const [autopassword, setAutopassword] = useState("");
 
   // for search
   const [search, setSearch] = useState("");
@@ -48,7 +48,7 @@ const UserMaster = () => {
   const getAllUsersHandler = async () => {
     try {
       const response = await axios.get(
-        `${getAllUsers}?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=username&name=${search}&email=${search}&role=${search}`
+        `${getAllUsers}?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=email_id&name=${search}&email=${search}&role=${search}`
       );
       setAllUserData(response.data.data);
       console.log("user details data", response.data);
@@ -122,11 +122,10 @@ const UserMaster = () => {
     //creating a function for deleting data
     try {
       const response = await axios.delete(`${deleteUser}` + id); // deleting data from server
-      if(response.status===200){
+      if (response.status === 200) {
         toast.success(response.data.msg);
         window.location.reload();
       }
-    
     } catch (err) {
       console.log("error deleting user", err); //if error occurs then log it
       toast.error(err.response.data.error);
@@ -145,9 +144,9 @@ const UserMaster = () => {
     employee_id: "",
     user_type: "",
     status: "",
-    username: "",
+    // username: "",
     password: "",
-    // email_id:'',
+    email_id: "",
     role: "",
   };
 
@@ -168,12 +167,12 @@ const UserMaster = () => {
     setViewUser(user);
     setAdminList(true);
     userForm.setFieldsValue({
-      username: user.username,
+      // username: user.username,
       password: user.password,
       user_type: user.user_type === 1 ? "admin" : "general",
       status: user.status,
       employee_id: user.employee_name,
-      // email_id: user.email_id,
+      email_id: user.email_id,
       role: user.role,
     });
   };
@@ -184,12 +183,12 @@ const UserMaster = () => {
     setFormDisabled(false);
     setAdminList(false);
     userForm.setFieldsValue({
-      username: user.username,
+      // username: user.username,
       password: user.password,
       user_type: user.user_type === 1 ? "admin" : "general",
       status: user.status,
       employee_id: user.employee_name,
-      // email_id: user.email_id,
+      email_id: user.email_id,
       role: user.role,
     });
   };
@@ -265,7 +264,7 @@ const UserMaster = () => {
                 <hr className="bg-primary border-4" />
                 <div className=" col-2 flex-end">
                   <label className="text-capitalize fw-bold text-info">
-                    Search by name or email
+                    Search by email
                   </label>
 
                   <Search
@@ -281,7 +280,13 @@ const UserMaster = () => {
                 </div>
                 {/* modal */}
                 <Modal
-                  title={editingUser ? "Edit User" : viewUser ? "View User" : "Add User"}
+                  title={
+                    editingUser
+                      ? "Edit User"
+                      : viewUser
+                      ? "View User"
+                      : "Add User"
+                  }
                   visible={modalVisible}
                   onOk={userFormSubmit}
                   onCancel={() => {
@@ -317,7 +322,7 @@ const UserMaster = () => {
                             },
                           ]}
                         >
-                          <Select
+                          {/* <Select
                             showSearch
                             allowClear
                             placeholder="Select"
@@ -342,19 +347,68 @@ const UserMaster = () => {
                                 {employer.name}
                               </Option>
                             ))}
+                          </Select> */}
+                          <Select
+                            showSearch
+                            allowClear
+                            placeholder="Select"
+                            optionFilterProp="children"
+                            filterOption={filterOption}
+                            onChange={(value) => {
+                              setAutousername(value);
+                              // Find the selected employer from the employerList
+                              const selectedEmployer = employerList.find(
+                                (employer) => employer.employee_id === value
+                              );
+                              // If employer is found, set the email_id field to the corresponding email
+                              if (selectedEmployer) {
+                                userForm.setFieldsValue({
+                                  email_id: selectedEmployer.email,
+                                });
+                                // userForm.setFieldsValue({ password: selectedEmployer.dob.slice(0,10) });
+                                const date = new Date(
+                                  selectedEmployer.dob.slice(0, 10)
+                                );
+                                const formattedDate =
+                                  date.toLocaleDateString("en-GB"); // 'en-GB' for dd-mm-yyyy format
+                                userForm.setFieldsValue({
+                                  password: formattedDate,
+                                });
+                              }
+                            }}
+                            style={{ width: "100%" }}
+                            className="rounded-2"
+                            disabled={editingUser}
+                          >
+                            <Option value="" disabled>
+                              Select
+                            </Option>
+                            {employerList.map((employer, index) => (
+                              <Option
+                                key={index}
+                                value={employer.employee_id}
+                                label={employer.name}
+                              >
+                                {employer.name}
+                              </Option>
+                            ))}
                           </Select>
                         </Form.Item>
                       </Col>
-                     
 
-                      {/* <Col span={12}>
-                                                <Form.Item name="email_id" label={<span className='text-info'>Email</span>}
-
-                                                    rules={[
-                                                        { required: false, message: 'Email is required' },
-                                                    ]}
-                                                >
-                                                    <Select
+                      <Col span={12}>
+                        <Form.Item
+                          name="email_id"
+                          label={<span className="text-info">Email</span>}
+                          rules={[
+                            { required: true, message: "Email is required" },
+                            {
+                              type: "email",
+                              message: "Please enter a valid email",
+                            },
+                          ]}
+                        >
+                          {/* <Select
                                                         showSearch
                                                         allowClear
                                                         placeholder="Select"
@@ -376,10 +430,11 @@ const UserMaster = () => {
                                                                 {employer.email}
                                                             </Option>
                                                         ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </Col> */}
-                     
+                                                    </Select> */}
+                          <Input />
+                        </Form.Item>
+                      </Col>
+
                       <Col span={12}>
                         <Form.Item
                           name="user_type"
@@ -400,8 +455,7 @@ const UserMaster = () => {
                             onChange={(value) => {
                               if (value == "1") {
                                 setAdminList(true);
-                              }         
-                              else{
+                              } else {
                                 setAdminList(false);
                               }
                             }}
@@ -433,14 +487,28 @@ const UserMaster = () => {
                             disabled={adminList}
                             // ||(editingUser && value == "1")
                           >
-                            <Option value="" disabled>Select</Option>
-                            <Option value="manager" className={ adminList ? "text-grey":"text-info "} disabled={adminList}>
+                            <Option value="" disabled>
+                              Select
+                            </Option>
+                            <Option
+                              value="manager"
+                              className={adminList ? "text-grey" : "text-info "}
+                              disabled={adminList}
+                            >
                               Manager
                             </Option>
-                            <Option value="employee" className={ adminList ? "text-grey":"text-info "} disabled={adminList}>
+                            <Option
+                              value="employee"
+                              className={adminList ? "text-grey" : "text-info "}
+                              disabled={adminList}
+                            >
                               Employee
                             </Option>
-                            <Option value="management" className={ adminList ? "text-grey":"text-info "} disabled={adminList}>
+                            <Option
+                              value="management"
+                              className={adminList ? "text-grey" : "text-info "}
+                              disabled={adminList}
+                            >
                               Management
                             </Option>
                           </Select>
@@ -476,7 +544,7 @@ const UserMaster = () => {
                           </Select>
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      {/* <Col span={12}>
                         <Form.Item
                           name="username"
                           label={<span className="text-info">Username</span>}
@@ -491,7 +559,7 @@ const UserMaster = () => {
                         >
                           <Input type="text" placeholder="username" value={autousername} />
                         </Form.Item>
-                      </Col>
+                      </Col> */}
                       <Col span={12}>
                         <Form.Item
                           name="password"
@@ -499,9 +567,9 @@ const UserMaster = () => {
                           rules={[
                             { required: true, message: "Password is required" },
                             {
-                              pattern: /^[@,&,.\-_\w\s]{8,20}$/,
+                              pattern: /^[/,@,&,.\-_\w\s]{8,20}$/,
                               message:
-                                "Please enter a valid Password (up to 8-20 characters, only @, &, , ., -, _ special characters are allowed)",
+                                "Please enter a valid Password (up to 8-20 characters, only @, &, /, , ., -, _ special characters are allowed)",
                             },
                           ]}
                         >
@@ -518,7 +586,7 @@ const UserMaster = () => {
                       <th scope="col">S.No.</th>
                       <th scope="col">
                         <div className="d-flex">
-                          <div>Username</div>
+                          <div>Email Id</div>
 
                           <ArrowUpOutlined
                             style={{ marginLeft: 18, fontSize: "1rem" }}
@@ -541,7 +609,7 @@ const UserMaster = () => {
                       return (
                         <tr key={data.user_id}>
                           <th scope="row">{index + 1}</th>
-                          <td>{data.username}</td>
+                          <td>{data.email_id}</td>
                           <td className="text-capitalize">{data.password}</td>
                           <td className="text-capitalize">
                             {data.user_type === 1 ? "admin" : "general"}

@@ -198,7 +198,7 @@ const Employee = () => {
       status: "",
       remarks: "",
       formDisabled: false, // Enable the newly added row
-      adhoc: 1,
+      adhoc: "",
     };
 
     // Update the task records with the new row
@@ -367,7 +367,7 @@ const Employee = () => {
 
   const handleProjectChange = (index, value) => {
     setMiscellaneous(false);
-    
+   setModule_id("");
     console.log("value**********", value);
     const updatedTaskRecords = [...taskRecords];
     
@@ -381,6 +381,7 @@ const Employee = () => {
     // setProject_id(value == "1" ? "" : value); 
     updatedTaskRecords[index].project_id = value;
     updatedTaskRecords[index].module_id = "";
+    updatedTaskRecords[index].task_id ="";
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
     // if(value=="miscellaneous"){
@@ -395,6 +396,9 @@ const Employee = () => {
     const updatedTaskRecords = [...taskRecords];
     updatedTaskRecords[index].module_id = value;
     updatedTaskRecords[index].task_id = "";
+
+    // localStorage.setItem(
+
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
     setModule_id(value);
@@ -576,6 +580,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               ref={projectRef}
                               showSearch
                               allowClear
+                              onClear={() => handleProjectChange(index, "")}
                               placeholder="Select Project"
                               optionFilterProp="children"
                               filterOption={(input, option) =>
@@ -631,6 +636,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               ref={moduleRef}
                               showSearch
                               allowClear
+                              onClear={() => handleModuleChange(index, "")}
                               placeholder="Select Module"
                               optionFilterProp="children"
                               filterOption={(input, option) =>

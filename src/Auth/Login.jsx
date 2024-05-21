@@ -11,7 +11,7 @@ export default function Login() {
     const navigate = useNavigate();
 
     const loginForm = {
-        username: '',
+        email_id: '',
         password: '',
     };
 
@@ -27,7 +27,7 @@ export default function Login() {
                 sessionStorage.setItem("token", result.data.result.token);
                 sessionStorage.setItem('user', JSON.stringify(result.data.result.user));
                 sessionStorage.setItem('id', JSON.stringify(result.data.result.user.id));
-                sessionStorage.setItem('username', JSON.stringify(result.data.result.user.username));
+                sessionStorage.setItem('email_id', JSON.stringify(result.data.result.user.email_id));
                 sessionStorage.setItem('user_type', JSON.stringify(result.data.result.user.user_type));
                 sessionStorage.setItem('role', JSON.stringify(result.data.result.user.role));
                 sessionStorage.setItem('status', JSON.stringify(result.data.result.user.status));
@@ -86,9 +86,9 @@ export default function Login() {
                         {({ handleSubmit, isSubmitting }) => (
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
-                                    <label htmlFor="username" className="form-label text-info">Username</label>
-                                    <Field type="text" name="username" id="username" className="form-control" />
-                                    <ErrorMessage name="username" component="div" className="error" style={{ color: "red" }} />
+                                    <label htmlFor="email_id" className="form-label text-info">Email</label>
+                                    <Field type="text" name="email_id" id="email_id" className="form-control" />
+                                    <ErrorMessage name="email_id" component="div" className="error" style={{ color: "red" }} />
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="password" className="form-label text-info">Password</label>

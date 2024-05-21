@@ -9,7 +9,7 @@ import { UserOutlined } from '@ant-design/icons';
 const Header = () => {
     let [username, SetUserName] = useState('');
     useEffect(function () {
-        const name = JSON.parse(sessionStorage.getItem('username'));
+        const name = JSON.parse(sessionStorage.getItem('email_id'));
         SetUserName(name)
     }, [])
     const navigate = useNavigate();
