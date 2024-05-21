@@ -367,15 +367,15 @@ const UserMaster = () => {
                                 userForm.setFieldsValue({
                                   email_id: selectedEmployer.email,
                                 });
-                                // userForm.setFieldsValue({ password: selectedEmployer.dob.slice(0,10) });
-                                const date = new Date(
-                                  selectedEmployer.dob.slice(0, 10)
-                                );
-                                const formattedDate =
-                                  date.toLocaleDateString("en-GB"); // 'en-GB' for dd-mm-yyyy format
-                                userForm.setFieldsValue({
-                                  password: formattedDate,
-                                });
+                                userForm.setFieldsValue({ password: selectedEmployer.dob.slice(0,10)});
+                                // const date = new Date(
+                                //   selectedEmployer.dob.slice(0, 10)
+                                // );
+                                // const formattedDate =
+                                //   date.toLocaleDateString("en-GB"); // 'en-GB' for dd-mm-yyyy format
+                                // userForm.setFieldsValue({
+                                //   password: formattedDate,
+                                // });
                               }
                             }}
                             style={{ width: "100%" }}

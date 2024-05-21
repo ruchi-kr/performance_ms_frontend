@@ -154,7 +154,7 @@ const SideNavbar = () => {
 
                   <li className="nav-item btnhovergrey mt-3">
                     <NavLink
-                      className={`nav-link text-white ${
+                      className={`nav-link text-white text-decoration-none ${
                         window.location.pathname ===
                         `/projectplan/:project_id=null`
                           ? "bg-cyan"
@@ -295,7 +295,7 @@ const SideNavbar = () => {
                           <p>Reports</p>
                           <i className="fas fa-angle-left right"></i>
                         </a>
-                        <ul className="nav nav-treeview mt-3">
+                        {/* <ul className="nav nav-treeview mt-3"> */}
                           <div>
                             <li className="nav-item">
                               <Link
@@ -340,7 +340,7 @@ const SideNavbar = () => {
                               </Link>
                             </li>
                           </div>
-                        </ul>
+                        {/* </ul> */}
                       </li>
                       <li className="nav-item fixed-bottom ">
                         <button
