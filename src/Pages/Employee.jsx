@@ -300,6 +300,18 @@ const Employee = () => {
         toast.error("Please fill required fields");
         return false;
       }
+      else if ((
+        !task.project_id ||
+        !task.module_id ||
+        !task.task_id ||
+        !task.allocated_time ||
+        !task.remarks ||
+        !task.actual_time ||
+        !task.status
+      ) && project_id!="1" && dayjs(currentTime).hour() >= 12){
+        toast.error("Please fill required fields");
+        return false;
+      }
       if (!task.status) {
         task.status = "notstarted";
       }
