@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
+import { NavLink } from "react-router-dom";
+// import { useHistory } from "react-router-dom";
 import {
   deleteProject,
   getAllProjects,
@@ -37,11 +39,13 @@ import "jspdf-autotable";
 import dayjs from "dayjs";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import TextArea from "antd/es/input/TextArea.js";
 const { Search } = Input;
 const { Option } = Select;
 const { confirm } = Modal;
 
 const ProjectMaster = () => {
+  // const history = useHistory();
   // for search by project name
   const [project, setProject] = useState("");
 
@@ -97,6 +101,7 @@ const ProjectMaster = () => {
     getAllProjectsHandler(currentPage);
   }, [project, pagination.currentPage, pagination.pageSize, sortOrder]);
 
+  const [projectId, setprojectId] = useState(null);
   // create project
   const projectFormSubmit = (values) => {
     projectForm
@@ -112,6 +117,7 @@ const ProjectMaster = () => {
             : `${createProject}`;
           const response = await axios.post(url, requestData, CONFIG_OBJ);
           if (response.status === 200) {
+            setprojectId(response.data.project_id);
             if (editingProject && editingProject.project_id !== null) {
               toast.success("Project Details Updated Successfully!");
             } else {
@@ -149,7 +155,7 @@ const ProjectMaster = () => {
   const deleteProjectHandler = async (id) => {
     //creating a function for deleting data
     try {
-      const response =await axios.delete(`${deleteProject}` + id, CONFIG_OBJ); // deleting data from server
+      const response = await axios.delete(`${deleteProject}` + id, CONFIG_OBJ); // deleting data from server
       if (response.status === 200) {
         toast.success(response.data.msg);
         window.location.reload(); //reloading the page
@@ -164,12 +170,14 @@ const ProjectMaster = () => {
   const [projectForm] = Form.useForm();
   let [project_id, SetProjectId] = useState(null);
   let [modalVisible, setModalVisible] = useState(false);
+  const [secondModalVisible, setSecondModalVisible] = useState(false);
   const [formDisabled, setFormDisabled] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [viewProject, setViewProject] = useState(null);
 
   const projectData = {
     project_name: "",
+    project_details: "",
     stage: "rfp",
     schedule_start_date: "",
     schedule_end_date: "",
@@ -192,6 +200,7 @@ const ProjectMaster = () => {
     projectForm.setFieldsValue({
       project_name: project.project_name,
       stage: project.stage,
+      project_details: project.project_details,
       schedule_start_date: dayjs(project.schedule_start_date), // Display only the date part
       schedule_end_date: dayjs(project.schedule_end_date), // Display only the date part
     });
@@ -199,10 +208,12 @@ const ProjectMaster = () => {
 
   const openProjectEdit = async (project) => {
     setEditingProject(project);
+    setSecondModalVisible(false);
     setModalVisible(true);
     setFormDisabled(false);
     projectForm.setFieldsValue({
       project_name: project.project_name,
+      project_details: project.project_details,
       stage: project.stage,
       schedule_start_date: dayjs(project.schedule_start_date), // Display only the date part
       schedule_end_date: dayjs(project.schedule_end_date), // Display only the date part
@@ -349,9 +360,24 @@ const ProjectMaster = () => {
                   </div>
                 </div>
                 <Modal
-                  title={editingProject ? "Edit Project" :viewProject ? "View Project" : "Add Project"}
+                  title={
+                    editingProject
+                      ? "Edit Project"
+                      : viewProject
+                      ? "View Project"
+                      : "Add Project"
+                  }
                   visible={modalVisible}
-                  onOk={projectFormSubmit}
+                  // onOk={projectFormSubmit}
+                  onOk={() => {
+                    projectFormSubmit();
+                    {
+                      !editingProject && !viewProject
+                        ? setSecondModalVisible(true)
+                        : setSecondModalVisible(false);
+                    }
+                    // setSecondModalVisible(true);
+                  }}
                   onCancel={() => {
                     setModalVisible(false);
                     setEditingProject(null);
@@ -389,7 +415,7 @@ const ProjectMaster = () => {
                             },
                           ]}
                         >
-                          <Input />
+                          <Input placeholder="Project Name" />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -501,7 +527,49 @@ const ProjectMaster = () => {
                         </Form.Item>
                       </Col>
                     </Row>
+                    <Row gutter={[8, 4]}>
+                      <Col span={24}>
+                        <Form.Item
+                          name="project_details"
+                          label={
+                            <span className="text-info text-capitalize">
+                              Project Description
+                            </span>
+                          }
+                        >
+                          <TextArea
+                            placeholder="Project Description"
+                            autoSize
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
                   </Form>
+                </Modal>
+
+                <Modal
+                  title=""
+                  visible={secondModalVisible}
+                  onOk={() => {
+                    setSecondModalVisible(false);
+
+                    setModalVisible(false);
+                    setEditingProject(null);
+                    setViewProject(null);
+                    // history.push(`/addprojectplan/?project_id=${project_id}&stage=rfp`);
+                    window.location.href = `/addprojectplan/?project_id=${projectId}&stage=rfp`;
+                  }}
+                  okText="yes"
+                  cancelText="No"
+                  onCancel={() => {
+                    setSecondModalVisible(false);
+
+                    setModalVisible(false);
+                    setEditingProject(null);
+                    setViewProject(null);
+                  }}
+                >
+                  <p>Do you want to create a Project Plan now ?</p>
                 </Modal>
                 <table
                   id="pmTable"
@@ -539,7 +607,14 @@ const ProjectMaster = () => {
                               1}
                           </th>
                           {/* <td>{data.project_id}</td> */}
-                          <td>{data.project_name}</td>
+
+                          <td>
+                            <NavLink
+                              to={`/projectplan/?project_id=${data.project_id}`}
+                            >
+                              {data.project_name}
+                            </NavLink>
+                          </td>
                           <td>
                             {data.schedule_start_date.slice(8, 10)}/
                             {data.schedule_start_date.slice(5, 7)}/
@@ -561,22 +636,26 @@ const ProjectMaster = () => {
                             {data.stage}
                           </td>
                           <td className="">
-                            <EyeOutlined
-                              onClick={() => openProjectView(data)}
-                              style={{ color: "blue", marginRight: "1rem" }}
-                            />
-                            {/* <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button> */}
-                            <EditOutlined
-                              onClick={() => openProjectEdit(data)}
-                              style={{ color: "blue", marginRight: "1rem" }}
-                            />
-                            {/* <button className="btn btn-danger btn-sm" onClick={() => deleteProjectHandler(data.project_id)}>Delete</button> */}
-                            <DeleteOutlined
-                              onClick={() =>
-                                deleteProjectHandler(data.project_id)
-                              }
-                              style={{ color: "red", marginRight: "1rem" }}
-                            />
+                            {data.project_id !== 1 && (
+                              <>
+                                <EyeOutlined
+                                  onClick={() => openProjectView(data)}
+                                  style={{ color: "blue", marginRight: "1rem" }}
+                                />
+                                {/* <button className="btn btn-primary btn-sm" onClick={() => openProjectEdit(data)} >Edit</button> */}
+                                <EditOutlined
+                                  onClick={() => openProjectEdit(data)}
+                                  style={{ color: "blue", marginRight: "1rem" }}
+                                />
+                                {/* <button className="btn btn-danger btn-sm" onClick={() => deleteProjectHandler(data.project_id)}>Delete</button> */}
+                                <DeleteOutlined
+                                  onClick={() =>
+                                    deleteProjectHandler(data.project_id)
+                                  }
+                                  style={{ color: "red", marginRight: "1rem" }}
+                                />
+                              </>
+                            )}
                           </td>
                         </tr>
                       );

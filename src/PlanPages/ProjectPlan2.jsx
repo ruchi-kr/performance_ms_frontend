@@ -49,6 +49,8 @@ const { Option } = Select;
 const { Search } = Input;
 
 const ProjectPlan = () => {
+  // for user type
+  const user_type = JSON.parse(sessionStorage.getItem("user_type"));
   // for excel pdf
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
@@ -302,7 +304,7 @@ const ProjectPlan = () => {
                       <div className="col-2">
                         <button
                           className="btn btn-sm btn-info"
-                          disabled={selectedProjectStage === "completed"}
+                          disabled={selectedProjectStage === "completed" || user_type !== 1}
                         >
                           <NavLink
                             to={`/addprojectplan/?project_id=${selectedProjectId}&stage=${selectedProjectStage}`}

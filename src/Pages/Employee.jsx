@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   PlusOutlined,
   CloseOutlined,
   CheckOutlined,
   EditOutlined,
+  PercentageOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
@@ -71,7 +72,7 @@ const Employee = () => {
     try {
       const result = await axios.get(`${getAllProjects}`);
       const projectUnderManager = result.data.filter(
-        (project) => project.reporting_manager_id !== null
+        (project) => project.reporting_manager_id !== null || project.project_name === "miscellaneous"
       );
       setProjectList(projectUnderManager);
       console.log("project list", result.data);
@@ -101,7 +102,7 @@ const Employee = () => {
   useEffect(() => {
     getProjectPlanData();
   }, [project_id]);
-
+  // [project_id!=="miscellaneous" ? project_id : null]
   const getTasks = async (moduleId) => {
     console.log("module id selected----->", moduleId);
     const tempModule = moduleList?.filter(
@@ -175,6 +176,7 @@ const Employee = () => {
   }, []);
 
   const handleAddTask = () => {
+    setMiscellaneous(false);
     setAdhoc(1);
     // Disable all existing rows
     const updatedTaskRecords = taskRecords.map((record) => ({
@@ -283,64 +285,18 @@ const Employee = () => {
     setTaskRecords(updatedTaskRecords);
   };
 
-  // Function to save task changes
-  // const saveTask = async (index) => {
-  //   const task = taskRecords[index];
-  //   try {
-  //     if (task.id) {
-  //       const payload = {
-  //         user_id: user_id,
-  //         employee_id: employee_id,
-  //       };
-  //       // If the task already has an ID, it's an existing task, so update it
-  //       const response1 = await axios.put(
-  //         `${editTask}${task.id}`,
-  //         task,
-  //         payload
-  //       );
-  //       if (response1.status === 200) {
-  //         setTaskSaved(true);
-  //         setFormDisabled(true);
-  //         setAdhoc(0);
-  //         toast.success("Task Updated Successfully");
-  //       } else {
-  //         toast.error("Task Not Updated");
-  //       }
-  //     } else {
-  //       const payload = {
-  //         user_id: user_id,
-  //       };
 
-  //       // If the task doesn't have an ID, it's a new task, so create it
-  //       const response2 = await axios.post(`${addTask}`, task, payload);
-  //       if (response2.status === 200) {
-  //         setTaskSaved(true);
-  //         setFormDisabled(true);
-  //         setAdhoc(1);
-  //         toast.success("Task added Successfully");
-  //         setFormDisabled(true);
-
-  //         console.log("form disabled", formDisabled);
-  //       } else {
-  //         toast.error("Task Not added");
-  //       }
-  //     }
-  //     // Refresh tasks after saving
-  //     fetchTasks();
-  //   } catch (error) {
-  //     console.error("Error saving task:", error);
-  //   }
-  // };
 
   const saveTask = async (index) => {
     const task = taskRecords[index];
+
     try {
-      if (
+      if ((
         !task.project_id ||
         !task.module_id ||
         !task.task_id ||
         !task.allocated_time
-      ) {
+      ) && project_id!="1"){
         toast.error("Please fill required fields");
         return false;
       }
@@ -391,11 +347,12 @@ const Employee = () => {
         if (response2.status === 200) {
           setTaskSaved(true);
           setFormDisabled(true);
-          setAdhoc(1);
+          setAdhoc(0);
           toast.success(response2.data.msg);
           setFormDisabled(true);
 
           console.log("form disabled", formDisabled);
+          console.log("adhoc save task", adhoc);
         } else {
           toast.error("Task Not added");
         }
@@ -409,36 +366,40 @@ const Employee = () => {
   };
 
   const handleProjectChange = (index, value) => {
+    setMiscellaneous(false);
+    
     console.log("value**********", value);
     const updatedTaskRecords = [...taskRecords];
+    
     const temp = projectList.filter((project) => project.project_id === value);
     console.log("temp", temp);
     console.log("temp manager", temp[0]?.reporting_manager_id);
     setProjectManagerName(temp[0]?.reporting_manager_id);
     updatedTaskRecords[index].manager_id = temp[0]?.reporting_manager_id;
+    // updatedTaskRecords[index].manager_id = value === "miscellaneous" ? "" : temp[0]?.reporting_manager_id; 
     setProject_id(value);
+    // setProject_id(value == "1" ? "" : value); 
     updatedTaskRecords[index].project_id = value;
+    updatedTaskRecords[index].module_id = "";
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
+    // if(value=="miscellaneous"){
+    //   setProject_id("");
+    //   // updatedTaskRecords[index].project_id = value;
+    // }
+    // console.log("project id miscellaneous :", project_id);
   };
   // Function to handle changes in module selection selectedModule.module_id
   const handleModuleChange = (index, value) => {
     console.log("value**********", value);
     const updatedTaskRecords = [...taskRecords];
     updatedTaskRecords[index].module_id = value;
+    updatedTaskRecords[index].task_id = "";
     setTaskRecords(updatedTaskRecords);
     console.log("task records", taskRecords);
     setModule_id(value);
   };
 
-  // const handleModuleChange = (index, value) => {
-  //   console.log("value**********", value);
-  //   const updatedTaskRecords = [...taskRecords];
-  //   updatedTaskRecords[index].selectedModule.module_id = value;
-  //   setTaskRecords(updatedTaskRecords);
-  //   console.log("task records", taskRecords);
-  //   setModule_id(value);
-  // };
   // Function to handle changes in manager selection
   const handleManagerChange = (index, value) => {
     const updatedTaskRecords = [...taskRecords];
@@ -469,12 +430,6 @@ const Employee = () => {
       setCurrentTime(response.data.currentTimeStamp);
       console.log("current time", response.data.currentTimeStamp);
 
-      //    // Check the current time and reload the page if the desired time is reached
-      // const reloadTime = dayjs(response.data.currentTimeStamp).hour() === 15 && dayjs(response.data.currentTimeStamp).minute() === 50;
-      // console.log("reload time", reloadTime);
-      // if (reloadTime) {
-      //   reloadPage();
-      // }
     } catch (error) {
       console.log(error);
     }
@@ -487,15 +442,30 @@ const Employee = () => {
     window.location.reload();
   };
 
-  // Check the current time and reload the page if the desired time is reached
-  // setInterval(() => {
-  //   // const currentTime = new Date();
-  //   // const reloadTime = dayjs(currentTime).hour() === 12;
-  //   const reloadTime = dayjs(currentTime).hour() === 15 && dayjs(currentTime).minute() === 55;
-  //   if (reloadTime) {
-  //     reloadPage();
-  //   }
-  // }, 60000); // Check every minute
+  
+
+  // for one by one start to end filling of input type
+  const projectRef = useRef(null);
+  const moduleRef = useRef(null);
+  const taskRef = useRef(null);
+  const allocatedTimeRef = useRef(null);
+  const actualTimeRef = useRef(null);
+  const statusRef = useRef(null);
+  const taskPercentRef = useRef(null);
+  const remarksRef = useRef(null);
+
+  // Add more refs as needed for other input elements
+
+  // Function to focus on the next input element
+  const focusNextInput = (nextRef) => {
+    if (nextRef && nextRef.current) {
+      nextRef.current.focus();
+    }
+  };
+
+  // for misacellaneous
+const[ miscellaneous,setMiscellaneous]=useState(false);
+
   return (
     <>
       <Header />
@@ -603,6 +573,7 @@ const Employee = () => {
                           </td>
                           <td>
                             <Select
+                              ref={projectRef}
                               showSearch
                               allowClear
                               placeholder="Select Project"
@@ -623,9 +594,16 @@ const Employee = () => {
                               }}
                               className="rounded-2"
                               value={record.project_id}
-                              onChange={(value) =>
-                                handleProjectChange(index, value)
-                              }
+                              onChange={(value) => {
+                                handleProjectChange(index, value);
+                                focusNextInput(moduleRef)
+                                if(value == "1"){
+                                  setMiscellaneous(true);
+                                 record.module_id ="";
+                                 record.task_id="";
+                                 
+                                };
+                              }}
                               required
                               disabled={
                                 record.formDisabled ||
@@ -633,6 +611,12 @@ const Employee = () => {
                                 (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
                               }
                             >
+                              {/* <Option
+                                value="miscellaneous"
+                                label="Miscellaneous"
+                              >
+                                Miscellaneous
+                              </Option> */}
                               {projectList.map((project) => (
                                 <Option
                                   key={project.project_id}
@@ -644,9 +628,16 @@ const Employee = () => {
                               ))}
                             </Select>
                             <Select
+                              ref={moduleRef}
+                              showSearch
                               allowClear
                               placeholder="Select Module"
-                              // style={{ width: "150px" }}
+                              optionFilterProp="children"
+                              filterOption={(input, option) =>
+                                option.label
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
                               style={{
                                 width:
                                   window.location.pathname !== "/plan" &&
@@ -663,9 +654,10 @@ const Employee = () => {
                                   ? record.module_id
                                   : record.module_name
                               }
-                              onChange={(value) =>
-                                handleModuleChange(index, value)
-                              }
+                              onChange={(value) => {
+                                handleModuleChange(index, value);
+                                focusNextInput(taskRef);
+                              }}
                               //                             value={record.module_name} // Initially set the value to module_name
                               // onChange={(value) => {
                               //   const selectedModule = moduleList.find((module) => module.module_name === value);
@@ -675,6 +667,7 @@ const Employee = () => {
                               // }}
                               required
                               disabled={
+                                miscellaneous ||
                                 record.formDisabled ||
                                 formDisabled ||
                                 (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
@@ -754,8 +747,16 @@ const Employee = () => {
                               <span className="text-danger">*</span>
                             )} */}
                             <Select
+                              showSearch
                               allowClear
+                              ref={taskRef}
                               placeholder="Select Task"
+                              optionFilterProp="children"
+                              filterOption={(input, option) =>
+                                option.label
+                                  .toLowerCase()
+                                  .includes(input.toLowerCase())
+                              }
                               style={{
                                 width:
                                   window.location.pathname !== "/plan"
@@ -772,12 +773,14 @@ const Employee = () => {
                                   : record.task_name
                               }
                               // defaultValue={projectManagerName}
-                              onChange={(value) =>
-                                handleTaskChange(index, value)
-                              }
+                              onChange={(value) => {
+                                handleTaskChange(index, value);
+                                focusNextInput(allocatedTimeRef);
+                              }}
                               required
                               disabled={
-                                record.formDisabled ||
+                               miscellaneous || 
+                               record.formDisabled ||
                                 formDisabled ||
                                 (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
                               }
@@ -798,6 +801,7 @@ const Employee = () => {
                           </td>
                           <td>
                             <input
+                              ref={allocatedTimeRef}
                               type="number"
                               name="allocated_time"
                               // style={{ width: "70px" }}
@@ -810,7 +814,9 @@ const Employee = () => {
                               }}
                               className="form-control"
                               value={record.allocated_time}
-                              onChange={(e) => handleInputChange(index, e)}
+                              onChange={(e) => {handleInputChange(index, e);
+                                focusNextInput(actualTimeRef);
+                              }}
                               required
                               disabled={
                                 record.formDisabled ||
@@ -831,6 +837,7 @@ const Employee = () => {
                               <td className="text-center">
                                 <Space direction="vertical">
                                   <input
+                                    ref={actualTimeRef}
                                     type="number"
                                     name="actual_time"
                                     style={{
@@ -843,7 +850,9 @@ const Employee = () => {
                                     className="form-control"
                                     value={record.actual_time}
                                     onChange={(e) =>
-                                      handleInputChange(index, e)
+                                      {handleInputChange(index, e);
+                                       focusNextInput(statusRef);                                       
+                                      }
                                     }
                                     required
                                     min={0}
@@ -854,27 +863,34 @@ const Employee = () => {
 
                                   {record.status === "transfer" ||
                                   record.status === "inprocess" ? (
-                                    <input
-                                      type="number"
-                                      name="task_percent"
-                                      style={{
-                                        width:
-                                          window.location.pathname !== "/plan"
-                                            ? "3rem"
-                                            : "100%",
-                                      }}
-                                      defaultValue={0}
-                                      className="form-control"
-                                      value={record.task_percent}
-                                      onChange={(e) =>
-                                        handleInputChange(index, e)
-                                      }
-                                      required
-                                      min={0}
-                                      disabled={
-                                        record.formDisabled || formDisabled
-                                      }
-                                    />
+                                    <div className="d-flex">
+                                      <input
+                                        ref={taskPercentRef}
+                                        type="number"
+                                        name="task_percent"
+                                        style={{
+                                          width:
+                                            window.location.pathname !== "/plan"
+                                              ? "3rem"
+                                              : "100%",
+                                        }}
+                                        defaultValue={0}
+                                        className="form-control"
+                                        value={record.task_percent}
+                                        onChange={(e) =>{
+                                          handleInputChange(index, e);
+                                         focusNextInput(remarksRef);
+                                        }
+                                        
+                                        }
+                                        required
+                                        min={0}
+                                        disabled={
+                                          record.formDisabled || formDisabled
+                                        }
+                                      />
+                                      <PercentageOutlined />
+                                    </div>
                                   ) : null}
                                 </Space>
                                 {!record.actual_time && (
@@ -884,11 +900,19 @@ const Employee = () => {
 
                               <td>
                                 <select
+                                  ref={statusRef}
                                   name="status"
                                   className="form-control"
                                   value={record.status || "notstarted"}
                                   onChange={(e) =>
-                                    handleStatusChange(index, e.target.value)
+                                    {handleStatusChange(index, e.target.value);
+                                      if( record.status==="transfer" || record.status==="inprocess"){
+                                        focusNextInput(taskPercentRef);
+                                      }
+                                      else{
+                                        focusNextInput(remarksRef);
+                                      }
+                                    }
                                   }
                                   required
                                   disabled={record.formDisabled || formDisabled}
@@ -927,6 +951,7 @@ const Employee = () => {
                               </td>
                               <td>
                                 <TextArea
+                                  ref={remarksRef}
                                   type="text"
                                   name="remarks"
                                   // rows={5}
@@ -949,7 +974,11 @@ const Employee = () => {
                                 <Popover
                                   placement="left"
                                   title={"Remarks"}
-                                  content={record.manager_remarks?record.manager_remarks:"No Remarks"}
+                                  content={
+                                    record.manager_remarks
+                                      ? record.manager_remarks
+                                      : "No Remarks"
+                                  }
                                   overlayStyle={{ maxWidth: "20rem" }}
                                 >
                                   <TextArea

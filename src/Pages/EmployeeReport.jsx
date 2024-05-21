@@ -13,6 +13,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { faFilePdf, faFileExcel } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NavLink } from "react-router-dom";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 
@@ -326,7 +327,12 @@ const handleExcel = () => {
                           <tr onClick={() => handleRowClick(index)}>
                             <th scope="row">{index + 1}</th>
                             <td className="text-capitalize">
+                            <NavLink
+                              to={`/projectplan/?project_id=${item.project_id}`}
+                            >
                               {item.project_name}
+                            </NavLink>
+                              
                             </td>
                             <td>
                               {item.schedule_start_date.slice(8, 10)}/
