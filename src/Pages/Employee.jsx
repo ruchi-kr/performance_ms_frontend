@@ -198,7 +198,7 @@ const Employee = () => {
       status: "",
       remarks: "",
       formDisabled: false, // Enable the newly added row
-      adhoc: "",
+      adhoc: dayjs(currentTime).hour() >= 12 ? 1 : 0,
     };
 
     // Update the task records with the new row

@@ -237,8 +237,6 @@ const EmployeeReportDateWise = () => {
                       <th>Act hrs</th>
                     </tr>
                   </thead>
-
-
                   <tbody>
                     {reportData.map((report, index) => {
                       const projects = (report.projects);

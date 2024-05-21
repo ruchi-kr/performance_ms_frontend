@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Forgot() {
 
-  const [email, setEmail] = useState("")
+  const [email_id, setEmail_id] = useState("")
   const [newpassword, setNewpassword] = useState("");
   const [confirmpassword, setConfirmpassword] = useState("");
   const [otp, setOtp] = useState("");
@@ -23,13 +23,13 @@ export default function Forgot() {
   const sendOtp = (event) => {
     event.preventDefault();
 
-    if(email!=null && email!=''){
-      const requestData = {email}
+    if(email_id!=null && email_id!=''){
+      const requestData = {email_id}
       Setloader(true)
 
       axios.post(`${forgotPassword}`, requestData)
       .then((result) => {
-        if (result.status === 200 && result.data.status===true) {
+        if (result.status === 200 ) {
           SetModalVisible(true)
           Setloader(false)
           toast.success('Mail Sent Successfully!');
@@ -38,7 +38,7 @@ export default function Forgot() {
         }
       })
       .catch((error) => {
-        toast.error(error.response.data.message);
+        toast.error(error.response.data.error);
       })
 
     }else{
@@ -52,12 +52,12 @@ export default function Forgot() {
   // otp verification function
   const verifyotp = (event) => {
     event.preventDefault();
-    const requestData = { email, password:newpassword, password_confirm:confirmpassword, otp }
+    const requestData = { email_id, password:newpassword, password_confirm:confirmpassword, otp }
     console.log(requestData);
     axios.post(`${forgotPasswordVerify}`, requestData)
       .then((result) => {
-        if (result.status === 200 && result.data.status==true) {
-          toast.success('Password Changed Successfully!');
+        if (result.status === 200 ) {
+          toast.success(result.data.message);
           navigate('/login')
         }else{
           toast.error(result.data.message)
@@ -65,7 +65,7 @@ export default function Forgot() {
       })
       .catch((error) => {
         console.log(error);
-        toast.error(error.response.data.message);
+        toast.error(error.response.data.error);
       })
   }
   return (
@@ -77,7 +77,7 @@ export default function Forgot() {
         <p className='textgrey text-center fst-italic text-secondary'>Upon entering the email you will receive an OTP to recover your account.</p>
         <div className="mb-3">
           <label htmlFor="exampleInput" className="form-label text-info">Email</label>
-          <Input value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" type="email" placeholder="email" id='exampleInput' aria-label="default input example" />
+          <Input value={email_id} onChange={(e) => setEmail_id(e.target.value)} className="form-control" type="email" placeholder="email" id='exampleInput' aria-label="default input example" />
         </div>
         <div className="d-grid">
 
@@ -98,13 +98,13 @@ export default function Forgot() {
           >
                   <div className="d-flex justify-content-center">
                   </div>
-                  <p className='text-center' style={{ fontSize: '40px', fontWeight: '700', lineHeight: '40px' }}><span className='textcolorblue'>Recover your</span><br /><span className='textcolor'>account</span></p>
+                  <p className='text-center text-info' style={{ fontSize: '25px', fontWeight: '600', lineHeight: '40px' }}><span className='textcolorblue'>Recover your</span><br /><span className='textcolor'>account</span></p>
                   {/* <p className='textgrey text-center'>Upon entering the registered email address you will receive an OTP to recover your account.</p> */}
                  
                   <Form layout="vertical">
                   <Form.Item
                     name="password"
-                    label="Password"
+                    label={<span className='text-info'>Password</span>}
                     rules={[
                       {
                         required: true,
@@ -118,7 +118,7 @@ export default function Forgot() {
 
                   <Form.Item
                     name="confirm"
-                    label="Confirm Password"
+                    label={<span className='text-info'>Confirm Password</span>}
                     dependencies={['password']}
                     hasFeedback
                     rules={[
@@ -143,7 +143,8 @@ export default function Forgot() {
                   <Form.Item
                     className='otpinput'
                     name="otp"
-                    label="Enter 4 Digit Code"
+                    placeholder="Enter 4 Digit Code"
+                    label={<span className='text-info'>OTP</span>}
                     rules={[
                       {
                         required: true,
