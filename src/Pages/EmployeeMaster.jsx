@@ -15,9 +15,16 @@ import {
 } from "../Config.js";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
-import {AutoComplete, Col, Form, Input, Modal, Row, Select } from "antd";
-import { DatePicker ,Pagination} from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined,ArrowUpOutlined } from "@ant-design/icons";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import { AutoComplete, Col, Form, Input, Modal, Row, Select } from "antd";
+import { DatePicker, Pagination } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  ArrowUpOutlined,
+} from "@ant-design/icons";
+dayjs.extend(customParseFormat);
 const { TextArea } = Input;
 const { Option } = Select;
 const { Search } = Input;
@@ -43,10 +50,10 @@ const EmployeeMaster = () => {
 
   const handleSearch = (value) => {
     setOptions(() => {
-      if (!value || value.includes('@')) {
+      if (!value || value.includes("@")) {
         return [];
       }
-      return ['gmail.com', 'intileo.com', 'qmoniqs.com'].map((domain) => ({
+      return ["gmail.com", "intileo.com", "qmoniqs.com"].map((domain) => ({
         label: `${value}@${domain}`,
         value: `${value}@${domain}`,
       }));
@@ -295,6 +302,14 @@ const EmployeeMaster = () => {
       return "ASC";
     });
   };
+  //Functions to disable dates
+  const disableDobHandler = (current) => {
+    return current && current > dayjs().subtract(18,"year");
+  };
+
+  const disableDojHandler = (current) => {
+    return current && current > dayjs().endOf("day");
+  };
   return (
     <>
       <Header />
@@ -336,7 +351,13 @@ const EmployeeMaster = () => {
                 </div>
                 {/* modal */}
                 <Modal
-                  title={editingEmployee ? "Edit Employee" : viewEmployee ? "View Employee" : "Add Employee"}
+                  title={
+                    editingEmployee
+                      ? "Edit Employee"
+                      : viewEmployee
+                      ? "View Employee"
+                      : "Add Employee"
+                  }
                   visible={modalVisible}
                   onOk={employeeFormSubmit}
                   onCancel={() => {
@@ -443,6 +464,7 @@ const EmployeeMaster = () => {
                           <DatePicker
                             format="DD/MM/YYYY"
                             style={{ width: "100%" }}
+                            disabledDate={disableDojHandler}
                           />
                         </Form.Item>
                       </Col>
@@ -481,6 +503,7 @@ const EmployeeMaster = () => {
                           <DatePicker
                             format="DD/MM/YYYY"
                             style={{ width: "100%" }}
+                            disabledDate={disableDobHandler}
                           />
                         </Form.Item>
                       </Col>
@@ -518,7 +541,7 @@ const EmployeeMaster = () => {
                           ]}
                         >
                           <AutoComplete
-                           onSearch={handleSearch}
+                            onSearch={handleSearch}
                             type="email"
                             placeholder="you@example.com"
                             options={options}
@@ -707,10 +730,16 @@ const EmployeeMaster = () => {
                           {/* <td>{data.job_id}</td> */}
                           {/* <td className="text-wrap">{data.skills}</td> */}
                           <td>{data.email}</td>
-                          <td className="text-capitalize">{data.designation_name}</td>
-                          <td className="text-capitalize">{data.job_role_name}</td>
+                          <td className="text-capitalize">
+                            {data.designation_name}
+                          </td>
+                          <td className="text-capitalize">
+                            {data.job_role_name}
+                          </td>
                           <td>{data.mobile_no}</td>
-                          <td className="text-capitalize">{data.manager_name}</td>
+                          <td className="text-capitalize">
+                            {data.manager_name}
+                          </td>
                           {/* <td>{manager}</td> */}
                           <td className="">
                             {/* <button className="btn btn-primary btn-sm" onClick={() => openEmployeeEdit(data)} >Edit</button>
