@@ -29,6 +29,7 @@ import ProjectPlan from "./PlanPages/ProjectPlan";
 import ProjectPlan2 from "./PlanPages/ProjectPlan2";
 import AddModuleTasks from "./Pages/AddModuleTasks";
 import AssignTeamNew from "./Pages/AssignTeamNew";
+import SystemSettings from "./Pages/SystemSettings";
 
 function App() {
   const status = sessionStorage.getItem("status");
@@ -50,6 +51,7 @@ function App() {
             <Route path="/jobrolemaster" element={<JobRoleMaster />} />
             <Route path="/addprojectplan" element={<AddProjectPlan />} />
             <Route path="/addmoduletasks" element={<AddModuleTasks />} />
+            <Route path="/systemsettings" element={<SystemSettings />} />
 
             <Route path="/modulemaster" element={<ModuleMaster />} />
             <Route path="/assignteam" element={<AssignTeam />}></Route>
