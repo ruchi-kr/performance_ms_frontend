@@ -13,10 +13,19 @@ import {
   Button,
   Row,
   Col,
+  Modal,
 } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+  ExclamationCircleFilled,
+  PlusOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 
 const { TextArea } = Input;
+const { confirm } = Modal;
 const SystemSettings = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -71,6 +80,11 @@ const SystemSettings = () => {
       }
     } else if (!isAdding && isEditing) {
       console.log("editing settings");
+
+      // confirm({
+      //   title: "Are you sure you want to edit settings?",
+      //   icon: <ExclamationCircleFilled />,
+      //   async onOk() {
       try {
         const resp = await axios.patch(
           `http://localhost:8000/api/admin/editsystemsettings/${values.settings_id}`,
@@ -78,11 +92,17 @@ const SystemSettings = () => {
         );
         toast.success("Settings Modified");
         // window.location.reload();
-        componentDisabled(false);
+        setComponentDisabled(true);
         fetchAll();
       } catch (error) {
         console.log("errro occured in editing");
       }
+      // },
+      // onCancel() {
+      //   toast.error("Setting editing cancelled!");
+      //   setComponentDisabled(true);
+      // },
+      // });
     }
   };
   const onFinishFailed = () => {
@@ -151,7 +171,7 @@ const SystemSettings = () => {
 
                     <Form.Item style={{ marginTop: "1rem" }}>
                       <Button type="primary" htmlType="submit">
-                        Submit
+                        {isAdding ? "Add Settings" : "Edit Settings"}
                       </Button>
                     </Form.Item>
                   </Form>

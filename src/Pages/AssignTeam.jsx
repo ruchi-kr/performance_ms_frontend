@@ -134,7 +134,7 @@ const AssignTeam = () => {
   }, [allEmployeeData, teamsData]);
 
   const openEmployeeEdit = async (employee) => {
-    console.log("record to edit",employee)
+    console.log("record to edit", employee);
     // const filteredProjects = projectData?.filter(
     //   (project) =>
     //     !teamsData?.some(
@@ -142,12 +142,12 @@ const AssignTeam = () => {
     //     )
     // );
     // console.log("filtered projects", filteredProjects);
-   
+
     // setFilteredProjectData(filteredProjects);
     // console.log("filtered project data",filteredProjectData)
-    const newProject = projectData?.filter((project)=>project.project_id===employee.project_id)
-    setFilteredProjectData([...filteredProjectData,newProject[0]])
-    console.log("new project",newProject)
+    // const newProject = projectData?.filter((project)=>project.project_id===employee.project_id)
+    // setFilteredProjectData([...filteredProjectData,newProject[0]])
+    // console.log("new project",newProject)
     setEditingEmployee(employee);
     setEditingId(employee.team_id);
     setModalVisible(true);
@@ -188,7 +188,7 @@ const AssignTeam = () => {
         });
     } else if (!isAdding && isEditing) {
       console.log("editing values", values.team_id);
-      setFilteredProjectData(filteredProjectData.items.slice(0, -1))
+      setFilteredProjectData(filteredProjectData.items.slice(0, -1));
       form
         .validateFields()
         .then((values) => {
@@ -427,8 +427,8 @@ const AssignTeam = () => {
     {
       title: "Year of Exp.",
       dataIndex: "experience",
-      width:"15%",
-      align:"center",
+      width: "15%",
+      align: "center",
       sorter: {
         compare: (a, b) => a.experience - b.experience,
         multiple: 1,
@@ -475,7 +475,7 @@ const AssignTeam = () => {
                   </button>
                 </div>
                 <hr className="bg-primary border-4" />
-             
+
                 <table className="table table-striped table-hover mt-5">
                   <thead>
                     <tr>
@@ -492,10 +492,7 @@ const AssignTeam = () => {
                         <tr key={data?.team_id}>
                           <th scope="row">{index + 1}</th>
                           <th scope="row" className="text-capitalize">
-                           
-                                {data?.project_name}
-                             
-                           
+                            {data?.project_name}
                           </th>
                           <th scope="row">
                             <Tag
@@ -557,22 +554,46 @@ const AssignTeam = () => {
                             },
                           ]}
                         >
-                          <Select
-                            allowClear
-                            placeholder="Select Project"
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            {filteredProjectData.map((project) => (
-                              <Option
-                                key={project.project_id}
-                                value={project.project_id}
-                                label={project.project_name}
-                              >
-                                <span className="text-capitalize">{project.project_name}</span>
-                              </Option>
-                            ))}
-                          </Select>
+                          {isAdding && (
+                            <Select
+                              allowClear
+                              placeholder="Select Project"
+                              style={{ width: "100%" }}
+                              className="rounded-2"
+                            >
+                              {filteredProjectData.map((project) => (
+                                <Option
+                                  key={project.project_id}
+                                  value={project.project_id}
+                                  label={project.project_name}
+                                >
+                                  <span className="text-capitalize">
+                                    {project.project_name}
+                                  </span>
+                                </Option>
+                              ))}
+                            </Select>
+                          )}
+                          {isEditing && (
+                            <Select
+                              allowClear
+                              placeholder="Select Project"
+                              style={{ width: "100%" }}
+                              className="rounded-2"
+                            >
+                              {projectData.map((project) => (
+                                <Option
+                                  key={project.project_id}
+                                  value={project.project_id}
+                                  label={project.project_name}
+                                >
+                                  <span className="text-capitalize">
+                                    {project.project_name}
+                                  </span>
+                                </Option>
+                              ))}
+                            </Select>
+                          )}
                         </Form.Item>
                       </Col>
                     </Row>
