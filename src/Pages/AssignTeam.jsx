@@ -188,7 +188,6 @@ const AssignTeam = () => {
         });
     } else if (!isAdding && isEditing) {
       console.log("editing values", values.team_id);
-      setFilteredProjectData(filteredProjectData.items.slice(0, -1));
       form
         .validateFields()
         .then((values) => {
@@ -203,8 +202,9 @@ const AssignTeam = () => {
                 employee_id: selectedRowKeys,
               }
             );
-            fetchAll();
             setIsEditing(false);
+            setIsAdding(true)
+            fetchAll();
             form.resetFields();
             setSelectedRowKeys([]);
             setModalVisible(false);
@@ -580,6 +580,7 @@ const AssignTeam = () => {
                               placeholder="Select Project"
                               style={{ width: "100%" }}
                               className="rounded-2"
+                              disabled={isEditing}
                             >
                               {projectData.map((project) => (
                                 <Option
