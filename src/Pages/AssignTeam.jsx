@@ -467,12 +467,12 @@ const AssignTeam = () => {
                 <div className="d-flex justify-content-between">
                   <h3 className="text-primary">Teams Details New</h3>
 
-                  <button
+                  {/* <button
                     className="btn btn-sm btn-info d-flex align-items-center"
                     onClick={openTeamAdd}
                   >
                     <span className="fs-4"> + </span>&nbsp;Add Team
-                  </button>
+                  </button> */}
                 </div>
                 <hr className="bg-primary border-4" />
 
