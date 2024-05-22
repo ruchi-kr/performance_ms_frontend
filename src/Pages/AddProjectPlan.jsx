@@ -801,7 +801,7 @@ const AddProjectPlan = () => {
           ) + 1;
         // Increment the task counter for the current module
         const taskNumber = index + 1;
-        return `${moduleNumber}.${taskNumber}`;
+        return moduleNumber!==0 ? `${moduleNumber}.${taskNumber}` : "-";
       },
     },
     {
@@ -819,7 +819,7 @@ const AddProjectPlan = () => {
       dataIndex: "description",
       key: "description",
 
-      // render: (text) => `${text ? text : "-"}`,
+      render: (text) => `${text ? text : "-"}`,
     },
 
     {
