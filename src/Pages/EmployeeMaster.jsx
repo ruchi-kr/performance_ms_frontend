@@ -734,11 +734,11 @@ const EmployeeMaster = () => {
                             {data.designation_name}
                           </td>
                           <td className="text-capitalize">
-                            {data.job_role_name}
+                            {data.job_role_name ? data.job_role_name : "N.A."}
                           </td>
                           <td>{data.mobile_no}</td>
                           <td className="text-capitalize">
-                            {data.manager_name}
+                            {data.manager_name ? data.manager_name : "N.A." }
                           </td>
                           {/* <td>{manager}</td> */}
                           <td className="">
