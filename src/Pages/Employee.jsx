@@ -189,10 +189,10 @@ useEffect(() => {
       console.log("Error fetching tasks:", error);
     }
   };
-  // useEffect(() => {
-  //   const sumAllocatedTime = taskRecords.reduce((total, task) => Number(total) + Number(task.allocated_time), 0);
-  //   setTotalAllocatedTime(sumAllocatedTime);
-  // }, [taskRecords]);
+  useEffect(() => {
+    const sumAllocatedTime = taskRecords && taskRecords.reduce((total, task) => Number(total) + Number(task.allocated_time), 0);
+    setTotalAllocatedTime(sumAllocatedTime);
+  }, [taskRecords.length > 0 ? taskRecords : '']);
   
 
   console.log("total allocated time",totalAllocatedTime)
@@ -343,7 +343,7 @@ useEffect(() => {
       }
       console.log(manHrs-totalAllocatedTime, "manHrs-totalAllocatedTime");
       console.log(Number(manHrs)-Number(totalAllocatedTime), "Number(manHrs)-Number(totalAllocatedTime)");
-      if(task.allocated_time > (Number(manHrs)-Number(totalAllocatedTime))){
+      if(Number(totalAllocatedTime) > (Number(manHrs))){
         toast.error(`Total allocated time should be less than ${manHrs} hours`);
         return false;
       }
