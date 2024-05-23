@@ -3,7 +3,7 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import { getEmployeeReport } from "../Config";
+import { getEmployeeReport,CONFIG_OBJ } from "../Config";
 import { Input, DatePicker, Button } from "antd";
 import moment from "moment";
 import { toast } from "react-toastify";
@@ -76,7 +76,7 @@ const ManagerRemark = () => {
         url += `&fromDate=${formattedFromDate}&toDate=${formattedToDate}`;
       }
 
-      const response = await axios.get(url);
+      const response = await axios.get(url,CONFIG_OBJ);
       setReportData(response.data);
       const tasksArray = JSON.parse(response.data[3].tasks);
       setTotalPages(Math.ceil(response.headers['x-total-count'] / pageSize));

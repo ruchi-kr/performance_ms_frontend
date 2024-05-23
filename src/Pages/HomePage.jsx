@@ -3,22 +3,22 @@ import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
 import Footer from '../Components/Footer'
-import { getDashData } from '../Config'
+import { CONFIG_OBJ, getDashData } from '../Config'
 
 const HomePage = () => {
 
   const [dashProjectData, setDashProjectData] = useState("");
-  const [dashUserData, setDashUserData] = useState("");
+  // const [dashUserData, setDashUserData] = useState("");
   const [dashEmployeeData, setDashEmployeeData] = useState("");
   const [dashRMData, setDashRMData] = useState("");
   const getAllDashData = async () => {
     try {
-      const response = await axios.get(`${getDashData }`);
-      console.log("dash data", response.data);
-      setDashProjectData(response.data.projectCount);
-      setDashUserData(response.data.userCount);
-      setDashEmployeeData(response.data.employeeCount);
-      setDashRMData(response.data.reportingManagerCount);
+      const response = await axios.get(`${getDashData }`,CONFIG_OBJ);
+      console.log("dash data", response.data[0]);
+      setDashProjectData(response.data[0].projectCount);
+      // setDashUserData(response.data.userCount);
+      setDashEmployeeData(response.data[0].teamMemberCount);
+      setDashRMData(response.data[0].managerCount);
 
     } catch (error) {
       console.log("error fetching dash data", error)

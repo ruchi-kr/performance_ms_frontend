@@ -18,6 +18,7 @@ import {
   deleteTask,
   getAllEmployeeslist,
   getCurrentTime,
+  CONFIG_OBJ,
 } from "../Config.js";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -70,7 +71,7 @@ const Employee = () => {
 
   const getProjects = async (value) => {
     try {
-      const result = await axios.get(`${getAllProjects}`);
+      const result = await axios.get(`${getAllProjects}`, CONFIG_OBJ);
       const projectUnderManager = result.data.filter(
         (project) => project.reporting_manager_id !== null || project.project_name === "miscellaneous"
       );
@@ -89,7 +90,7 @@ const Employee = () => {
   const getProjectPlanData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/getAllModule/${project_id}/?search=`
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?search=`, CONFIG_OBJ
       );
       console.log("project plan data", response.data.data);
       setModuleList(response.data.data);
@@ -137,7 +138,7 @@ const Employee = () => {
     // get all projects function
     const getAllEmployees = async () => {
       try {
-        const response = await axios.get(`${getAllEmployeeslist}`);
+        const response = await axios.get(`${getAllEmployeeslist}`, CONFIG_OBJ);
 
         console.log("employee list get all employees", response.data);
         const filteredUsers = response?.data?.filter(
@@ -161,9 +162,10 @@ const Employee = () => {
   // Function to fetch tasks from the server
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${getTask}/${user_id}`);
+      const response = await axios.get(`${getTask}/${user_id}`, CONFIG_OBJ);
       console.log("task records", response.data);
       setTaskRecords(response.data);
+      setFormDisabled(true);
       // setAdhoc(response.data.adhoc)
       // console.log("adhoc value",adhoc)
     } catch (error) {
@@ -253,7 +255,7 @@ const Employee = () => {
         content: "Be sure before deleting, this process is irreversible!",
         async onOk() {
           try {
-            const response = await axios.delete(`${deleteTask}/${taskId}`);
+            const response = await axios.delete(`${deleteTask}/${taskId}`, CONFIG_OBJ);
             setTaskRecords(taskRecords.filter((task) => task.id !== taskId));
             fetchTasks();
             if (response.status === 200) {
@@ -306,8 +308,7 @@ const Employee = () => {
         !task.task_id ||
         !task.allocated_time ||
         !task.remarks ||
-        !task.actual_time ||
-        !task.status
+        !task.actual_time 
       ) && project_id!="1" && dayjs(currentTime).hour() >= 12){
         toast.error("Please fill required fields");
         return false;
@@ -320,18 +321,22 @@ const Employee = () => {
         let payload = {
           user_id: user_id,
           employee_id: employee_id,
+          // CONFIG_OBJ,
         };
         if (dayjs(currentTime).hour() >= 12) {
           payload = {
             user_id: user_id,
             employee_id: employee_id,
             adhoc: adhoc,
+            // CONFIG_OBJ,
+
           }; // Add adhoc=1 to the payload if it's after 12 PM
         }
+        console.log(CONFIG_OBJ, "payload CONFIG");
         const response1 = await axios.put(
-          `${editTask}${task.id}`,
+          `${editTask}${task.id}`,  
           task,
-          payload
+          {...payload, ...CONFIG_OBJ} // Pass the payload object as payload
         );
         if (response1.status === 200) {
           setTaskSaved(true);
@@ -344,18 +349,20 @@ const Employee = () => {
       } else {
         let payload = {
           user_id: user_id,
+          // CONFIG_OBJ,
         };
         if (dayjs(currentTime).hour() >= 12) {
           payload = {
             user_id: user_id,
             employee_id: employee_id,
             adhoc: adhoc,
+            // CONFIG_OBJ,
           };
 
           // payload.adhoc = 1; // Add adhoc=1 to the payload if it's after 12 PM
         }
         // If the task doesn't have an ID, it's a new task, so create it
-        const response2 = await axios.post(`${addTask}`, task, payload);
+        const response2 = await axios.post(`${addTask}`, task, {...payload, ...CONFIG_OBJ});
         if (response2.status === 200) {
           setTaskSaved(true);
           setFormDisabled(true);

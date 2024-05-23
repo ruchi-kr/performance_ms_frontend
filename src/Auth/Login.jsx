@@ -37,13 +37,13 @@ export default function Login() {
                 const status = result.data.result.user.status
                 console.log("role", role)
                 if (role === "manager" && status === "active") {
-                    navigate('/manager');
+                    navigate('/assignteam');
                 }
                 else if (role === "employee" && status === "active") {
                     navigate('/employee');
                 }
                 else if (role == "management" && status === "active") {
-                    navigate('/manager');
+                    navigate('/assignteam');
                 }
                 else if (status !== "active") {
                     navigate('/accessdenied');

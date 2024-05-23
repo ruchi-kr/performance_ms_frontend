@@ -49,6 +49,7 @@ import {
   editModule,
   deleteModule,
   getAllProjects,
+  CONFIG_OBJ,
 } from "../Config.js";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
@@ -118,7 +119,7 @@ const AddProjectPlan = () => {
 
   const getProjects = async (value) => {
     try {
-      const result = await axios.get(`${getAllProjects}`);
+      const result = await axios.get(`${getAllProjects}`,CONFIG_OBJ);
 
       setProjectList(result.data);
 
@@ -136,7 +137,7 @@ const AddProjectPlan = () => {
   const getModuleListWithTasks = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`,CONFIG_OBJ
       );
       console.log("module with their tasks", response.data.data);
       setModuleList(response.data.data);
@@ -154,7 +155,7 @@ const AddProjectPlan = () => {
       //   `http://localhost:8000/api/admin/getModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
       // );
       const response = await axios.get(
-        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`,CONFIG_OBJ
       );
       console.log("module list", response.data.data);
       setModuleList(response.data.data);
@@ -273,7 +274,7 @@ const AddProjectPlan = () => {
       async onOk() {
         try {
           await axios.delete(
-            `http://localhost:8000/api/admin/deleteModule/${record.module_id}`
+            `http://localhost:8000/api/admin/deleteModule/${record.module_id}`,CONFIG_OBJ
           );
           notification.success({
             message: "Success",
@@ -302,7 +303,7 @@ const AddProjectPlan = () => {
       async onOk() {
         try {
           const response = await axios.delete(
-            `http://localhost:8000/api/module/task/${record.task_id}`
+            `http://localhost:8000/api/module/task/${record.task_id}`,CONFIG_OBJ
           );
           notification.success({
             message: "Success",
@@ -348,7 +349,7 @@ const AddProjectPlan = () => {
     if (isAdding && !isEditing) {
       try {
         console.log("onFinish before sending values adding", values);
-        await axios.post("http://localhost:8000/api/admin/addModule", {
+        await axios.post("http://localhost:8000/api/admin/addModule",CONFIG_OBJ, {
           ...values,
           stage: stage,
         });
@@ -372,7 +373,7 @@ const AddProjectPlan = () => {
       console.log("values inside edit!!!!", values);
       try {
         await axios.patch(
-          `http://localhost:8000/api/admin/editModule/${values.module_id}`,
+          `http://localhost:8000/api/admin/editModule/${values.module_id}`,CONFIG_OBJ,
           values
         );
         handleReset();
@@ -399,7 +400,7 @@ const AddProjectPlan = () => {
         // console.log("values inside edit!!!!", values);
         console.log("get field values all", formTask.getFieldsValue());
 
-        await axios.post("http://localhost:8000/api/module/task", {
+        await axios.post("http://localhost:8000/api/module/task",CONFIG_OBJ, {
           ...values,
           stage: stage,
         });
@@ -426,7 +427,7 @@ const AddProjectPlan = () => {
 
       try {
         await axios.patch(
-          `http://localhost:8000/api/module/task/${values.task_id}`,
+          `http://localhost:8000/api/module/task/${values.task_id}`,CONFIG_OBJ,
           values
         );
         handleReset();

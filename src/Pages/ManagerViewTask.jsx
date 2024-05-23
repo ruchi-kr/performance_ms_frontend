@@ -38,6 +38,7 @@ import {
   getTask,
   editTask,
   deleteTask,
+  CONFIG_OBJ,
 } from "../Config.js";
 import { Select } from "antd";
 import { toast } from "react-toastify";
@@ -63,7 +64,7 @@ const ManagerViewTask = () => {
 
   const getProjects = async (value) => {
     try {
-      const result = await axios.get(`${getAllProjects}`);
+      const result = await axios.get(`${getAllProjects}`,CONFIG_OBJ);
       setProjectList(result.data);
       console.log("project list", result.data);
     } catch (error) {
@@ -78,7 +79,7 @@ const ManagerViewTask = () => {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/project/employee/report/${manager_id}/${employee_id}/null`
+        `http://localhost:8000/api/project/employee/report/${manager_id}/${employee_id}/null`,CONFIG_OBJ
       );
       setTaskRecords(response.data.data);
 
@@ -125,7 +126,7 @@ const ManagerViewTask = () => {
       if (task.id) {
         // If the task already has an ID, it's an existing task, so update it
         const response1 = await axios.patch(
-          `http://localhost:8000/api/project/task/${task.id}`,
+          `http://localhost:8000/api/project/task/${task.id}`,CONFIG_OBJ,
           task
         );
         if (response1.status === 200) {
@@ -135,7 +136,7 @@ const ManagerViewTask = () => {
         }
       } else {
         // If the task doesn't have an ID, it's a new task, so create it
-        const response2 = await axios.post(`${addTask}`, task);
+        const response2 = await axios.post(`${addTask}`,CONFIG_OBJ, task);
         if (response2.status === 200) {
           toast.success("Task added Successfully");
         } else {

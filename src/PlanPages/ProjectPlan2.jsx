@@ -33,6 +33,7 @@ import {
   deleteModule,
   getAllProjects,
   getProjectPlan,
+  CONFIG_OBJ,
 } from "../Config.js";
 import { Steps } from "antd";
 import { Link } from "react-router-dom";
@@ -69,7 +70,7 @@ const ProjectPlan = () => {
 
   const getProjects = async (value) => {
     try {
-      const result = await axios.get(`${getAllProjects}`);
+      const result = await axios.get(`${getAllProjects}`, CONFIG_OBJ);
 
       setProjectList(result.data);
       console.log("project list", result.data);
@@ -90,7 +91,7 @@ const ProjectPlan = () => {
     const fetchProjectDetails = async (selectedProjectId) => {
       try {
         const response = await axios.get(
-          `${getAllProjects}/${selectedProjectId}`
+          `${getAllProjects}/${selectedProjectId}`, CONFIG_OBJ
         );
         setProjectStage(response.data[0].stage);
         setSelectedProjectStage(response.data[0].stage);
@@ -170,7 +171,7 @@ const ProjectPlan = () => {
   const getProjectPlanData = async () => {
     try {
       const response = await axios.get(
-        `${getProjectPlan}/${selectedProjectId}`
+        `${getProjectPlan}/${selectedProjectId}`, CONFIG_OBJ
       );
       setAllData(response.data.plan);
       console.log("project plan data", response.data.plan);
@@ -330,15 +331,15 @@ const ProjectPlan = () => {
                         className="table table-bordered p-0"
                         // style={{ borderCollapse: "collapse" }}
                       >
-                        <thead className="sticky-top">
+                        <thead className="sticky-top bg-white">
                           <tr>
                             <th colSpan={4} className="bg-warning-subtle">
                               RFP
                             </th>
                           </tr>
                           <tr>
-                            <th rowSpan={3}>S.No.</th>
-                            <th colSpan={1}>Module Name</th>
+                            <th rowSpan={3} className="bg-white">S.No.</th>
+                            <th colSpan={1} className="bg-white">Module Name</th>
                             <th colSpan={2}>
                               <div className="d-flex flex-column">
                                 <span>Schd. St. Dt.</span>
@@ -347,7 +348,7 @@ const ProjectPlan = () => {
                             </th>
                           </tr>
                           <tr>
-                            <th colSpan={2}>Task</th>
+                            <th colSpan={2} className="bg-white">Task</th>
 
                             <th>Alloc hrs</th>
                           </tr>

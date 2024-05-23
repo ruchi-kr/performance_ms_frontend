@@ -8,6 +8,7 @@ import {
   editModule,
   deleteModule,
   getAllProjects,
+  CONFIG_OBJ,
 } from "../Config.js";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -41,7 +42,7 @@ const ModuleMaster = () => {
   const getAllModulesHandler = async (page) => {
     try {
       const response = await axios.get(
-        `${getAllModules}?page=${page}&pageSize=${pageSize}&name=${projectName}`
+        `${getAllModules}?page=${page}&pageSize=${pageSize}&name=${projectName}`,CONFIG_OBJ
       );
       setAllModuleData(response.data);
       console.log("module data", response.data);
@@ -310,7 +311,7 @@ console.log(startDate,"dbjwnwdenkn")
                 ? `${editModule}/${editingModule.project_id}`
                 : `${createModule}`;
               axios
-                .post(url, requestData)
+                .post(url, requestData,CONFIG_OBJ)
                 .then((response) => {
                   if (response.status) {
                     if (editingModule && editingModule.project_id !== null) {
@@ -351,7 +352,7 @@ console.log(startDate,"dbjwnwdenkn")
 
   const deleteModuleHandler = async (id) => {
     try {
-      const response = await axios.delete(`${deleteModule}` + id);
+      const response = await axios.delete(`${deleteModule}` + id,CONFIG_OBJ);
       if (response.status === 200) {
         // Manager deleted successfully
         console.log(response.data);
@@ -442,7 +443,7 @@ console.log(startDate,"dbjwnwdenkn")
   const [projectEndDate, setProjectEndDate] = useState("");
   const getProjects = async (value) => {
     try {
-      const result = await axios.get(`${getAllProjects}`);
+      const result = await axios.get(`${getAllProjects}`,CONFIG_OBJ);
 
       setProjectList(result.data);
       console.log("project list", result.data);

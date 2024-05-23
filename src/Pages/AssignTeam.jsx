@@ -3,7 +3,7 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar.jsx";
 import Header from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
-import { getAllEmployees } from "../Config.js";
+import { getAllEmployees,CONFIG_OBJ } from "../Config.js";
 import { toast } from "react-toastify";
 import {
   Col,
@@ -69,7 +69,7 @@ const AssignTeam = () => {
 
   const fetchAll = async () => {
     const resp = await axios.get(
-      `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`
+      `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,CONFIG_OBJ
     );
     console.log("team data ******", resp.data.data);
     setTeamsData(resp.data.data);
@@ -83,7 +83,7 @@ const AssignTeam = () => {
     const getAllEmployees = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/admin/getEmployeeslist"
+          "http://localhost:8000/api/admin/getEmployeeslist",CONFIG_OBJ
         );
         console.log("employee list get all employees", response.data);
         const filteredUsers = response?.data?.filter(
@@ -104,7 +104,7 @@ const AssignTeam = () => {
   useEffect(() => {
     const fetchProject = async () => {
       const resp = await axios.get(
-        "http://localhost:8000/api/admin/getProjects"
+        "http://localhost:8000/api/admin/getProjects",CONFIG_OBJ
       );
       console.log("project data", resp.data);
       setProjectData(resp.data);
@@ -148,7 +148,7 @@ const AssignTeam = () => {
             console.log("form data", values);
             axios.post(
               `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
-              { ...values, employee_id: selectedRowKeys }
+              { ...values, employee_id: selectedRowKeys },CONFIG_OBJ,
             );
             setIsAdding(true);
             setSelectedRowKeys([]);
@@ -177,7 +177,7 @@ const AssignTeam = () => {
                 ...values,
                 reporting_manager_id: managerEmployeeId,
                 employee_id: selectedRowKeys,
-              }
+              },CONFIG_OBJ
             );
             fetchAll();
             setIsEditing(false);
@@ -203,7 +203,7 @@ const AssignTeam = () => {
           try {
             console.log("form data", values);
             axios.post(
-              `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
+              `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,CONFIG_OBJ,
               values
             );
             setIsAdding(false);
@@ -226,7 +226,7 @@ const AssignTeam = () => {
             console.log("team id", editingId);
             console.log("form data", values);
             axios.patch(
-              `http://localhost:8000/api/user/project/teams/${editingId}`,
+              `http://localhost:8000/api/user/project/teams/${editingId}`,CONFIG_OBJ,
               {
                 ...values,
                 reporting_manager_id: managerEmployeeId,
@@ -256,7 +256,7 @@ const AssignTeam = () => {
         async onOk() {
           try {
             await axios.delete(
-              "http://localhost:8000/api/user/project/teams/" + id
+              "http://localhost:8000/api/user/project/teams/" + id,CONFIG_OBJ
             );
             fetchAll();
           } catch (err) {
