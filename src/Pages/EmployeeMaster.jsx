@@ -12,6 +12,7 @@ import {
   getManagerList,
   getDesignationList,
   getJobRoleList,
+  CONFIG_OBJ,
 } from "../Config.js";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
@@ -63,7 +64,7 @@ const EmployeeMaster = () => {
   const getAllEmployeesHandler = async () => {
     try {
       const response = await axios.get(
-        `${getAllEmployees}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=name&name=${search}&email=${search}`
+        `${getAllEmployees}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=name&name=${search}&email=${search}`,CONFIG_OBJ
       );
       setAllEmployeeData(response.data.data);
       const {
@@ -106,7 +107,7 @@ const EmployeeMaster = () => {
             ? `${editEmployee}/${editingEmployee.employee_id}`
             : `${createEmployee}`;
           await axios
-            .post(url, requestData)
+            .post(url, requestData,CONFIG_OBJ)
             .then((response) => {
               if (response.status === 200) {
                 if (editingEmployee && editingEmployee.employee_id !== null) {
@@ -154,7 +155,7 @@ const EmployeeMaster = () => {
   const deleteEmployeeHandler = async (id) => {
     //creating a function for deleting data
     try {
-      await axios.delete(`${deleteEmployee}` + id); // deleting data from server
+      await axios.delete(`${deleteEmployee}` + id,CONFIG_OBJ); // deleting data from server
       //   window.location.reload(); //reloading the page
       getAllEmployeesHandler();
     } catch (err) {
@@ -238,7 +239,7 @@ const EmployeeMaster = () => {
   const getManagers = async (value) => {
     try {
       // ?designation_id=${value}
-      const result = await axios.get(`${getAllEmployeeslist}`);
+      const result = await axios.get(`${getAllEmployeeslist}`,CONFIG_OBJ,);
       setManagerList(result.data);
       console.log("manager list", result.data);
     } catch (error) {
@@ -255,7 +256,7 @@ const EmployeeMaster = () => {
   const [designationList, setDesignationList] = useState([]);
   const getDesignation = async (value) => {
     try {
-      const result = await axios.get(`${getDesignationList}`);
+      const result = await axios.get(`${getDesignationList}`,CONFIG_OBJ,);
       setDesignationList(result.data);
       console.log("Designation list", result.data);
     } catch (error) {
@@ -270,7 +271,7 @@ const EmployeeMaster = () => {
   const [jobroleList, setJobroleList] = useState([]);
   const getJobRole = async (value) => {
     try {
-      const result = await axios.get(`${getJobRoleList}`);
+      const result = await axios.get(`${getJobRoleList}`,CONFIG_OBJ,);
       setJobroleList(result.data);
       console.log("Job Role list", result.data);
     } catch (error) {

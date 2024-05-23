@@ -7,6 +7,7 @@ import {
   createJobRole,
   editJobRole,
   deleteJobRole,
+  CONFIG_OBJ,
 } from "../Config.js";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -45,7 +46,7 @@ const JobRoleMaster = () => {
   const getAllJobRolesHandler = async () => {
     try {
       const response = await axios.get(
-        `${getAllJobRoles}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=job_role_name&name=${jobrole}`
+        `${getAllJobRoles}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=job_role_name&name=${jobrole}`,CONFIG_OBJ
       );
       setAllJobRoleData(response.data.data);
       const {
@@ -89,7 +90,7 @@ const JobRoleMaster = () => {
             ? `${editJobRole}/${editingManager.job_id}`
             : `${createJobRole}`;
 
-          const response = await axios.post(url, requestData);
+          const response = await axios.post(url, requestData,CONFIG_OBJ,);
           if (response.status) {
             if (editingManager && editingManager.job_id !== null) {
               toast.success("Job Role Updated Successfully!");
@@ -117,7 +118,7 @@ const JobRoleMaster = () => {
 
   const deleteHandler = async (id) => {
     try {
-      const response = await axios.delete(`${deleteJobRole}` + id);
+      const response = await axios.delete(`${deleteJobRole}` + id,CONFIG_OBJ);
       if (response.status === 200) {
         // Manager deleted successfully
         toast.success(response.data.msg)

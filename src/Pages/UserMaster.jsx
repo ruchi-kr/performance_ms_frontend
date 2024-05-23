@@ -7,6 +7,7 @@ import {
   deleteUser,
   getEmployerList,
   EmployeeList,
+  CONFIG_OBJ,
 } from "../Config.js";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
@@ -49,7 +50,7 @@ const UserMaster = () => {
   const getAllUsersHandler = async () => {
     try {
       const response = await axios.get(
-        `${getAllUsers}?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=email_id&name=${search}&email=${search}&role=${search}`
+        `${getAllUsers}?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=email_id&name=${search}&email=${search}&role=${search}`,CONFIG_OBJ
       );
       setAllUserData(response.data.data);
       console.log("user details data", response.data);
@@ -92,7 +93,7 @@ const UserMaster = () => {
           const url = editingUser
             ? `${editUser}/${editingUser.user_id}`
             : `${createUser}`;
-          const response = await axios.post(url, requestData);
+          const response = await axios.post(url, requestData,CONFIG_OBJ);
           if (response.status) {
             if (editingUser && editingUser.user_id !== null) {
               toast.success("User Details Updated Successfully!");
@@ -122,7 +123,7 @@ const UserMaster = () => {
   const deleteUserHandler = async (id) => {
     //creating a function for deleting data
     try {
-      const response = await axios.delete(`${deleteUser}` + id); // deleting data from server
+      const response = await axios.delete(`${deleteUser}` + id,CONFIG_OBJ); // deleting data from server
       if (response.status === 200) {
         toast.success(response.data.msg);
         window.location.reload();
@@ -202,7 +203,7 @@ const UserMaster = () => {
   const [employer, setEmployer] = useState("");
   const getEmployers = async (value) => {
     try {
-      const result = await axios.get(`${EmployeeList}`);
+      const result = await axios.get(`${EmployeeList}`,CONFIG_OBJ);
       setEmployerList(result.data);
       console.log("employer list", result.data);
     } catch (error) {
@@ -315,7 +316,7 @@ const UserMaster = () => {
                         <Form.Item
                           name="employee_id"
                           label={
-                            <span className="text-info">Employer Name</span>
+                            <span className="text-info">Employee Name</span>
                           }
                           rules={[
                             {

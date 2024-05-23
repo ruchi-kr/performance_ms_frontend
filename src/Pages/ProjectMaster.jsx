@@ -68,7 +68,8 @@ const ProjectMaster = () => {
   const getAllProjectsHandler = async (page) => {
     try {
       const response = await axios.get(
-        `${getAllProjectsUrlPagination}?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=project_name&name=${project}`
+        `${getAllProjectsUrlPagination}?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=project_name&name=${project}`,
+        CONFIG_OBJ
       );
       setAllProjectData(response.data.data);
       console.log("project details data", response.data);
@@ -612,7 +613,7 @@ const ProjectMaster = () => {
                             <NavLink
                               to={`/projectplan/?project_id=${data.project_id}`}
                             >
-                              {data.project_name}
+                              <span className="text-capitalize">{data.project_name}</span>
                             </NavLink>
                           </td>
                           <td>

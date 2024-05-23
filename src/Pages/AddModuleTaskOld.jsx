@@ -37,6 +37,7 @@ import {
   editModule,
   deleteModule,
   getAllProjects,
+  CONFIG_OBJ,
 } from "../Config.js";
 import styles from "./AddModuleTasks.module.css";
 const utc = require("dayjs/plugin/utc");
@@ -84,7 +85,7 @@ const AddModuleTasks = () => {
 
   const getProjects = async (value) => {
     try {
-      const result = await axios.get(`${getAllProjects}`);
+      const result = await axios.get(`${getAllProjects}`,CONFIG_OBJ);
 
       setProjectList(result.data);
       console.log("project list", result.data);
@@ -99,7 +100,7 @@ const AddModuleTasks = () => {
   const getModuleList = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/getModule/?page=1&pageSize=100000&search="
+        "http://localhost:8000/api/admin/getModule/?page=1&pageSize=100000&search=",CONFIG_OBJ
       );
       setModuleList(response.data.results);
       //   if (response.data.results !== undefined) {
@@ -114,7 +115,7 @@ const AddModuleTasks = () => {
   const getModuleTaskList = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/module/task/${module_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
+        `http://localhost:8000/api/module/task/${module_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`,CONFIG_OBJ
       );
       console.log("response", response.data);
       setTaskList(response.data.results);
@@ -222,7 +223,7 @@ const AddModuleTasks = () => {
       async onOk() {
         try {
           await axios.delete(
-            `http://localhost:8000/api/module/task/${record.task_id}`
+            `http://localhost:8000/api/module/task/${record.task_id}`,CONFIG_OBJ
           );
           notification.success({
             message: "Success",
@@ -246,7 +247,7 @@ const AddModuleTasks = () => {
     if (isAdding && !isEditing) {
       try {
         console.log("onFinish before sending values adding", values);
-        await axios.post("http://localhost:8000/api/module/task", {
+        await axios.post("http://localhost:8000/api/module/task",CONFIG_OBJ, {
           ...values,
           stage: stage,
         });
@@ -269,7 +270,7 @@ const AddModuleTasks = () => {
       console.log("values inside edit!!!!", values);
       try {
         await axios.patch(
-          `http://localhost:8000/api/module/task/${values.task_id}`,
+          `http://localhost:8000/api/module/task/${values.task_id}`,CONFIG_OBJ,
           values
         );
         handleReset();

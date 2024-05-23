@@ -4,8 +4,11 @@ import { useParams, NavLink } from "react-router-dom";
 import Header from "../Components/Header";
 import SideNavbar from "../Components/SideNavbar";
 import Footer from "../Components/Footer";
+import { CONFIG_OBJ } from "../Config";
 import { Flex, Space, Table, Tag, Input } from "antd";
 const { Search } = Input;
+
+
 const ManagerViewProjectTask = () => {
   const { project_id } = useParams();
   console.log("project_id", project_id);
@@ -18,7 +21,7 @@ const ManagerViewProjectTask = () => {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/project/employee/report/${manager_id}/null/${project_id}/?search=${search}`
+        `http://localhost:8000/api/project/employee/report/${manager_id}/null/${project_id}/?search=${search}`,CONFIG_OBJ
       );
       setTaskRecords(response.data.data);
       console.log("task records", response.data.data);

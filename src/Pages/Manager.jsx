@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { PlusOutlined, CloseOutlined,CheckOutlined } from "@ant-design/icons";
+import { CONFIG_OBJ} from '../Config.js';
 import axios from 'axios';
 import SideNavbar from '../Components/SideNavbar'
 import Header from '../Components/Header'
@@ -14,7 +15,7 @@ const Manager = () => {
   };
   const deleteRemarks = async (id) => {                            //creating a function for deleting data
     try {
-        await axios.delete(`${deleteRemarks}` + id)          // deleting data from server
+        await axios.delete(`${deleteRemarks}` + id,CONFIG_OBJ)          // deleting data from server
         window.location.reload()                             //reloading the page
     } catch (err) {
         console.log("error deleting remarks", err);                                 //if error occurs then log it

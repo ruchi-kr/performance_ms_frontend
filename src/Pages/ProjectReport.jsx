@@ -4,7 +4,7 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import moment from "moment";
-import { getEmployeeReport } from "../Config";
+import { getEmployeeReport,CONFIG_OBJ } from "../Config";
 import dayjs from "dayjs";
 import { Input, Button, DatePicker, Tag } from "antd";
 import { toast } from "react-toastify";
@@ -36,7 +36,7 @@ const ProjectReport = () => {
       // const response = await axios.get(`${getEmployeeReport}/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}`);
       // ?page=${page}&pageSize=${pageSize}
       const response = await axios.get(
-        `http://localhost:8000/api/project/report/${manager_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`
+        `http://localhost:8000/api/project/report/${manager_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`,CONFIG_OBJ
       );
       setReportData(response.data);
       console.log("report data", response.data);
@@ -52,7 +52,7 @@ const ProjectReport = () => {
   useEffect(() => {
     async function fetchScheduleStartDate() {
       const projectExtraDetails = await axios.get(
-        `http://localhost:8000/api/project/actualStartDate/${manager_id}`
+        `http://localhost:8000/api/project/actualStartDate/${manager_id}`,CONFIG_OBJ
       );
       console.log("project extra details", projectExtraDetails.data);
       setProjectActualStartDate(projectExtraDetails.data);

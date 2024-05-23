@@ -8,6 +8,7 @@ import {
   editDesignation,
   deleteDesignation,
   getDesignationList,
+  CONFIG_OBJ,
 } from "../Config.js";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -89,7 +90,7 @@ const DesignationMaster = () => {
   const getAllDesignationHandler = async () => {
     try {
       const response = await axios.get(
-        `${getAllDesignation}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=designation_name&name=${designation}`
+        `${getAllDesignation}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&sortOrder=${sortOrder}&sortBy=designation_name&name=${designation}`,CONFIG_OBJ
       );
       setAllManagerData(response.data.data);
       const {
@@ -115,29 +116,23 @@ const DesignationMaster = () => {
     }
   };
 
-  // const [loading, setLoading] = useState(false);
-  // useEffect(() => {
-  //   setLoading(false);
-  //   const timer = setTimeout(() => {
-  //     onSearch();
-  //   }, 3000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearch();
+    }, 2000);
 
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, [designation]);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [designation]);
+  const onSearch = async () => {
+    if (designation === null || designation === undefined) return;
+    getAllDesignationHandler(currentPage);
+  };
 
-  // const onSearch = async () => {
-  //   if (designation === null || designation === undefined) {
-  //     getAllDesignationHandler(currentPage);
-  //     setLoading(false);
-  //   } else {
-  //     setLoading(true);
-  //   }
-  // };
   useEffect(() => {
     getAllDesignationHandler(currentPage);
-  }, [designation, pagination.currentPage, pagination.pageSize, sortOrder]);
+  }, [ pagination.currentPage, pagination.pageSize, sortOrder]);
 
   // for adding another
   const handleAddAnother = () => {
@@ -148,7 +143,7 @@ const DesignationMaster = () => {
           ...values,
         };
         const url = `${createDesignation}`;
-        const response = await axios.post(url, requestData);
+        const response = await axios.post(url, requestData,CONFIG_OBJ);
         if (response.status === 200) {
           toast.success("Designation Added Successfully!");
 
@@ -179,7 +174,7 @@ const DesignationMaster = () => {
           const url = editingManager
             ? `${editDesignation}/${editingManager.designation_id}`
             : `${createDesignation}`;
-          const response = await axios.post(url, requestData);
+          const response = await axios.post(url, requestData,CONFIG_OBJ);
           if (response.status) {
             if (editingManager && editingManager.designation_id !== null) {
               toast.success("Designation Updated Successfully!");
@@ -206,7 +201,7 @@ const DesignationMaster = () => {
 
   const deleteManagerHandler = async (id) => {
     try {
-      const response = await axios.delete(`${deleteDesignation}` + id);
+      const response = await axios.delete(`${deleteDesignation}` + id,CONFIG_OBJ);
       if (response.status === 200) {
         // Manager deleted successfully
         console.log(response.data);
@@ -321,7 +316,7 @@ const DesignationMaster = () => {
                   <Search
                     placeholder="search by designation"
                     allowClear
-                    // onSearch={onSearch}
+                    onSearch={onSearch}
                     style={{
                       width: 200,
                     }}
@@ -399,7 +394,6 @@ const DesignationMaster = () => {
                   <thead>
                     <tr>
                       <th scope="col">S.No.</th>
-
                       <th scope="col">
                         <div className="d-flex">
                           <div>Designation Name</div>

@@ -3,7 +3,7 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import { getEmployeeReport } from "../Config";
+import { getEmployeeReport,CONFIG_OBJ } from "../Config";
 import { Input, DatePicker, Button, Tag, Flex, Progress } from "antd";
 import moment from "moment";
 import dayjs from "dayjs";
@@ -48,7 +48,7 @@ const ManagerProjectReport = () => {
   const getEmployeeReportHandler = async (page) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/project/report/detailed/${manager_id}/?&search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${page}&pageSize=${10}`
+        `http://localhost:8000/api/project/report/detailed/${manager_id}/?&search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${page}&pageSize=${10}`,CONFIG_OBJ
       );
       console.log("response", response);
       setReportData(response.data);

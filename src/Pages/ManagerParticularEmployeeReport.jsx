@@ -3,7 +3,7 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import { getEmployeeReport } from "../Config";
+import { getEmployeeReport,CONFIG_OBJ } from "../Config";
 import {
   Input,
   DatePicker,
@@ -55,7 +55,7 @@ const ManagerParticularEmployeeReport = () => {
   const getEmployeeReview = async (page) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/employee/remark/${manager_id}/${employee_id}`
+        `http://localhost:8000/api/employee/remark/${manager_id}/${employee_id}`,CONFIG_OBJ
       );
       console.log("employee review", response?.data[0]);
       setEmployeeRemarkData(response?.data[0]);
@@ -72,7 +72,7 @@ const ManagerParticularEmployeeReport = () => {
   const getEmployeeReportHandler = async (page) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/employee/report/${manager_id}/${employee_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`
+        `http://localhost:8000/api/employee/report/${manager_id}/${employee_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`,CONFIG_OBJ
       );
       console.log("response", response.data);
       setReportData(response.data);
@@ -173,7 +173,7 @@ const ManagerParticularEmployeeReport = () => {
     } else {
       try {
         const resp = await axios.post(
-          `http://localhost:8000/api/employee/remark/${manager_id}/${employee_id}`,
+          `http://localhost:8000/api/employee/remark/${manager_id}/${employee_id}`,CONFIG_OBJ,
           { ...values, from_date: monday, to_date: saturday }
         );
         console.log(resp);

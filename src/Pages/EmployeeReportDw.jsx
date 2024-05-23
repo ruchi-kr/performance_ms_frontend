@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { getEmployeeReportDW } from '../Config';
+import { getEmployeeReportDW, CONFIG_OBJ } from '../Config';
 import SideNavbar from '../Components/SideNavbar';
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
@@ -68,7 +68,7 @@ const EmployeeReportDateWise = () => {
         url += `&fromDate=${formattedFromDate}&toDate=${formattedToDate}`;
       }
 
-      const response = await axios.get(url);
+      const response = await axios.get(url, CONFIG_OBJ);
 
       setReportData(response.data);
       console.log('report data', response.data);
