@@ -66,7 +66,7 @@ const ProjectPlan = () => {
   const project_id = JSON.parse(queryParams.get("project_id")); 
   const [selectedProjectId, setSelectedProjectId] = useState(project_id);
   const [moduleStage, setModuleStage] = useState("");
-
+  let [searchParams, setSearchParams] = useSearchParams();
   const getProjects = async (value) => {
     try {
       const result = await axios.get(`${getAllProjects}`);
@@ -83,6 +83,7 @@ const ProjectPlan = () => {
   const projectChangeHandler = (value) => {
     console.log(" projetc value", value);
     setSelectedProjectId(value);
+    setSearchParams({"project_id":value})
   };
   console.log("selected project id", selectedProjectId);
 
@@ -182,7 +183,7 @@ const ProjectPlan = () => {
   useEffect(() => {
     console.log("inside use effect", project_id);
     getProjectPlanData();
-  }, [selectedProjectId, project_id]);
+  }, [selectedProjectId, project_id,searchParams]);
 
   // function for excel pdf
   // const generatePDF = async () => {
@@ -272,6 +273,7 @@ const ProjectPlan = () => {
                     onChange={projectChangeHandler}
                     placeholder="Select Project"
                     style={{ width: "20rem" }}
+                  
                   >
                     {projectList.map((project) => (
                       <Option
