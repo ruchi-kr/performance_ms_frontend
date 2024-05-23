@@ -52,6 +52,7 @@ const { Search } = Input;
 const ProjectPlan = () => {
   // for user type
   const user_type = JSON.parse(sessionStorage.getItem("user_type"));
+  const role = JSON.parse(sessionStorage.getItem("role"));
   // for excel pdf
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
@@ -273,6 +274,8 @@ const ProjectPlan = () => {
                     onChange={projectChangeHandler}
                     placeholder="Select Project"
                     style={{ width: "20rem" }}
+                    disabled={(user_type !== 1 && role ==="employee")}
+
                   >
                     {projectList.map((project) => (
                       <Option
@@ -305,7 +308,7 @@ const ProjectPlan = () => {
                       <div className="col-2">
                         <button
                           className="btn btn-sm btn-info"
-                          disabled={selectedProjectStage === "completed" || user_type !== 1}
+                          disabled={selectedProjectStage === "completed" || (user_type !== 1 && role ==="employee")}
                         >
                           <NavLink
                             to={`/addprojectplan/?project_id=${selectedProjectId}&stage=${selectedProjectStage}`}

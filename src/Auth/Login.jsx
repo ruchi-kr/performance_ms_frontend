@@ -5,11 +5,12 @@ import LoginSchema from '../Schema/LoginSchema';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { loginUrl } from '../Config';
+import { useDispatch } from 'react-redux'; 
 
 export default function Login() {
 
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
     const loginForm = {
         email_id: '',
         password: '',
@@ -32,7 +33,9 @@ export default function Login() {
                 sessionStorage.setItem('role', JSON.stringify(result.data.result.user.role));
                 sessionStorage.setItem('status', JSON.stringify(result.data.result.user.status));
 
+                dispatch({ type: 'LOGIN_SUCCESS', payload: result.data.result.user });
                 console.log("token set successfully", result.data.result);
+                // window.location.reload();
                 const role = result.data.result.user.role;
                 const status = result.data.result.user.status
                 console.log("role", role)
@@ -41,6 +44,7 @@ export default function Login() {
                 }
                 else if (role === "employee" && status === "active") {
                     navigate('/employee');
+                    
                 }
                 else if (role == "management" && status === "active") {
                     navigate('/assignteam');

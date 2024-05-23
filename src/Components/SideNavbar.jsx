@@ -152,7 +152,7 @@ const SideNavbar = () => {
                     </Link>
                   </li>
 
-                  <li className="nav-item btnhovergrey mt-3">
+                  {/* <li className="nav-item btnhovergrey mt-3">
                     <NavLink
                       className={`nav-link text-white text-decoration-none ${
                         window.location.pathname ===
@@ -161,7 +161,7 @@ const SideNavbar = () => {
                           : ""
                       }`}
                       to="/projectplan/?project_id=null"
-                      onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
+                      // onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
                     >
                       <FontAwesomeIcon
                         className="nav-icon"
@@ -169,7 +169,7 @@ const SideNavbar = () => {
                       />
                       <p>Project Plan</p>
                     </NavLink>
-                  </li>
+                  </li> */}
                 </>
               ) : (
                 <>
@@ -342,6 +342,24 @@ const SideNavbar = () => {
                           </div>
                         {/* </ul> */}
                       </li>
+                        <li className="nav-item btnhovergrey mt-3">
+                    <NavLink
+                      className={`nav-link text-white text-decoration-none ${
+                        window.location.pathname ===
+                        `/projectplan/:project_id=null`
+                          ? "bg-cyan"
+                          : ""
+                      }`}
+                      to="/projectplan/?project_id=null"
+                      // onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
+                    >
+                      <FontAwesomeIcon
+                        className="nav-icon"
+                        icon={faFolderOpen}
+                      />
+                      <p>Project Plan</p>
+                    </NavLink>
+                  </li>
                       <li className="nav-item fixed-bottom ">
                         <button
                           className="nav-link text-white text-left"

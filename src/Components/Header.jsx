@@ -20,7 +20,7 @@ const user_type = JSON.parse(sessionStorage.getItem('user_type'));
 
     const logout = () => {
         sessionStorage.clear();
-       
+       localStorage.clear();
            navigate("/login");
     }
     return (
