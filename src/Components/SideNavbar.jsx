@@ -162,7 +162,7 @@ const SideNavbar = () => {
                           : ""
                       }`}
                       to="/projectplan/?project_id=null"
-                      onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
+                      // onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
                     >
                       <FontAwesomeIcon
                         className="nav-icon"

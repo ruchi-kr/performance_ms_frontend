@@ -49,6 +49,7 @@ import {
   editModule,
   deleteModule,
   getAllProjects,
+  getJobRoleList,
   CONFIG_OBJ,
 } from "../Config.js";
 import SideNavbar from "../Components/SideNavbar";
@@ -70,6 +71,7 @@ const AddProjectPlan = () => {
   const [formTask] = Form.useForm();
 
   const [userData, setUserData] = useState([]);
+  const [jobRoleData, setJobRoleData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isAddingTask, setIsAddingTask] = useState(false);
@@ -117,9 +119,16 @@ const AddProjectPlan = () => {
     setExpandedRowKeys([]);
   };
 
+  const getJobRoleData = async () => {
+    try {
+      const results = await axios.get(`${getJobRoleList}`, CONFIG_OBJ);
+      console.log("job role", results.data);
+      setJobRoleData(results.data);
+    } catch (error) {}
+  };
   const getProjects = async (value) => {
     try {
-      const result = await axios.get(`${getAllProjects}`,CONFIG_OBJ);
+      const result = await axios.get(`${getAllProjects}`, CONFIG_OBJ);
 
       setProjectList(result.data);
 
@@ -137,7 +146,8 @@ const AddProjectPlan = () => {
   const getModuleListWithTasks = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`,CONFIG_OBJ
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=1&pageSize=100000&search=`,
+        CONFIG_OBJ
       );
       console.log("module with their tasks", response.data.data);
       setModuleList(response.data.data);
@@ -155,7 +165,8 @@ const AddProjectPlan = () => {
       //   `http://localhost:8000/api/admin/getModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`
       // );
       const response = await axios.get(
-        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`,CONFIG_OBJ
+        `http://localhost:8000/api/admin/getAllModule/${project_id}/?page=${pagination.currentPage}&pageSize=${pagination.pageSize}&search=${search}`,
+        CONFIG_OBJ
       );
       console.log("module list", response.data.data);
       setModuleList(response.data.data);
@@ -193,6 +204,7 @@ const AddProjectPlan = () => {
     getProjects();
     getModuleListHandler();
     getModuleListWithTasks();
+    getJobRoleData();
   }, []);
   useEffect(() => {
     getModuleListHandler();
@@ -274,7 +286,8 @@ const AddProjectPlan = () => {
       async onOk() {
         try {
           await axios.delete(
-            `http://localhost:8000/api/admin/deleteModule/${record.module_id}`,CONFIG_OBJ
+            `http://localhost:8000/api/admin/deleteModule/${record.module_id}`,
+            CONFIG_OBJ
           );
           notification.success({
             message: "Success",
@@ -303,7 +316,8 @@ const AddProjectPlan = () => {
       async onOk() {
         try {
           const response = await axios.delete(
-            `http://localhost:8000/api/module/task/${record.task_id}`,CONFIG_OBJ
+            `http://localhost:8000/api/module/task/${record.task_id}`,
+            CONFIG_OBJ
           );
           notification.success({
             message: "Success",
@@ -340,6 +354,9 @@ const AddProjectPlan = () => {
       task_name: record.task_name,
       allocated_time: record.allocated_time,
       description: record.description,
+      days: record.days,
+      job_role_id: record.job_id,
+      memberdetails: { count: record.count, days: record.days },
     });
     setIsEditingTask(true);
   };
@@ -349,10 +366,14 @@ const AddProjectPlan = () => {
     if (isAdding && !isEditing) {
       try {
         console.log("onFinish before sending values adding", values);
-        await axios.post("http://localhost:8000/api/admin/addModule",CONFIG_OBJ, {
-          ...values,
-          stage: stage,
-        });
+        await axios.post(
+          "http://localhost:8000/api/admin/addModule",
+          CONFIG_OBJ,
+          {
+            ...values,
+            stage: stage,
+          }
+        );
         getModuleListHandler();
         form.resetFields(["module_name", "from_date", "to_date", "status"]);
         // handleReset();
@@ -373,7 +394,8 @@ const AddProjectPlan = () => {
       console.log("values inside edit!!!!", values);
       try {
         await axios.patch(
-          `http://localhost:8000/api/admin/editModule/${values.module_id}`,CONFIG_OBJ,
+          `http://localhost:8000/api/admin/editModule/${values.module_id}`,
+          CONFIG_OBJ,
           values
         );
         handleReset();
@@ -396,14 +418,24 @@ const AddProjectPlan = () => {
     console.log(values);
     if (isAddingTask && !isEditingTask) {
       try {
-        console.log("onFinish before sending values adding", values);
+        console.log("onFinish before sending values adding", {
+          ...values,
+          count: values.memberdetails.count,
+          days: values.memberdetails.days,
+        });
         // console.log("values inside edit!!!!", values);
         console.log("get field values all", formTask.getFieldsValue());
 
-        await axios.post("http://localhost:8000/api/module/task",CONFIG_OBJ, {
-          ...values,
-          stage: stage,
-        });
+        await axios.post(
+          "http://localhost:8000/api/module/task",
+          {
+            ...values,
+            stage: stage,
+            count: values.memberdetails.count,
+            days: values.memberdetails.days,
+          },
+          CONFIG_OBJ
+        );
         formTask.resetFields(["task_name", "allocated_time"]);
         getModuleListWithTasks();
         // handleReset();
@@ -427,8 +459,13 @@ const AddProjectPlan = () => {
 
       try {
         await axios.patch(
-          `http://localhost:8000/api/module/task/${values.task_id}`,CONFIG_OBJ,
-          values
+          `http://localhost:8000/api/module/task/${values.task_id}`,
+          {
+            ...values,
+            count: values.memberdetails.count,
+            days: values.memberdetails.days,
+          },
+          CONFIG_OBJ
         );
         handleReset();
         getModuleListWithTasks();
@@ -802,35 +839,55 @@ const AddProjectPlan = () => {
           ) + 1;
         // Increment the task counter for the current module
         const taskNumber = index + 1;
-        return moduleNumber!==0 ? `${moduleNumber}.${taskNumber}` : "-";
+        return moduleNumber !== 0 ? `${moduleNumber}.${taskNumber}` : "-";
       },
     },
     {
       title: <div className="text-primary">Task Name</div>,
       dataIndex: "task_name",
       key: "task_name",
-      width:"20%",
+      width: "20%",
       render: (text) => (
         <span className="text-capitalize">{text ? text : "-"}</span>
       ),
       // render: (text) => `${text ? text : "-"}`,
+    },
+
+    {
+      title: <div className="text-primary">Job Role</div>,
+      dataIndex: "job_role",
+      width: "18%",
+      key: "job_role",
+      render: (text) => (
+        <span className="text-capitalize">{text ? text : "-"}</span>
+      ),
     },
     {
       title: <div className="text-primary">Description</div>,
       dataIndex: "description",
       key: "description",
 
-      render: (text) => `${text ? text : "-"}`,
+      render: (text) => `${text ? text : "N.A."}`,
     },
-
     {
-      title: <div className="text-primary">Allocated Time (hrs)</div>,
+      title: <div className="text-primary">No. of Emp.</div>,
+      dataIndex: "count",
+      width: "8%",
+      key: "count",
+    },
+    {
+      title: <div className="text-primary">No. of Days</div>,
+      dataIndex: "days",
+      width: "8%",
+      key: "days",
+    },
+    {
+      title: <div className="text-primary">Alloc. Time (Man Days)</div>,
       dataIndex: "allocated_time",
       key: "allocated_time",
       width: "10%",
       align: "left",
       render: (text) => `${text ? `${text} hrs` : "-"}`,
-      
     },
     {
       title: "Module_id",
@@ -844,29 +901,8 @@ const AddProjectPlan = () => {
       dataIndex: "action",
       align: "center",
       key: "action",
-      width: "15%",
-      // render: (_, record) => (
-      //   <div>
+      width: "8%",
 
-      //     <EditOutlined
-      //       type="primary"
-      //       style={{
-      //         marginRight: "9px",
-      //         color: "green",
-      //         textAlign: "center",
-      //       }}
-      //       onClick={() => {
-      //         handleEdit(record);
-      //         setIsAdding(false);
-      //       }}
-      //     />
-      //     <DeleteOutlined
-      //       type="primary"
-      //       style={{ color: "red" }}
-      //       onClick={() => handleDelete(record)}
-      //     />
-      //   </div>
-      // ),
       render: (_, record) => (
         <div>
           {record.task_id !== null ? (
@@ -900,6 +936,19 @@ const AddProjectPlan = () => {
       ),
     },
   ];
+  //form onchange
+  const handleValuesChange = (_, allValues) => {
+    console.log("form in onchange", allValues.memberdetails.count);
+    const number1 = allValues.memberdetails.count;
+    const number2 = allValues.memberdetails.days;
+    const total = number1 * number2;
+    if (number1 !== undefined && number2 !== undefined) {
+      console.log("total man hrs", number1 * number2);
+      formTask.setFieldsValue({ allocated_time: total });
+    } else {
+      console.log("tootal man hrs", 0);
+    }
+  };
 
   return (
     <>
@@ -1031,7 +1080,7 @@ const AddProjectPlan = () => {
                       dataSource={record.tasks} // Use the tasks array from the record
                       pagination={false} // Disable pagination for nested table
                       size="small"
-                      bordered  
+                      bordered
                       style={{ width: "90%" }}
                     />
                   ),
@@ -1336,16 +1385,12 @@ const AddProjectPlan = () => {
                           onFinish={onFinishTask}
                           onFinishFailed={onFinishFailedTask}
                           autoComplete="on"
+                          onValuesChange={handleValuesChange}
                           style={{ paddingTop: "2rem" }}
-                          // initialValues={{
-                          //   fullstack: { count: 0, days: 0 },
-                          //   frontend: { count: 0, days: 0 },
-                          //   backend: { count: 0, days: 0 },
-                          //   qa: { count: 0, days: 0 },
-                          //   pm: { count: 0, days: 0 },
-                          //   design: { count: 0, days: 0 },
-                          //   special: { count: 0, days: 0 },
-                          // }}
+                          initialValues={{
+                            allocated_time: 1,
+                            memberdetails: { count: 1, days: 1 },
+                          }}
                         >
                           <Row gutter={16}>
                             <Col span={24}>
@@ -1412,7 +1457,7 @@ const AddProjectPlan = () => {
                             </Col>
                             <Col span={6}>
                               <Form.Item
-                                label="Allocated Time (Man Hrs.)"
+                                label="Allocated Time (Man Days)"
                                 name="allocated_time"
                                 rules={[
                                   {
@@ -1422,10 +1467,130 @@ const AddProjectPlan = () => {
                                 ]}
                               >
                                 <InputNumber
-                                  min={0}
-                                  max={500}
+                                  min={1}
+                                  max={1000}
+                                  disabled
                                   style={{ width: "80%" }}
                                 />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row gutter={24}>
+                            <Col span={8}>
+                              <Form.Item
+                                label="Job Role"
+                                name="job_role_id"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Please select job role!",
+                                  },
+                                ]}
+                              >
+                                <Select
+                                  allowClear
+                                  placeholder="Select Job Role"
+                                  optionFilterProp="children"
+                                  className="rounded-2"
+                                >
+                                  <Option value="">Select</Option>
+
+                                  {jobRoleData.map((item, index) => (
+                                    <Option
+                                      key={index}
+                                      value={item.job_id}
+                                      label={item.job_role_name}
+                                    >
+                                      {item.job_role_name}
+                                    </Option>
+                                  ))}
+                                </Select>
+                              </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                              <Form.Item
+                                label="Man Hrs. Details"
+                                name={["basic", "memberdetails"]}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "",
+                                  },
+                                ]}
+                              >
+                                <Space.Compact>
+                                  <Form.Item
+                                    name={["memberdetails", "count"]}
+                                    label="No. of employees"
+                                    noStyle
+                                    rules={[
+                                      ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                          const days = getFieldValue([
+                                            "memberdetails",
+                                            "days",
+                                          ]);
+
+                                          if (
+                                            (days !== null ||
+                                              days !== undefined) &&
+                                            (value === null ||
+                                              value === undefined)
+                                          ) {
+                                            return Promise.reject(
+                                              new Error(
+                                                "Enter no. of members !"
+                                              )
+                                            );
+                                          }
+                                          return Promise.resolve();
+                                        },
+                                      }),
+                                    ]}
+                                  >
+                                    <InputNumber
+                                      style={{ width: "50%" }}
+                                      min={1}
+                                      max={100}
+                                      placeholder="No. of employees"
+                                    />
+                                  </Form.Item>
+                                  <Form.Item
+                                    name={["memberdetails", "days"]}
+                                    label="days"
+                                    noStyle
+                                    dependencies={[["memberdetails", "count"]]}
+                                    rules={[
+                                      ({ getFieldValue }) => ({
+                                        validator(_, value) {
+                                          const count = getFieldValue([
+                                            "memberdetails",
+                                            "count",
+                                          ]);
+                                          if (
+                                            (count !== null ||
+                                              count !== undefined) &&
+                                            (value === null ||
+                                              value === undefined)
+                                          ) {
+                                            return Promise.reject(
+                                              new Error("Enter no. of days !")
+                                            );
+                                          }
+
+                                          return Promise.resolve();
+                                        },
+                                      }),
+                                    ]}
+                                  >
+                                    <InputNumber
+                                      style={{ width: "50%" }}
+                                      min={1}
+                                      max={100}
+                                      placeholder="No. of days"
+                                    />
+                                  </Form.Item>
+                                </Space.Compact>
                               </Form.Item>
                             </Col>
                           </Row>
