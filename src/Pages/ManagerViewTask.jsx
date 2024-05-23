@@ -10,7 +10,9 @@ import {
   ArrowDownOutlined,
   ArrowUpOutlined,
   ReadOutlined,
+  HistoryOutlined,
   PauseOutlined,
+  SettingOutlined,
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
@@ -255,7 +257,7 @@ const ManagerViewTask = () => {
                                 valueStyle={{
                                   color: "blue",
                                 }}
-                                prefix={<ClockCircleOutlined />}
+                                prefix={<SettingOutlined />}
                                 // suffix="%"
                               />
                             </Card>
@@ -270,7 +272,7 @@ const ManagerViewTask = () => {
                                 valueStyle={{
                                   color: "orange",
                                 }}
-                                prefix={<PauseOutlined />}
+                                prefix={<HistoryOutlined />}
                               />
                             </Card>
                           </Col>

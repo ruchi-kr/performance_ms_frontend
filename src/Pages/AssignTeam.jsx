@@ -21,14 +21,13 @@ import {
 import {
   DeleteOutlined,
   EditOutlined,
-  
   SearchOutlined,
   ExclamationCircleFilled,
   PlusOutlined,
 } from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import { formatDate } from "../utils/dateFormatter.js";
-import Highlighter from 'react-highlight-words';
+import Highlighter from "react-highlight-words";
 const { Option } = Select;
 const { confirm } = Modal;
 const { Title } = Typography;
@@ -39,6 +38,7 @@ const AssignTeam = () => {
   const [modifiedTeamsData, setModifiedTeamsData] = useState(null);
   const [allEmployeeData, setAllEmployeeData] = useState(null);
   const [projectData, setProjectData] = useState([]);
+  const [filteredProjectData, setFilteredProjectData] = useState([]);
   const [form] = Form.useForm();
   const [project_id, SetProjectId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -107,10 +107,19 @@ const AssignTeam = () => {
         "http://localhost:8000/api/admin/getProjects",CONFIG_OBJ
       );
       console.log("project data", resp.data);
+      console.log("teams data", teamsData);
+      const filteredProjects = resp.data?.filter(
+        (project) =>
+          !teamsData?.some(
+            (team) => Number(team.project_id) === Number(project.project_id)
+          )
+      );
+      console.log("filtered projects", filteredProjects);
       setProjectData(resp.data);
+      setFilteredProjectData(filteredProjects);
     };
     fetchProject();
-  }, []);
+  }, [teamsData]);
 
   useEffect(() => {
     // Populate employee data for each team
@@ -125,6 +134,20 @@ const AssignTeam = () => {
   }, [allEmployeeData, teamsData]);
 
   const openEmployeeEdit = async (employee) => {
+    console.log("record to edit", employee);
+    // const filteredProjects = projectData?.filter(
+    //   (project) =>
+    //     !teamsData?.some(
+    //       (team) => Number(team.project_id) === Number(project.project_id)
+    //     )
+    // );
+    // console.log("filtered projects", filteredProjects);
+
+    // setFilteredProjectData(filteredProjects);
+    // console.log("filtered project data",filteredProjectData)
+    // const newProject = projectData?.filter((project)=>project.project_id===employee.project_id)
+    // setFilteredProjectData([...filteredProjectData,newProject[0]])
+    // console.log("new project",newProject)
     setEditingEmployee(employee);
     setEditingId(employee.team_id);
     setModalVisible(true);
@@ -179,8 +202,9 @@ const AssignTeam = () => {
                 employee_id: selectedRowKeys,
               },CONFIG_OBJ
             );
-            fetchAll();
             setIsEditing(false);
+            setIsAdding(true)
+            fetchAll();
             form.resetFields();
             setSelectedRowKeys([]);
             setModalVisible(false);
@@ -386,29 +410,30 @@ const AssignTeam = () => {
 
   //Table column
   const columns = [
-   
     {
       title: "Name",
       dataIndex: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps("name"),
       render: (text) => <span className="text-capitalize">{text}</span>,
     },
     {
       title: "Job Role",
       dataIndex: "job_role_name",
       sorter: (a, b) => a.job_role_name.localeCompare(b.job_role_name),
-      ...getColumnSearchProps('job_role_name'),
+      ...getColumnSearchProps("job_role_name"),
       render: (text) => <p className="text-capitalize">{text}</p>,
     },
     {
       title: "Year of Exp.",
       dataIndex: "experience",
+      width: "15%",
+      align: "center",
       sorter: {
         compare: (a, b) => a.experience - b.experience,
         multiple: 1,
       },
-    //   sortDirections: ['descend', 'ascend'],
+      //   sortDirections: ['descend', 'ascend'],
     },
   ];
 
@@ -442,106 +467,15 @@ const AssignTeam = () => {
                 <div className="d-flex justify-content-between">
                   <h3 className="text-primary">Teams Details New</h3>
 
-                  <button
+                  {/* <button
                     className="btn btn-sm btn-info d-flex align-items-center"
                     onClick={openTeamAdd}
                   >
                     <span className="fs-4"> + </span>&nbsp;Add Team
-                  </button>
+                  </button> */}
                 </div>
                 <hr className="bg-primary border-4" />
-                {/* modal */}
-                {/* <Modal
-                  title={
-                    editingEmployee ? "Edit Team Members" : "Add Team Members"
-                  }
-                  visible={modalVisible}
-                  onOk={teamFormSubmit}
-                  onCancel={() => {
-                    setModalVisible(false);
-                    setEditingEmployee(null);
-                  }}
-                  okText="Submit"
-                  okButtonProps={{
-                    style: { display: formDisabled ? "none" : "" },
-                  }}
-                  width={500}
-                  centered
-                >
-                  <Form
-                    form={form}
-                    onFinish={teamFormSubmit}
-                    layout="vertical"
-                    disabled={formDisabled}
-                  >
-                    <p className="text-info text-decoration-underline">
-                      Team Details
-                    </p>
-                    <Row gutter={[8, 4]}>
-                      <Col span={12}>
-                        <Form.Item
-                          name="project_id"
-                          label={<span className="text-info">Project</span>}
-                          rules={[
-                            {
-                              required: true,
-                              message: "Project Name is required",
-                            },
-                          ]}
-                        >
-                          <Select
-                            allowClear
-                            placeholder="Select"
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            {projectData.map((project) => (
-                              <Option
-                                key={project.project_id}
-                                value={project.project_id}
-                                label={project.project_name}
-                              >
-                                {project.project_name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          name="employee_id"
-                          label={
-                            <span className="text-info">Team Members</span>
-                          }
-                          rules={[
-                            {
-                              required: true,
-                              message: "Choose at least one memeber",
-                            },
-                          ]}
-                        >
-                          <Select
-                            mode="multiple"
-                            allowClear
-                            placeholder="Select Team Members"
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            {allEmployeeData?.map((emp) => (
-                              <Option
-                                key={emp.employee_id}
-                                value={emp.employee_id}
-                                label={emp.name}
-                              >
-                                {emp.name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Form>
-                </Modal> */}
+
                 <table className="table table-striped table-hover mt-5">
                   <thead>
                     <tr>
@@ -557,14 +491,8 @@ const AssignTeam = () => {
                       return (
                         <tr key={data?.team_id}>
                           <th scope="row">{index + 1}</th>
-                          <th scope="row">
-                            <NavLink
-                              to={`/view/project/tasks/${data.project_id}`}
-                            >
-                              <Tag color="gray" key={data.index}>
-                                {data?.project_name}
-                              </Tag>
-                            </NavLink>
+                          <th scope="row" className="text-capitalize">
+                            {data?.project_name}
                           </th>
                           <th scope="row">
                             <Tag
@@ -609,53 +537,81 @@ const AssignTeam = () => {
                     })}
                   </tbody>
                 </table>
-                <div>
+                <div style={{ width: "70%", margin: "auto" }}>
                   <Title level={3} className="text-primary">
                     {isEditing ? "Edit Team Members" : "Add Team Members"}
                   </Title>
                   <Form onFinish={onFinish} form={form} layout="vertical">
                     <Row>
-                      <Col span={8}>
+                      <Col span={10}>
                         <Form.Item
                           name="project_id"
                           label={<span className="text-info">Project</span>}
                           rules={[
                             {
                               required: true,
-                              message: "Project Name is required",
+                              message: "Please select project!",
                             },
                           ]}
                         >
-                          <Select
-                            allowClear
-                            placeholder="Select"
-                            style={{ width: "100%" }}
-                            className="rounded-2"
-                          >
-                            {projectData.map((project) => (
-                              <Option
-                                key={project.project_id}
-                                value={project.project_id}
-                                label={project.project_name}
-                              >
-                                {project.project_name}
-                              </Option>
-                            ))}
-                          </Select>
+                          {isAdding && (
+                            <Select
+                              allowClear
+                              placeholder="Select Project"
+                              style={{ width: "100%" }}
+                              className="rounded-2"
+                            >
+                              {filteredProjectData.map((project) => (
+                                <Option
+                                  key={project.project_id}
+                                  value={project.project_id}
+                                  label={project.project_name}
+                                >
+                                  <span className="text-capitalize">
+                                    {project.project_name}
+                                  </span>
+                                </Option>
+                              ))}
+                            </Select>
+                          )}
+                          {isEditing && (
+                            <Select
+                              allowClear
+                              placeholder="Select Project"
+                              style={{ width: "100%" }}
+                              className="rounded-2"
+                              disabled={isEditing}
+                            >
+                              {projectData.map((project) => (
+                                <Option
+                                  key={project.project_id}
+                                  value={project.project_id}
+                                  label={project.project_name}
+                                >
+                                  <span className="text-capitalize">
+                                    {project.project_name}
+                                  </span>
+                                </Option>
+                              ))}
+                            </Select>
+                          )}
                         </Form.Item>
                       </Col>
                     </Row>
 
-                    <Form.Item label={<span className="text-info">Select Employees</span>}>
+                    <Form.Item
+                      label={
+                        <span className="text-info">Select Employees</span>
+                      }
+                    >
                       <Table
                         rowKey="employee_id"
                         rowSelection={rowSelection}
                         columns={columns}
-                        
                         size={"small"}
+                        // bordered
                         dataSource={allEmployeeData}
                         // style={{ width: '60%',margin:"auto" }}
-
                       />
                     </Form.Item>
                     <Form.Item>
@@ -663,11 +619,11 @@ const AssignTeam = () => {
                         <span
                           style={{
                             marginLeft: 0,
-                            marginBottom: "0.2rem",
+                            marginBottom: "0.3rem",
                           }}
                         >
                           {hasSelected
-                            ? `Selected ${selectedRowKeys.length} items`
+                            ? `Selected ${selectedRowKeys.length} members`
                             : ""}
                         </span>
                       </Row>

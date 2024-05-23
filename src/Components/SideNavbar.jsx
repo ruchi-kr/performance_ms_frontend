@@ -5,6 +5,7 @@ import {
   faBell,
   faArrowRightFromBracket,
   faUsers,
+  faGear,
   faFolderOpen,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
@@ -170,6 +171,23 @@ const SideNavbar = () => {
                       <p>Project Plan</p>
                     </NavLink>
                   </li> */}
+                  <li className="nav-item btnhovergrey mt-3">
+                    <Link
+                      className={`nav-link text-white text-decoration-none ${
+                        window.location.pathname ===
+                        `/systemsettings/`
+                          ? "bg-cyan"
+                          : ""
+                      }`}
+                      to="/systemsettings"
+                    >
+                      <FontAwesomeIcon
+                        className="nav-icon"
+                        icon={faGear}
+                      />
+                      <p>System Settings</p>
+                    </Link>
+                  </li>
                 </>
               ) : (
                 <>

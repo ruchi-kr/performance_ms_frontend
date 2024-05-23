@@ -622,7 +622,7 @@ const UserMaster = () => {
                             {data.employee_name}
                           </td>
                           {/* <td className='text-capitalize'>{data.email}</td> */}
-                          <td className="text-capitalize">{data.role}</td>
+                          <td className="text-capitalize">{data.role?data.role:"N.A."}</td>
                           <td
                             className={`text-capitalize ${
                               data.status === "active"
