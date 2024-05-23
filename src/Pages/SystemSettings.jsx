@@ -117,9 +117,10 @@ const SystemSettings = () => {
         <div className="content">
           <div className="container-fluid bg-white">
             <div className="row my-5">
-              <div className="col-12 mx-auto">
+              <div className="col-11 mx-auto">
                 {/* <div className="d-flex justify-content-between"> */}
                 <h3 className="text-primary">System Settings</h3>
+                <hr className="bg-primary border-4" />
                 <div>
                   <Checkbox
                     checked={componentDisabled}
@@ -130,20 +131,20 @@ const SystemSettings = () => {
                   </Checkbox>
                   <Form
                     form={form}
-                    layout="horizontal"
+                    layout="vertical"
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     disabled={componentDisabled}
                     style={{ marginTop: "1.5rem" }}
                   >
                     <Row>
-                      <Col span={12}>
+                      <Col span={1}>
                         <Form.Item
                           name="settings_id"
                           label="Settings Id"
                           hidden
                         >
-                          <InputNumber style={{ width: "60%" }} />
+                          <InputNumber style={{ width: "10%" }} />
                         </Form.Item>
                       </Col>
                     </Row>
