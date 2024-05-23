@@ -23,7 +23,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-
+import { CONFIG_OBJ } from "../Config.js";
 const { TextArea } = Input;
 const { confirm } = Modal;
 const SystemSettings = () => {
@@ -38,7 +38,7 @@ const SystemSettings = () => {
   }, []);
   const fetchAll = async () => {
     const resp = await axios.get(
-      "http://localhost:8000/api/admin/systemsettings"
+      "http://localhost:8000/api/admin/systemsettings", CONFIG_OBJ
     );
     console.log("response", resp?.data?.data[0]?.manHrsPerDay);
     const response = resp?.data?.data[0];
@@ -67,7 +67,7 @@ const SystemSettings = () => {
       try {
         const resp = await axios.post(
           "http://localhost:8000/api/admin/systemsettings",
-          values
+          values, CONFIG_OBJ
         );
         toast.success("Settings Added");
         // window.location.reload();
@@ -88,7 +88,7 @@ const SystemSettings = () => {
       try {
         const resp = await axios.patch(
           `http://localhost:8000/api/admin/editsystemsettings/${values.settings_id}`,
-          values
+          values, CONFIG_OBJ
         );
         toast.success("Settings Modified");
         // window.location.reload();

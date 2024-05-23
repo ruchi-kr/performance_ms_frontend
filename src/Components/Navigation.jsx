@@ -28,6 +28,7 @@ import AddProjectPlan from "../Pages/AddProjectPlan";
 import ProjectPlan from "../PlanPages/ProjectPlan";
 import ProjectPlan2 from "../PlanPages/ProjectPlan2";
 import AddModuleTasks from "../Pages/AddModuleTasks";
+import SystemSettings from "../Pages/SystemSettings";
 import AssignTeamNew from "../Pages/AssignTeamNew";
 export const nav = [
     // public
@@ -44,6 +45,7 @@ export const nav = [
     { path: "/jobrolemaster", element: <JobRoleMaster />, isPrivate: true, isAdmin: true, isManager: false, isEmployee: false },
     { path: "/designationmaster", element: <DesignationMaster />, isPrivate: true, isAdmin: true, isManager: false, isEmployee: false },
     { path: "/modulemaster", element: <ModuleMaster />, isPrivate: true, isAdmin: true, isManager: false, isEmployee: false },
+    { path : "/systemsettings", element : <SystemSettings /> , isPrivate : true, isAdmin : true, isManager : false, isEmployee : false},
     // admin and manager url
     { path: "/addprojectplan", element: <AddProjectPlan />, isPrivate: true, isAdmin: true, isManager: true, isEmployee: false },
     { path: "/addmoduletasks", element: <AddModuleTasks />, isPrivate: true, isAdmin: true, isManager: true, isEmployee: false },

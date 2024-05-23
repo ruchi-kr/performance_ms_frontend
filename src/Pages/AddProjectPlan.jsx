@@ -367,12 +367,11 @@ const AddProjectPlan = () => {
       try {
         console.log("onFinish before sending values adding", values);
         await axios.post(
-          "http://localhost:8000/api/admin/addModule",
-          CONFIG_OBJ,
+          "http://localhost:8000/api/admin/addModule",         
           {
             ...values,
             stage: stage,
-          }
+          },CONFIG_OBJ
         );
         getModuleListHandler();
         form.resetFields(["module_name", "from_date", "to_date", "status"]);

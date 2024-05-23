@@ -18,6 +18,7 @@ import {
   deleteTask,
   getAllEmployeeslist,
   getCurrentTime,
+  getManhours,
   CONFIG_OBJ,
 } from "../Config.js";
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -68,6 +69,21 @@ const Employee = () => {
   const [moduleList, setModuleList] = useState([]);
   const [allEmployeeData, setAllEmployeeData] = useState(null);
   const [managerList, setManagerList] = useState([]);
+
+  // for fetching man hrs
+  const [manHrs, setManHrs] = useState(0);
+ const getManHrs = async () => {
+   try {
+     const response = await axios.get(`${getManhours}`, CONFIG_OBJ);
+     console.log("man hrs", response.data.data[0].manHrsPerDay);
+     setManHrs(response.data.data[0].manHrsPerDay);
+   } catch (error) {
+     console.log("Error fetching man hrs", error);
+ }
+}
+useEffect(() => {
+  getManHrs();
+},[]);
 
   const getProjects = async (value) => {
     try {
@@ -158,7 +174,7 @@ const Employee = () => {
   }, []);
 
   const [taskRecords, setTaskRecords] = useState([]);
-
+  const [totalAllocatedTime, setTotalAllocatedTime] = useState(0);
   // Function to fetch tasks from the server
   const fetchTasks = async () => {
     try {
@@ -166,12 +182,21 @@ const Employee = () => {
       console.log("task records", response.data);
       setTaskRecords(response.data);
       setFormDisabled(true);
+      
       // setAdhoc(response.data.adhoc)
       // console.log("adhoc value",adhoc)
     } catch (error) {
       console.log("Error fetching tasks:", error);
     }
   };
+  // useEffect(() => {
+  //   const sumAllocatedTime = taskRecords.reduce((total, task) => Number(total) + Number(task.allocated_time), 0);
+  //   setTotalAllocatedTime(sumAllocatedTime);
+  // }, [taskRecords]);
+  
+
+  console.log("total allocated time",totalAllocatedTime)
+  
 
   useEffect(() => {
     fetchTasks();
@@ -316,6 +341,13 @@ const Employee = () => {
       if (!task.status) {
         task.status = "notstarted";
       }
+      console.log(manHrs-totalAllocatedTime, "manHrs-totalAllocatedTime");
+      console.log(Number(manHrs)-Number(totalAllocatedTime), "Number(manHrs)-Number(totalAllocatedTime)");
+      if(task.allocated_time > (Number(manHrs)-Number(totalAllocatedTime))){
+        toast.error(`Total allocated time should be less than ${manHrs} hours`);
+        return false;
+      }
+      
       if (task.id) {
         // If the task already has an ID, it's an existing task, so update it
         let payload = {
