@@ -7,7 +7,10 @@ import {
   faArrowRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import { Avatar } from "antd";
+import { useDispatch } from "react-redux";
 import { UserOutlined } from "@ant-design/icons";
+import { persistStore } from 'redux-persist';
+import { persistor } from '../redux/store';
 
 const Header = () => {
   let [username, SetUserName] = useState("");
@@ -17,16 +20,38 @@ const Header = () => {
   }, []);
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
   // const name = sessionStorage.getItem('username');
   const role = JSON.parse(sessionStorage.getItem("role"));
   const user_type = JSON.parse(sessionStorage.getItem("user_type"));
 
+  // const logout = () => {
+  //   dispatch({ type: "LOGOUT" });
+  //   sessionStorage.clear();
+  //   localStorage.clear();
+  //   navigate("/login");
+  //   window.location.reload();
+   
+  //    persistStore(store).purge();
+  // //   setTimeout(function() {
+  // //     window.location.reload();
+  // // }, 1000);
+  // };
   const logout = () => {
+    dispatch({ type: "LOGOUT" });
     sessionStorage.clear();
     localStorage.clear();
-
     navigate("/login");
-    window.location.reload();
+    
+    persistor.purge();
+    setTimeout(function() {
+          window.location.reload();
+      }, 1000);
+    // Purge the Redux Persist store
+    // persistStore(store, null, () => {
+    //   store.dispatch({ type: "RESET_STATE" }); // Reset the Redux state
+    // });
   };
   return (
     <>

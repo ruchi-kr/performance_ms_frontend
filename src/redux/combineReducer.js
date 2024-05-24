@@ -24,3 +24,12 @@ export const combineReducer = combineReducers({
 
 export default combineReducer;
 
+// import { combineReducers } from "redux";
+// import { userReducer } from "./userReducer";
+
+// // Renamed combineReducer to rootReducer
+// export const combineReducer = combineReducers({ 
+//     userReducer: userReducer, // Rename to 'user' to match the state key
+// });
+
+// export default combineReducer;

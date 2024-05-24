@@ -18,7 +18,10 @@ export const userReducer = (state = initialState, action) => {
                 isEmployee: user_type === 0 && role === "employee"
             };
         case "LOGIN_ERROR":
+        case "LOGOUT":
             return initialState;
+        case "RESET_STATE":    
+            return null;
         default:
             return state;
     }
