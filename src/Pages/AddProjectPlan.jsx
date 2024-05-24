@@ -367,11 +367,12 @@ const AddProjectPlan = () => {
       try {
         console.log("onFinish before sending values adding", values);
         await axios.post(
-          "http://localhost:8000/api/admin/addModule",         
+          "http://localhost:8000/api/admin/addModule",
           {
             ...values,
             stage: stage,
-          },CONFIG_OBJ
+          },
+          CONFIG_OBJ
         );
         getModuleListHandler();
         form.resetFields(["module_name", "from_date", "to_date", "status"]);
@@ -435,7 +436,13 @@ const AddProjectPlan = () => {
           },
           CONFIG_OBJ
         );
-        formTask.resetFields(["task_name", "allocated_time"]);
+        formTask.resetFields([
+          "task_name",
+          "allocated_time",
+          "memberdetails",
+          "job_role_id",
+          "description",
+        ]);
         getModuleListWithTasks();
         // handleReset();
         // form.resetField("task_name")
@@ -1387,8 +1394,8 @@ const AddProjectPlan = () => {
                           onValuesChange={handleValuesChange}
                           style={{ paddingTop: "2rem" }}
                           initialValues={{
-                            allocated_time: 1,
-                            memberdetails: { count: 1, days: 1 },
+                            allocated_time: 0,
+                            // memberdetails: { count: 1, days: 1 },
                           }}
                         >
                           <Row gutter={16}>
@@ -1508,7 +1515,7 @@ const AddProjectPlan = () => {
                             </Col>
                             <Col span={8}>
                               <Form.Item
-                                label="Man Hrs. Details"
+                                label="Man Hrs. Details (No. of Emp./Days)"
                                 name={["basic", "memberdetails"]}
                                 rules={[
                                   {
