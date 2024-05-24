@@ -68,11 +68,16 @@ const AssignTeam = () => {
   };
 
   const fetchAll = async () => {
-    const resp = await axios.get(
-      `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,CONFIG_OBJ
-    );
-    console.log("team data ******", resp.data.data);
-    setTeamsData(resp.data.data);
+    try {
+      const resp = await axios.get(
+        `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,CONFIG_OBJ
+      );
+      console.log("team data ******", resp.data.data);
+      setTeamsData(resp.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+   
   };
   useEffect(() => {
     fetchAll();
@@ -103,20 +108,25 @@ const AssignTeam = () => {
 
   useEffect(() => {
     const fetchProject = async () => {
-      const resp = await axios.get(
-        "http://localhost:8000/api/admin/getProjects",CONFIG_OBJ
-      );
-      console.log("project data", resp.data);
-      console.log("teams data", teamsData);
-      const filteredProjects = resp.data?.filter(
-        (project) =>
-          !teamsData?.some(
-            (team) => Number(team.project_id) === Number(project.project_id)
-          )
-      );
-      console.log("filtered projects", filteredProjects);
-      setProjectData(resp.data);
-      setFilteredProjectData(filteredProjects);
+      try {
+        const resp = await axios.get(
+          "http://localhost:8000/api/admin/getProjects",CONFIG_OBJ
+        );
+        console.log("project data", resp.data);
+        console.log("teams data", teamsData);
+        const filteredProjects = resp.data?.filter(
+          (project) =>
+            !teamsData?.some(
+              (team) => Number(team.project_id) === Number(project.project_id)
+            )
+        );
+        console.log("filtered projects", filteredProjects);
+        setProjectData(resp.data);
+        setFilteredProjectData(filteredProjects);
+      } catch (error) {
+        console.log(error);
+      }
+      
     };
     fetchProject();
   }, [teamsData]);

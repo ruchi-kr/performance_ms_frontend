@@ -213,24 +213,25 @@ const EmployeeReportDateWise = () => {
             </div>
             <div className="row">
               <div className="col-11 mx-auto">
-                <table id='reportTable' className="table table-bordered" style={{ borderCollapse: 'collapse' }}>
-                  <thead className='sticky-top'>
+                <table id='reportTable' className="table table-bordered ">
+                  <thead className='sticky-top border border-dark' style={{ zIndex: '10' }}>
                     <tr>
                       <th rowSpan={4}>S.No.</th>
                       <th rowSpan={4}>Date</th>
 
-                      <th colSpan={5}>Activities</th> {/* Spanning 5 columns */}
+                      <th colSpan={6}>Activities</th> {/* Spanning 5 columns */}
                     </tr>
                     <tr>
 
-                      <th colSpan={5} className='text-primary'>Project Name</th> {/* Spanning 5 columns */}
+                      <th colSpan={6} className='text-primary'>Project Name</th> {/* Spanning 5 columns */}
                     </tr>
                     <tr>
-
-                      <th colSpan={5} className='text-success'>Module Name</th> {/* Spanning 5 columns */}
+<th></th>
+                      <th colSpan={6} className='text-success'>Module Name</th> {/* Spanning 5 columns */}
                     </tr>
                     <tr>
-
+<th></th>
+<th></th>
                       <th>Task</th>
                       <th>Status</th>
                       <th>Alloc hrs</th>
@@ -272,7 +273,8 @@ const EmployeeReportDateWise = () => {
                                 <tr key={`${index}-${projectIndex}-${moduleIndex}`}>
                                   <td></td>
                                   <td></td>
-                                  <td colSpan={5} className='text-capitalize text-success'>{module.module_name}</td>                          
+                                  <td></td>
+                                  <td colSpan={4} className='text-capitalize text-success'>{module.module_name}</td>                          
                                 </tr>
                                 
                              
@@ -280,10 +282,12 @@ const EmployeeReportDateWise = () => {
                                 <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
                                   <td></td>
                                   <td></td>
+                                  <td></td>
+                                  <td></td>
                                   <td>{task.task_name}</td>
                                   {/* <td>{task.status}</td> */}
-                                  <td style={task.status === 'inprocess' ? { color: 'orange' } : { color: 'green' }}>{task.status}</td>
-                                  <td>{task.employee_allocated_time}</td>
+                                  <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                                   <td>{task.employee_allocated_time}</td>
                                   <td>{task.employee_actual_time}</td>
                                 </tr>
                               ))}
