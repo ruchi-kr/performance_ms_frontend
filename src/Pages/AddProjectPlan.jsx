@@ -687,20 +687,44 @@ const AddProjectPlan = () => {
         // Calculate the serial number based on the current page and the index of the item
         return (pagination.currentPage - 1) * pagination.pageSize + index + 1;
       },
-      width: "5%",
+      width: "7%",
       align: "center",
     },
     {
       title: (
-        <div>
-          Module Name
-          {/* {
-            <ArrowUpOutlined
-              style={{ marginLeft: 12, fontSize: "1rem" }}
-              onClick={handleSortChange}
-              rotate={sortOrder === "ASC" ? 0 : 180}
-            />
-          } */}
+        <div className="d-flex justify-content-between">
+          <p>Module Name</p>
+          <Button
+            onClick={() => {
+              setIsAdding(true);
+              setIsEditing(false);
+              setIsAdding(true);
+              setIsEditing(false);
+              getProjectStartEndDate(Number(project_id));
+
+              form.setFieldsValue({
+                project_id: Number(project_id),
+                status: "notstarted",
+              });
+              window.scrollTo({
+                // top: document.body.scrollHeight,
+                // top: 20000,
+                top: document.body.offsetHeight,
+                behavior: "smooth", // Optional: smooth scrolling animation
+              });
+            }}
+            type="primary"
+            style={{ minWidth: "10rem", marginBottom: "0rem" }}
+          >
+            <div>
+              <PlusOutlined
+                style={{
+                  marginRight: "0.5rem",
+                }}
+              />
+              Add Module
+            </div>
+          </Button>
         </div>
       ),
       dataIndex: "module_name",
@@ -720,7 +744,7 @@ const AddProjectPlan = () => {
         </span>
       ),
       // render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
-      width: "10%",
+      width: "12%",
     },
     {
       title: "Schd. End Dt.",
@@ -733,7 +757,7 @@ const AddProjectPlan = () => {
       ),
 
       // render: (text) => moment(text).utcOffset("+05:30").format("DD/MM/YYYY"),
-      width: "10%",
+      width: "12%",
     },
 
     // {
@@ -768,10 +792,10 @@ const AddProjectPlan = () => {
             break;
         }
         return (
-          <p className={`text-capitalize ${color} fs-6 fw-medium`}>{text}</p>
+          <p className={`text-capitalize ${color} fs-6 fw-small`}>{text}</p>
         );
       },
-      width: "10%",
+      width: "12%",
     },
     {
       title: "Action",
@@ -783,6 +807,7 @@ const AddProjectPlan = () => {
         <div className="d-flex justify-content-center gap-2">
           <Button
             size="small"
+            type="primary"
             className="d-flex align-items-center"
             onClick={() => {
               setIsAddingTask(true);
@@ -829,7 +854,7 @@ const AddProjectPlan = () => {
       dataIndex: "task_id",
       key: "task_id",
       align: "center",
-      width: "5%",
+      width: "6%",
       // render: (_, record, index) => {
       //   // Calculate the serial number based on the current page and the index of the item
       //   if (record.task_id === null) {
@@ -893,7 +918,7 @@ const AddProjectPlan = () => {
       key: "allocated_time",
       width: "10%",
       align: "left",
-      render: (text) => `${text ? `${text} hrs` : "-"}`,
+      render: (text) => `${text ? `${text} days` : "-"}`,
     },
     {
       title: "Module_id",
@@ -1074,8 +1099,15 @@ const AddProjectPlan = () => {
                 bordered
                 size="large"
                 pagination={false}
+                scroll={{
+                  y: 800,
+                }}
+                sticky={{ offsetHeader: 0 }}
                 style={{
                   marginBottom: "1rem",
+                  sticky: "top",
+                  "--antd-table-header-bg": "#4CAF50",
+                  "--antd-table-header-color": "blue",
                 }}
                 className="custom-table"
                 expandable={{
@@ -1087,7 +1119,15 @@ const AddProjectPlan = () => {
                       pagination={false} // Disable pagination for nested table
                       size="small"
                       bordered
-                      style={{ width: "90%" }}
+                      // sticky={{ offsetHeader: 0 }}
+                      scroll={{
+                        y: 310,
+                      }}
+                      style={{
+                        width: "95%",
+                        marginBottom: "2rem",
+                        marginTop: "2rem",
+                      }}
                     />
                   ),
                   expandedRowKeys: expandedRowKeys,
