@@ -311,7 +311,7 @@ const ManagerProjectReport = () => {
                                 {item.project_name}
                               </td>
                               <td className="text-capitalize font-weight-bold">
-                                {item.total_allocated_man_days}
+                                {item.total_allocated_man_days} Man hrs.
                               </td>
                               <td className="font-weight-bold">
                                 {item.total_allocated_time} hrs.
@@ -332,8 +332,8 @@ const ManagerProjectReport = () => {
                                         <th>Task</th>
                                         <th>Date</th>
                                         <th>Status</th>
-                                        <th>Allocated Time</th>
-                                        <th>Actual Time</th>
+                                        <th>Alloc. Time</th>
+                                        <th>Act. Time</th>
                                         <th>%&nbsp;Work Done</th>
                                       </tr>
                                     </thead>
@@ -349,7 +349,7 @@ const ManagerProjectReport = () => {
                                                 {task.module_name}
                                               </td>
                                               <td>
-                                                <p className="text-justify">
+                                                <p className=" text-capitalize">
                                                   {task.task}
                                                 </p>
                                               </td>

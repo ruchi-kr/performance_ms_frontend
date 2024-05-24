@@ -289,12 +289,13 @@ const ProjectReport = () => {
                         <tr key={item.user_id}>
                           <th scope="row">{index + 1}</th>
                           <td className="text-capitalize">
-                            <NavLink
+                            {/* <NavLink
                               to={`/view/project/tasks/${item.project_id}`}
                               replace={true}
-                            >
-                              <Tag color="gray">{item.project_name}</Tag>
-                            </NavLink>
+                            > */}
+                              {/* <Tag color="gray">{item.project_name}</Tag> */}
+                            {/* </NavLink> */}
+                            {item.project_name}
                           </td>
                           <td>
                             <div>

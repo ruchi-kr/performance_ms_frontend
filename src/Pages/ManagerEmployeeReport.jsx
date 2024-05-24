@@ -354,6 +354,7 @@ const ManagerEmployeeReport = () => {
                                     <thead>
                                       <tr>
                                         <th>Project Name</th>
+                                        <th>Module Name</th>
                                         <th>Task</th>
                                         <th>End Date</th>
                                         <th>Status</th>
@@ -369,6 +370,9 @@ const ManagerEmployeeReport = () => {
                                             <tr key={taskIndex}>
                                               <td className="text-capitalize">
                                                 {task.project_name}
+                                              </td>
+                                              <td className="text-capitalize">
+                                                {task.module_name}
                                               </td>
                                               <td className="text-capitalize">{task.task}</td>
                                               <td>
