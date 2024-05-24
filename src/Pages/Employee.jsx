@@ -89,7 +89,7 @@ useEffect(() => {
     try {
       const result = await axios.get(`${getAllProjects}`, CONFIG_OBJ);
       const projectUnderManager = result.data.filter(
-        (project) => project.reporting_manager_id !== null || project.project_name === "miscellaneous"
+        (project) => ((project.reporting_manager_id !== null ) || project.project_name === "miscellaneous")
       );
       setProjectList(projectUnderManager);
       console.log("project list", result.data);
