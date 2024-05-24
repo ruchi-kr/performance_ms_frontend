@@ -42,12 +42,14 @@ const Header = () => {
     dispatch({ type: "LOGOUT" });
     sessionStorage.clear();
     localStorage.clear();
-    navigate("/login");
+   
     
-    persistor.purge();
+    // persistor.purge();
     setTimeout(function() {
           window.location.reload();
-      }, 1000);
+          console.log("reload")
+      }, 100);
+      navigate("/login");
     // Purge the Redux Persist store
     // persistStore(store, null, () => {
     //   store.dispatch({ type: "RESET_STATE" }); // Reset the Redux state

@@ -6,7 +6,10 @@ import { useSelector } from "react-redux";
 import ErrorPage from "../Pages/ErrorPage";
 
 export const RenderRoutes = () => {
-    const user = useSelector(state => state.userReducer.user);
+    const user = useSelector(state => state.user);
+    console.log("user redux use selector",user)
+    // const user = useSelector(state => state.userReducer.user);
+
     const isAdmin = useSelector(state => state.isAdmin);
     const isManager = useSelector(state => state.isManager);
     const isEmployee = useSelector(state => state.isEmployee);
@@ -15,11 +18,11 @@ export const RenderRoutes = () => {
         <Routes>
             {nav.map((r, i) => {
                 if (r.isPrivate && user && Object.keys(user).length > 0) {
-                    if (r.isAdmin && isAdmin) {
+                    if (r.isAdmin && user.isAdmin) {
                         return <Route key={i} path={r.path} element={r.element} />;
-                    } else if (r.isManager && isManager) {
+                    } else if (r.isManager && user.isManager) {
                         return <Route key={i} path={r.path} element={r.element} />;
-                    } else if (r.isEmployee && isEmployee) {
+                    } else if (r.isEmployee && user.isEmployee) {
                         return <Route key={i} path={r.path} element={r.element} />;
                     } else {
                         return null;
