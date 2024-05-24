@@ -100,7 +100,7 @@ const AssignTeam = () => {
         setAllEmployeeData(filteredUsers);
         setManagerList(filteredManagers);
       } catch (err) {
-        console.log(err);
+        // console.log(err);
       }
     };
     getAllEmployees();

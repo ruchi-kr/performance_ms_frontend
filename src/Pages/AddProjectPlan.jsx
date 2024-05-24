@@ -375,7 +375,8 @@ const AddProjectPlan = () => {
           CONFIG_OBJ
         );
         getModuleListHandler();
-        form.resetFields(["module_name", "from_date", "to_date", "status"]);
+        form.resetFields(["module_name", "from_date", "to_date"]);
+        form.setFieldsValue({status:"notstarted"})
         // handleReset();
         notification.success({
           message: "Module Added.",

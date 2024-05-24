@@ -290,8 +290,8 @@ const ManagerProjectReport = () => {
                       <th scope="col">S.No.</th>
                       <th scope="col">Project Name</th>
                       <th scope="col">Planned Alloc hrs</th>
-                      <th scope="col">Alloc hrs</th>
-                      <th scope="col">Man hrs</th>
+                      <th scope="col">Actual Alloc hrs</th>
+                      <th scope="col">Actual Man hrs</th>
                     </tr>
                   </thead>
 
@@ -311,7 +311,7 @@ const ManagerProjectReport = () => {
                                 {item.project_name}
                               </td>
                               <td className="text-capitalize font-weight-bold">
-                                {totalActualTime}
+                                {item.total_allocated_man_days}
                               </td>
                               <td className="font-weight-bold">
                                 {item.total_allocated_time} hrs.
