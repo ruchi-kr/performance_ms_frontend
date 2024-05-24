@@ -89,7 +89,7 @@ useEffect(() => {
     try {
       const result = await axios.get(`${getAllProjects}`, CONFIG_OBJ);
       const projectUnderManager = result.data.filter(
-        (project) => ((project.reporting_manager_id !== null ) || project.project_name === "miscellaneous")
+        (project) => ((project.reporting_manager_id !== null && project.stage ==="inprocess" ) || project.project_name === "miscellaneous")
       );
       setProjectList(projectUnderManager);
       console.log("project list", result.data);
@@ -206,7 +206,7 @@ useEffect(() => {
     setMiscellaneous(false);
     setAdhoc(1);
     // Disable all existing rows
-    const updatedTaskRecords = taskRecords.map((record) => ({
+    const updatedTaskRecords = taskRecords?.map((record) => ({
       ...record,
       formDisabled: true,
     }));
@@ -344,7 +344,7 @@ useEffect(() => {
       console.log(manHrs-totalAllocatedTime, "manHrs-totalAllocatedTime");
       console.log(Number(manHrs)-Number(totalAllocatedTime), "Number(manHrs)-Number(totalAllocatedTime)");
       if(Number(totalAllocatedTime) > (Number(manHrs))){
-        toast.error(`Total allocated time should be <= ${manHrs} hours`);
+        toast.error(`Total allocated time should be less than ${manHrs} hours`);
         return false;
       }
       
@@ -629,7 +629,6 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                           <td>
                             <Select
                               ref={projectRef}
-                              size="small"
                               showSearch
                               allowClear
                               onClear={() => handleProjectChange(index, "")}
@@ -686,7 +685,6 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                             </Select>
                             <Select
                               ref={moduleRef}
-                              size="small"
                               showSearch
                               allowClear
                               onClear={() => handleModuleChange(index, "")}
@@ -806,10 +804,9 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               <span className="text-danger">*</span>
                             )} */}
                             <Select
-                             ref={taskRef}
                               showSearch
-                              size="small"
-                              allowClear                           
+                              allowClear
+                              ref={taskRef}
                               placeholder="Select Task"
                               optionFilterProp="children"
                               filterOption={(input, option) =>
@@ -861,7 +858,6 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                           </td>
                           <td>
                             <input
-                              
                               ref={allocatedTimeRef}
                               type="number"
                               name="allocated_time"
@@ -873,7 +869,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                     ? "3rem"
                                     : "100%",
                               }}
-                              className="form-control form-control-sm"
+                              className="form-control"
                               value={record.allocated_time}
                               onChange={(e) => {handleInputChange(index, e);
                                 focusNextInput(actualTimeRef);
