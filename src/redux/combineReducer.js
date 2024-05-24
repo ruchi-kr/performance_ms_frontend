@@ -10,14 +10,17 @@ const initialState = {
 };
 
 export const combineReducer = combineReducers({ 
-    userReducer: userReducer,
-    isAdmin: (state = initialState.isAdmin, action) => {
+    user: userReducer,
+    // initialState.isAdmin
+    isAdmin: (state = initialState, action) => {
         return action.type === "LOGIN_SUCCESS" && action.payload.user_type === 1;
     },
-    isManager: (state = initialState.isManager, action) => {
+    // initialState.isManager
+    isManager: (state = initialState, action) => {
         return action.type === "LOGIN_SUCCESS" && action.payload.user_type === 0 && action.payload.role === "manager";
     },
-    isEmployee: (state = initialState.isEmployee, action) => {
+    // initialState.isManager
+    isEmployee: (state = initialState, action) => {
         return action.type === "LOGIN_SUCCESS" && action.payload.user_type === 0 && action.payload.role === "employee";
     }
 });

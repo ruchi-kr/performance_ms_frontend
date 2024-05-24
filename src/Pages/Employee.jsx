@@ -344,7 +344,7 @@ useEffect(() => {
       console.log(manHrs-totalAllocatedTime, "manHrs-totalAllocatedTime");
       console.log(Number(manHrs)-Number(totalAllocatedTime), "Number(manHrs)-Number(totalAllocatedTime)");
       if(Number(totalAllocatedTime) > (Number(manHrs))){
-        toast.error(`Total allocated time should be less than ${manHrs} hours`);
+        toast.error(`Total allocated time should be <= ${manHrs} hours`);
         return false;
       }
       
@@ -629,6 +629,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                           <td>
                             <Select
                               ref={projectRef}
+                              size="small"
                               showSearch
                               allowClear
                               onClear={() => handleProjectChange(index, "")}
@@ -685,6 +686,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                             </Select>
                             <Select
                               ref={moduleRef}
+                              size="small"
                               showSearch
                               allowClear
                               onClear={() => handleModuleChange(index, "")}
@@ -804,9 +806,10 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               <span className="text-danger">*</span>
                             )} */}
                             <Select
+                             ref={taskRef}
                               showSearch
-                              allowClear
-                              ref={taskRef}
+                              size="small"
+                              allowClear                           
                               placeholder="Select Task"
                               optionFilterProp="children"
                               filterOption={(input, option) =>
@@ -858,6 +861,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                           </td>
                           <td>
                             <input
+                              
                               ref={allocatedTimeRef}
                               type="number"
                               name="allocated_time"
@@ -869,7 +873,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                     ? "3rem"
                                     : "100%",
                               }}
-                              className="form-control"
+                              className="form-control form-control-sm"
                               value={record.allocated_time}
                               onChange={(e) => {handleInputChange(index, e);
                                 focusNextInput(actualTimeRef);

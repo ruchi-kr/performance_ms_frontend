@@ -45,9 +45,9 @@ export default function Login() {
           "status",
           JSON.stringify(result.data.result.user.status)
         );
-
-        dispatch({ type: "LOGIN_SUCCESS", payload: result.data.result.user });
         console.log("token set successfully", result.data.result);
+        dispatch({ type: "LOGIN_SUCCESS", payload: result.data.result.user});
+        console.log("dispatched console", result.data.result.user);
         // window.location.reload();
         const role = result.data.result.user.role;
         const status = result.data.result.user.status;
@@ -63,7 +63,7 @@ export default function Login() {
         } else {
           navigate("/homepage");
         }
-        window.location.reload();
+        // window.location.reload();
         console.log("navigated successfully");
         // window.location.reload();
       } else {
