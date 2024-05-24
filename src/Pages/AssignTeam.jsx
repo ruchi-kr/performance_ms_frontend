@@ -71,8 +71,8 @@ const AssignTeam = () => {
     const resp = await axios.get(
       `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,CONFIG_OBJ
     );
-    console.log("team data ******", resp.data.data);
-    setTeamsData(resp.data.data);
+    console.log("team data ******", resp?.data.data);
+    setTeamsData(resp?.data.data);
   };
   useEffect(() => {
     fetchAll();
@@ -95,7 +95,7 @@ const AssignTeam = () => {
         setAllEmployeeData(filteredUsers);
         setManagerList(filteredManagers);
       } catch (err) {
-        console.log(err);
+        // console.log(err);
       }
     };
     getAllEmployees();
@@ -106,16 +106,16 @@ const AssignTeam = () => {
       const resp = await axios.get(
         "http://localhost:8000/api/admin/getProjects",CONFIG_OBJ
       );
-      console.log("project data", resp.data);
-      console.log("teams data", teamsData);
-      const filteredProjects = resp.data?.filter(
+      // console.log("project data", resp.data);
+      // console.log("teams data", teamsData);
+      const filteredProjects = resp?.data?.filter(
         (project) =>
           !teamsData?.some(
             (team) => Number(team.project_id) === Number(project.project_id)
           )
       );
       console.log("filtered projects", filteredProjects);
-      setProjectData(resp.data);
+      setProjectData(resp?.data);
       setFilteredProjectData(filteredProjects);
     };
     fetchProject();
