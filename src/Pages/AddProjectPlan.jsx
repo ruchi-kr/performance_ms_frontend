@@ -1516,6 +1516,7 @@ const AddProjectPlan = () => {
                                 <InputNumber
                                   min={1}
                                   max={1000}
+                                  precision={2}
                                   disabled
                                   style={{ width: "80%" }}
                                 />
@@ -1634,6 +1635,7 @@ const AddProjectPlan = () => {
                                       style={{ width: "50%" }}
                                       min={1}
                                       max={100}
+                                      step={0.5}
                                       placeholder="No. of days"
                                     />
                                   </Form.Item>
