@@ -26,9 +26,10 @@ export const RenderRoutes = () => {
                     }
                 } else if (!r.isPrivate) {
                     return <Route key={i} path={r.path} element={r.element} />;
-                } else {
-                    return null;
-                }
+                } 
+                // else {
+                //     return null;
+                // }
             })}
             {/* <Route path="*" element={<ErrorPage />} /> */}
         </Routes>
