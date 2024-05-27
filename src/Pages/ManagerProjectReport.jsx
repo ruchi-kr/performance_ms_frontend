@@ -4,7 +4,7 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { getEmployeeReport, CONFIG_OBJ } from "../Config";
-import { Input, DatePicker, Button, Tag, Flex, Progress } from "antd";
+import { Input, DatePicker, Button, Select, Tag, Flex, Progress } from "antd";
 import moment from "moment";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
@@ -26,6 +26,7 @@ const ManagerProjectReport = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [reportData, setReportData] = useState([]);
+  const [projectStageFilter, setProjectStageFilter] = useState("all");
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user?.employee_id;
   console.log("manager id", manager_id);
@@ -49,7 +50,7 @@ const ManagerProjectReport = () => {
   const getEmployeeReportHandler = async (page) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/project/report/detailed/${manager_id}/?&search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${page}&pageSize=${10}`,
+        `http://localhost:8000/api/project/report/detailed/${manager_id}/?&search=${search}&toDate=${toDate}&fromDate=${fromDate}&stage=${projectStageFilter}&page=${page}&pageSize=${10}`,
         CONFIG_OBJ
       );
       console.log("response", response);
@@ -62,7 +63,7 @@ const ManagerProjectReport = () => {
   };
   useEffect(() => {
     getEmployeeReportHandler(currentPage);
-  }, [toDate, fromDate, currentPage]);
+  }, [toDate, fromDate, currentPage, projectStageFilter]);
   // search functionality
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -118,6 +119,9 @@ const ManagerProjectReport = () => {
   const disabledDate = (current) => {
     // Can not select days before today and today
     return current && current >= dayjs().endOf("day");
+  };
+  const handleProjectStageChange = (value) => {
+    console.log(`selected ${value}`);
   };
   // export to excel and pdf file function
   const exportToExcel = async () => {
@@ -230,7 +234,7 @@ const ManagerProjectReport = () => {
                         <RangePicker
                           disabledDate={disabledDate}
                           onChange={handleDateRangeChange}
-                          defaultValue={[dayjs().subtract(28, "day"), dayjs()]}
+                          defaultValue={[dayjs().subtract(30, "day"), dayjs()]}
                           placeholder="From Date"
                           style={{
                             width: "100%",
@@ -239,6 +243,42 @@ const ManagerProjectReport = () => {
                           className="rounded-2"
                           format={dateFormat}
                           showTime={false}
+                        />
+                      </div>
+                    </div>
+
+                    {/* <div className="col-sm-4 col-md-1 col-lg-1 ">
+                      <Button
+                        className="py-1 px-2 mt-3 btn btn-info btn-sm rounded-2"
+                        onClick={handleSearchByDateRange}
+                      >
+                        Search
+                      </Button>
+                    </div> */}
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <div className="col-sm-4 col-md-3 col-lg-8">
+                      <div className="mb-1">
+                        <label className="text-capitalize textcolumntitle fw-bold text-info">
+                          Project Stage Filter
+                        </label>
+                        <Select
+                          defaultValue="all stages"
+                          style={{
+                            width: 120,
+                          }}
+                          // onChange={handleProjectStageChange}
+                          onChange={(value)=>setProjectStageFilter(value)}
+                          options={[
+                            {
+                              value: "completed",
+                              label: "Completed",
+                            },
+                            {
+                              value: "all",
+                              label: "All Stages",
+                            },
+                          ]}
                         />
                       </div>
                     </div>
@@ -278,6 +318,10 @@ const ManagerProjectReport = () => {
                       : "Collapse All"}
                   </Button>
                 </div>
+                <div className="d-flex justify-content-end mt-3 mr-2">
+                  <span className="text-danger">*</span>
+                  <span>Time in hours</span>
+                </div>
               </div>
             </div>
             <div className="row">
@@ -291,11 +335,21 @@ const ManagerProjectReport = () => {
                     <tr>
                       <th scope="col">S.No.</th>
                       <th scope="col">Project Name</th>
-                      <th scope="col">Schd. St. Dt.</th>
-                      <th scope="col">Schd. End Dt.</th>
-                      <th scope="col">Planned Alloc hrs</th>
-                      <th scope="col">Actual Alloc hrs</th>
-                      <th scope="col">Actual Man hrs</th>
+                      <th scope="col">
+                        <div className="d-flex flex-column">
+                          <span>Schd. St. Dt.</span>
+                          <span>Schd. End Dt.</span>
+                        </div>
+                      </th>
+                      <th scope="col" className=" text-center">
+                        Project Planned hrs
+                      </th>
+                      <th scope="col" className=" text-center">
+                        Allocated Man hrs
+                      </th>
+                      <th scope="col" className=" text-center">
+                        Actual Man hrs
+                      </th>
                     </tr>
                   </thead>
 
@@ -310,24 +364,33 @@ const ManagerProjectReport = () => {
                         return (
                           <React.Fragment key={item.employee_id}>
                             <tr onClick={() => handleRowClick(index)}>
-                              <th scope="row">{index + 1}</th>
-                              <td className="text-capitalize font-weight-bold">
+                              <th scope="row" className=" text-center">
+                                {index + 1}.
+                              </th>
+                              <td className="text-capitalize ">
                                 {item.project_name}
                               </td>
-                              <td className="font-weight-bold">
-                                {moment.utc(item.schedule_start_date).format("DD/MM/YYYY")}
+                              <td className="d-flex flex-column ">
+                                <span>
+                                  {moment
+                                    .utc(item.schedule_start_date)
+                                    .format("DD/MM/YYYY")}
+                                </span>
+                                <span>
+                                  {moment
+                                    .utc(item.schedule_end_date)
+                                    .format("DD/MM/YYYY")}
+                                </span>
                               </td>
-                              <td className="font-weight-bold">
-                                {moment.utc(item.schedule_end_date).format("DD/MM/YYYY")}
+
+                              <td className="text-capitalize text-center ">
+                                {item.total_allocated_man_days}
                               </td>
-                              <td className="text-capitalize font-weight-bold">
-                                {item.total_allocated_man_days} Man hrs.
+                              <td className=" text-center">
+                                {item.total_allocated_time}
                               </td>
-                              <td className="font-weight-bold">
-                                {item.total_allocated_time} hrs.
-                              </td>
-                              <td className="font-weight-bold">
-                                {item.total_actual_time} hrs.
+                              <td className=" text-center">
+                                {item.total_actual_time}
                               </td>
                             </tr>
                             {(expandedRows.includes(index) ||
@@ -340,11 +403,18 @@ const ManagerProjectReport = () => {
                                         <th>Employee Name</th>
                                         <th>Module Name</th>
                                         <th>Task</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Status</th>
-                                        <th>Alloc. Time</th>
-                                        <th>Act. Time</th>
+                                        <th scope="col">
+                                          <div className="d-flex flex-column">
+                                            <span>Start Date</span>
+                                            <span>End Date</span>
+                                          </div>
+                                        </th>
+                                        <th className=" text-center">
+                                          Alloc. Time
+                                        </th>
+                                        <th className=" text-center">
+                                          Act. Time
+                                        </th>
                                         <th>%&nbsp;Work Done</th>
                                       </tr>
                                     </thead>
@@ -365,41 +435,42 @@ const ManagerProjectReport = () => {
                                                 </p>
                                               </td>
                                               <td>
-                                                {moment
-                                                  .utc(task.created_at)
-                                                  .format("DD/MM/YYYY")}
+                                                <div className="d-flex flex-column">
+                                                  <span className="text-center">
+                                                    {moment
+                                                      .utc(task.created_at)
+                                                      .format("DD/MM/YYYY")}
+                                                  </span>
+                                                  <span className="text-center">
+                                                    {task.status ===
+                                                    "completed" ? (
+                                                      moment
+                                                        .utc(
+                                                          task.actual_end_date
+                                                        )
+                                                        .format("DD/MM/YYYY")
+                                                    ) : task.status ===
+                                                        "inprocess" ||
+                                                      task.status ===
+                                                        "notstarted" ? (
+                                                      <span className="text-center">
+                                                        -
+                                                      </span>
+                                                    ) : (
+                                                      moment
+                                                        .utc(task.updated_at)
+                                                        .format("DD/MM/YYYY")
+                                                    )}
+                                                  </span>
+                                                </div>
+                                              </td>
+
+                                              <td className="text-center">
+                                                {task.allocated_time}
                                               </td>
                                               <td className="text-center">
-                                                {task.status === "completed" ? (
-                                                  moment
-                                                    .utc(task.actual_end_date)
-                                                    .format("DD/MM/YYYY")
-                                                ) : task.status ===
-                                                    "inprocess" ||
-                                                  task.status ===
-                                                    "notstarted" ? (
-                                                  <span className="text-center">
-                                                    N.A.
-                                                  </span>
-                                                ) : (
-                                                  moment
-                                                    .utc(task.updated_at)
-                                                    .format("DD/MM/YYYY")
-                                                )}
+                                                {task.actual_time}
                                               </td>
-                                              {task.status === "completed" ? (
-                                                <td className="text-success text-capitalize">
-                                                  {task.status}
-                                                </td>
-                                              ) : (
-                                                <td className="text-warning text-capitalize">
-                                                  {task.status}
-                                                </td>
-                                              )}
-                                              <td>
-                                                {task.allocated_time} hrs.
-                                              </td>
-                                              <td>{task.actual_time} hrs.</td>
                                               <td>
                                                 {/* {task.task_percent} % */}
                                                 <Flex vertical gap="middle">
@@ -418,6 +489,33 @@ const ManagerProjectReport = () => {
                                                     />
                                                   </Flex>
                                                 </Flex>
+                                                {(() => {
+                                                  let className =
+                                                    "text-capitalize ";
+                                                  switch (task.status) {
+                                                    case "completed":
+                                                      className +=
+                                                        "text-success";
+                                                      break;
+                                                    case "in progress":
+                                                      className +=
+                                                        "text-warning"; // Adjust the class name as needed
+                                                      break;
+                                                    case "not started":
+                                                      className +=
+                                                        "text-danger"; // Adjust the class name as needed
+                                                      break;
+                                                    default:
+                                                      className +=
+                                                        "text-secondary";
+                                                      break;
+                                                  }
+                                                  return (
+                                                    <td className={className}>
+                                                      {task.status}
+                                                    </td>
+                                                  );
+                                                })()}
                                               </td>
                                             </tr>
                                           )
