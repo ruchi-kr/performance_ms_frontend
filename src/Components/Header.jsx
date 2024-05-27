@@ -9,8 +9,8 @@ import {
 import { Avatar } from "antd";
 import { useDispatch } from "react-redux";
 import { UserOutlined } from "@ant-design/icons";
-import { persistStore } from 'redux-persist';
-import { persistor } from '../redux/store';
+import { persistStore } from "redux-persist";
+import { persistor } from "../redux/store";
 
 const Header = () => {
   let [username, SetUserName] = useState("");
@@ -18,6 +18,9 @@ const Header = () => {
     const name = JSON.parse(sessionStorage.getItem("email_id"));
     SetUserName(name);
   }, []);
+
+  var initial = username.charAt(0).toUpperCase();
+  console.log("i m initial", initial);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -26,34 +29,16 @@ const Header = () => {
   const role = JSON.parse(sessionStorage.getItem("role"));
   const user_type = JSON.parse(sessionStorage.getItem("user_type"));
 
-  // const logout = () => {
-  //   dispatch({ type: "LOGOUT" });
-  //   sessionStorage.clear();
-  //   localStorage.clear();
-  //   navigate("/login");
-  //   window.location.reload();
-   
-  //    persistStore(store).purge();
-  // //   setTimeout(function() {
-  // //     window.location.reload();
-  // // }, 1000);
-  // };
   const logout = () => {
     dispatch({ type: "LOGOUT" });
     sessionStorage.clear();
     localStorage.clear();
-   
-    
-    // persistor.purge();
-    setTimeout(function() {
-          window.location.reload();
-          console.log("reload")
-      }, 100);
-      navigate("/login");
-    // Purge the Redux Persist store
-    // persistStore(store, null, () => {
-    //   store.dispatch({ type: "RESET_STATE" }); // Reset the Redux state
-    // });
+
+    setTimeout(function () {
+      window.location.reload();
+      console.log("reload");
+    }, 100);
+    navigate("/login");
   };
   return (
     <>
@@ -82,11 +67,18 @@ const Header = () => {
           <li className="user-panel d-flex nav-item mx-lg-1 mx-0 align-items-center ">
             {/* <div className=""> */}
             {/* <img src="dist/img/user2-160x160.jpg" className="img-circle elevation-2" alt="User Image" /> */}
-            <Avatar
-              size={{ xs: 16, sm: 24, md: 32, lg: 32, xl: 40, xxl: 40 }}
+            {/* <Avatar
+              siez={{ xs: 16, sm: 24, md: 32, lg: 32, xl: 40, xxl: 40 }}
               icon={<UserOutlined />}
               className="d-lg-block d-md-none d-none bg-secondary"
-            />
+            /> */}
+            <Avatar
+              size={{ xs: 16, sm: 24, md: 32, lg: 32, xl: 40, xxl: 40 }}
+              className="d-lg-block d-md-none d-none bg-info"
+            >
+              {/* Display the first letter of the user's name as the avatar */}
+              {initial}
+            </Avatar>
             {/* </div> */}
             <div className="info" style={{ lineHeight: "0.2" }}>
               <p className="text-white">{username}</p>
