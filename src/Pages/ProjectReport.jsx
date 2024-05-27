@@ -368,11 +368,11 @@ const ProjectReport = () => {
                                 </tr>
                               </thead>
                               <tbody>
-                                {item?.report?.map((i, index) =>
+                                {item?.report?.map((i, nestedIndex) =>
                                   i.name !== null ? (
                                     <tr className="">
                                       <th scope="row" className="text-center">
-                                        {index}
+                                        {nestedIndex+1}
                                       </th>
                                       <td className="text-capitalize">
                                         {i.name}{" "}

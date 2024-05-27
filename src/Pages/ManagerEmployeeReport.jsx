@@ -356,6 +356,7 @@ const ManagerEmployeeReport = () => {
                                         <th>Project Name</th>
                                         <th>Module Name</th>
                                         <th>Task</th>
+                                        <th>Start Date</th>
                                         <th>End Date</th>
                                         <th>Status</th>
                                         <th>Allocated Time</th>
@@ -380,6 +381,17 @@ const ManagerEmployeeReport = () => {
                                                   .utc(task.created_at)
                                                   .format("DD/MM/YYYY")}
                                               </td>
+                                              <td className="text-center">{task.status==="completed"?
+                                            moment
+                                                .utc(task.actual_end_date)
+                                                .format("DD/MM/YYYY"):
+                                                (task.status==="inprocess" || task.status==="notstarted")?
+                                                <span className="text-center">N.A.</span>:
+                                                moment
+                                                .utc(task.updated_at)
+                                                .format("DD/MM/YYYY")
+                                              
+                                              }</td>
                                               {/* {task.status === "completed" ? (
                                               <td>
                                                 <Tag color="green">
