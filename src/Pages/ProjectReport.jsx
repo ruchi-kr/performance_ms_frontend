@@ -4,7 +4,7 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import moment from "moment";
-import { getEmployeeReport,CONFIG_OBJ } from "../Config";
+import { getEmployeeReport, CONFIG_OBJ } from "../Config";
 import dayjs from "dayjs";
 import { Input, Button, DatePicker, Tag } from "antd";
 import { toast } from "react-toastify";
@@ -27,34 +27,76 @@ const ProjectReport = () => {
   const [projectActualStartDate, setProjectActualStartDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [fromDate, setFromDate] = useState(null);
+  const [projectTotalManDaysData, setProjectTotalManDaysData] = useState([]);
+  const [loadingFirstApi, setLoadingFirstApi] = useState(true);
+  const [loadingSecondApi, setLoadingSecondApi] = useState(true);
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user?.employee_id;
-  console.log("manager id", manager_id);
+  // console.log("manager id", manager_id);
   // get all reports function
-  const getEmployeeReportHandler = async (page) => {
+  const getTotalManDays = async () => {
+    try {
+      const resp = await axios.get(
+        "http://localhost:8000/api/getProjectTotalManHours",
+        CONFIG_OBJ
+      );
+      console.log("totoal man hrs data", resp.data.data);
+      setProjectTotalManDaysData(resp.data.data);
+      setLoadingSecondApi(false);
+    } catch (error) {
+      setLoadingSecondApi(false);
+    }
+  };
+
+  const getEmployeeReportHandler = async () => {
+    let response = [];
     try {
       // const response = await axios.get(`${getEmployeeReport}/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}`);
       // ?page=${page}&pageSize=${pageSize}
-      const response = await axios.get(
-        `http://localhost:8000/api/project/report/${manager_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`,CONFIG_OBJ
+      response = await axios.get(
+        `http://localhost:8000/api/project/report/${manager_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`,
+        CONFIG_OBJ
       );
-      setReportData(response.data);
+
       console.log("report data", response.data);
-      setTotalPages(Math.ceil(response.headers["x-total-count"] / pageSize));
+      // setReportData(response.data);
+      setLoadingFirstApi(false);
+      const newresp = response.data?.map((item) => {
+        const match = projectTotalManDaysData.find(
+          (i) => i.project_id === item.project_id
+        );
+
+        // console.log("match found", match);
+        return {
+          ...item,
+          total_allocated_man_days: match.total_man_days * 8,
+        };
+      });
+      setReportData(newresp);
+      // console.log("report data", newresp);
     } catch (err) {
       console.log(err);
+      setLoadingFirstApi(false);
     }
   };
   useEffect(() => {
-    getEmployeeReportHandler(currentPage);
-  }, [currentPage, toDate, fromDate]);
+    getTotalManDays();
+  }, []);
+  useEffect(() => {
+    console.log("man days data", projectTotalManDaysData);
+    getEmployeeReportHandler();
+  }, [projectTotalManDaysData]);
+  useEffect(() => {
+    getEmployeeReportHandler();
+  }, [toDate, fromDate]);
 
   useEffect(() => {
     async function fetchScheduleStartDate() {
       const projectExtraDetails = await axios.get(
-        `http://localhost:8000/api/project/actualStartDate/${manager_id}`,CONFIG_OBJ
+        `http://localhost:8000/api/project/actualStartDate/${manager_id}`,
+        CONFIG_OBJ
       );
-      console.log("project extra details", projectExtraDetails.data);
+      // console.log("project extra details", projectExtraDetails.data);
       setProjectActualStartDate(projectExtraDetails.data);
     }
     fetchScheduleStartDate();
@@ -67,7 +109,6 @@ const ProjectReport = () => {
     const project = projectActualStartDate?.find(
       (item) => item?.project_id === projectId
     );
-    console.log("date", project?.actual_start_date);
     return project ? project?.actual_start_date : null;
   };
   // search functionality
@@ -222,15 +263,6 @@ const ProjectReport = () => {
                         />
                       </div>
                     </div>
-
-                    {/* <div className="col-sm-4 col-md-1 col-lg-1 ">
-                      <Button
-                        className="py-1 px-2 mt-3 btn btn-info btn-sm rounded-2"
-                        // onClick={handleSearchByDateRange}
-                      >
-                        Search
-                      </Button>
-                    </div> */}
                   </div>
                   <div className="col-2 mt-4 d-flex justify-content-end">
                     <div className=" d-flex gap-3">
@@ -262,6 +294,7 @@ const ProjectReport = () => {
                     <tr className="table-info">
                       <th scope="col">S.No.</th>
                       <th scope="col">Project Name</th>
+
                       <th scope="col">
                         <div>Schd. Start Date</div>
                         <div>Schd. End Date</div>
@@ -270,8 +303,12 @@ const ProjectReport = () => {
                         <div>Act. Start Date</div>
                         <div>Act. End Date</div>
                       </th>
+                      <th scope="col">
+                        <div>Planned total</div>
+                        <div>Man Hours</div>
+                      </th>
                       <th scope="col" className="text-center ">
-                        Man Hours
+                        Acutal Man Hours
                       </th>
                     </tr>
                   </thead>
@@ -289,14 +326,9 @@ const ProjectReport = () => {
                         <tr key={item.user_id}>
                           <th scope="row">{index + 1}</th>
                           <td className="text-capitalize">
-                            {/* <NavLink
-                              to={`/view/project/tasks/${item.project_id}`}
-                              replace={true}
-                            > */}
-                              {/* <Tag color="gray">{item.project_name}</Tag> */}
-                            {/* </NavLink> */}
                             {item.project_name}
                           </td>
+
                           <td>
                             <div>
                               {moment
@@ -318,7 +350,9 @@ const ProjectReport = () => {
                                 : "Not yet started"}
                             </div>
                           </td>
-
+                          <td className="text-capitalize">
+                            {item.total_allocated_man_days} MHRS
+                          </td>
                           <td>
                             <table className="mx-auto">
                               <thead>
@@ -326,7 +360,11 @@ const ProjectReport = () => {
                                   <th scope="col">S.No.</th>
                                   <th scope="col">Name</th>
                                   <th scope="col">Alloc. Time</th>
-                                  <th scope="col">Act. Taken</th>
+                                  {/* <th scope="col">Act. Time Taken</th> */}
+                                  <th scope="col">
+                                    <div>Act. Time</div>
+                                    <div>Taken</div>
+                                  </th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -339,10 +377,10 @@ const ProjectReport = () => {
                                       <td className="text-capitalize">
                                         {i.name}{" "}
                                       </td>
-                                      <td className="text-center">
+                                      <td className="">
                                         {i.total_allocated_time} hrs.
                                       </td>
-                                      <td className="text-center">
+                                      <td className="">
                                         {i.total_actual_time} hrs.
                                       </td>
                                     </tr>
@@ -357,12 +395,12 @@ const ProjectReport = () => {
                                         Grand total
                                       </span>
                                     </td>
-                                    <td className="text-center">
+                                    <td className="">
                                       <span style={{ fontWeight: "bolder" }}>
                                         {totalAllocatedTime} hrs.
                                       </span>
                                     </td>
-                                    <td className="text-center">
+                                    <td className="">
                                       <span style={{ fontWeight: "bolder" }}>
                                         {totalActualTime} hrs.
                                       </span>
