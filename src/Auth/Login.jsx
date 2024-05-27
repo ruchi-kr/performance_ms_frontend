@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ErrorMessage, Field, Formik } from "formik";
 import LoginSchema from "../Schema/LoginSchema";
@@ -14,7 +14,7 @@ export default function Login() {
     email_id: "",
     password: "",
   };
-
+const [reload,setReload]=useState(false)
   const handleSubmit = async (payload, { setSubmitting }) => {
     try {
       const result = await axios.post(`${loginUrl}`, payload);
@@ -49,6 +49,7 @@ export default function Login() {
         dispatch({ type: "LOGIN_SUCCESS", payload: result.data.result.user});
         console.log("dispatched console", result.data.result.user);
         // window.location.reload();
+        setReload(true)
         const role = result.data.result.user.role;
         const status = result.data.result.user.status;
         console.log("role", role);
@@ -67,9 +68,11 @@ export default function Login() {
         console.log("navigated successfully");
         // window.location.reload();
       } else {
+        setReload(true)
         // toast.error(result.data.error);
       }
     } catch (error) {
+      setReload(false)
       toast.error(error.response.data.error);
     }
     setSubmitting(false);
