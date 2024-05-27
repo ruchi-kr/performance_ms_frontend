@@ -41,6 +41,7 @@ const ProjectReport = () => {
         CONFIG_OBJ
       );
       console.log("totoal man hrs data", resp.data.data);
+
       setProjectTotalManDaysData(resp.data.data);
       setLoadingSecondApi(false);
     } catch (error) {
@@ -61,7 +62,14 @@ const ProjectReport = () => {
       console.log("report data", response.data);
       // setReportData(response.data);
       setLoadingFirstApi(false);
-      const newresp = response.data?.map((item) => {
+      const temp = response.data.map((team) => {
+        return {
+          ...team,
+          report: team.report.filter((task) => task.employee_id !== null),
+        };
+      });
+      console.log("modified values", temp);
+      const newresp = temp?.map((item) => {
         const match = projectTotalManDaysData.find(
           (i) => i.project_id === item.project_id
         );
@@ -349,10 +357,9 @@ const ProjectReport = () => {
                                     .format("DD/MM/YYYY")
                                 : "Not yet started"}
                             </div>
+                            <div className="">In-process</div>
                           </td>
-                          <td className="text-capitalize">
-                            {item.total_allocated_man_days} MHRS
-                          </td>
+                          <td>{item.total_allocated_man_days} mhrs.</td>
                           <td>
                             <table className="mx-auto">
                               <thead>
@@ -372,7 +379,7 @@ const ProjectReport = () => {
                                   i.name !== null ? (
                                     <tr className="">
                                       <th scope="row" className="text-center">
-                                        {nestedIndex+1}
+                                        {nestedIndex + 1}
                                       </th>
                                       <td className="text-capitalize">
                                         {i.name}{" "}
