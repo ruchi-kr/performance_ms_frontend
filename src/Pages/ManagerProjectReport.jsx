@@ -3,7 +3,7 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import { getEmployeeReport,CONFIG_OBJ } from "../Config";
+import { getEmployeeReport, CONFIG_OBJ } from "../Config";
 import { Input, DatePicker, Button, Tag, Flex, Progress } from "antd";
 import moment from "moment";
 import dayjs from "dayjs";
@@ -45,11 +45,12 @@ const ManagerProjectReport = () => {
   //    };
 
   // ?page=${page}&pageSize=${pageSize} page,
- 
+
   const getEmployeeReportHandler = async (page) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/project/report/detailed/${manager_id}/?&search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${page}&pageSize=${10}`,CONFIG_OBJ
+        `http://localhost:8000/api/project/report/detailed/${manager_id}/?&search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${page}&pageSize=${10}`,
+        CONFIG_OBJ
       );
       console.log("response", response);
       setReportData(response.data);
@@ -273,8 +274,8 @@ const ManagerProjectReport = () => {
                 <div className="d-flex justify-content-end mt-3 mr-4">
                   <Button onClick={handleExpandAll} className="text-info">
                     {!expandedRows || expandedRows.length < reportData.length
-                      ? "Expand"
-                      : "Collapse"}
+                      ? "Expand All"
+                      : "Collapse All"}
                   </Button>
                 </div>
               </div>
@@ -290,6 +291,8 @@ const ManagerProjectReport = () => {
                     <tr>
                       <th scope="col">S.No.</th>
                       <th scope="col">Project Name</th>
+                      <th scope="col">Schd. St. Dt.</th>
+                      <th scope="col">Schd. End Dt.</th>
                       <th scope="col">Planned Alloc hrs</th>
                       <th scope="col">Actual Alloc hrs</th>
                       <th scope="col">Actual Man hrs</th>
@@ -311,6 +314,12 @@ const ManagerProjectReport = () => {
                               <td className="text-capitalize font-weight-bold">
                                 {item.project_name}
                               </td>
+                              <td className="font-weight-bold">
+                                {moment.utc(item.schedule_start_date).format("DD/MM/YYYY")}
+                              </td>
+                              <td className="font-weight-bold">
+                                {moment.utc(item.schedule_end_date).format("DD/MM/YYYY")}
+                              </td>
                               <td className="text-capitalize font-weight-bold">
                                 {item.total_allocated_man_days} Man hrs.
                               </td>
@@ -325,13 +334,14 @@ const ManagerProjectReport = () => {
                               expandedRow === index) && (
                               <tr>
                                 <td colSpan="12">
-                                  <table className="col-11 mx-auto">
+                                  <table className="col-12 mx-auto">
                                     <thead className="table-info">
                                       <tr>
                                         <th>Employee Name</th>
                                         <th>Module Name</th>
                                         <th>Task</th>
-                                        <th>Date</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
                                         <th>Status</th>
                                         <th>Alloc. Time</th>
                                         <th>Act. Time</th>
@@ -358,6 +368,24 @@ const ManagerProjectReport = () => {
                                                 {moment
                                                   .utc(task.created_at)
                                                   .format("DD/MM/YYYY")}
+                                              </td>
+                                              <td className="text-center">
+                                                {task.status === "completed" ? (
+                                                  moment
+                                                    .utc(task.actual_end_date)
+                                                    .format("DD/MM/YYYY")
+                                                ) : task.status ===
+                                                    "inprocess" ||
+                                                  task.status ===
+                                                    "notstarted" ? (
+                                                  <span className="text-center">
+                                                    N.A.
+                                                  </span>
+                                                ) : (
+                                                  moment
+                                                    .utc(task.updated_at)
+                                                    .format("DD/MM/YYYY")
+                                                )}
                                               </td>
                                               {task.status === "completed" ? (
                                                 <td className="text-success text-capitalize">

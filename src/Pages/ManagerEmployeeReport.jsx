@@ -30,7 +30,8 @@ const ManagerEmployeeReport = () => {
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user.employee_id;
   console.log("manager id", manager_id);
-
+  // Function to handle expand all rows
+  const [expandedRows, setExpandedRows] = useState([]);
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
   //        try {
   //            const response = await axios.get(
@@ -233,6 +234,15 @@ const ManagerEmployeeReport = () => {
     // setNotStartedTasks(notStarted);
     return Math.ceil(efficiency);
   };
+  
+  const handleExpandAll = () => {
+    if (expandedRows.length === reportData.length) {
+      setExpandedRows([]);
+    } else {
+      const newExpandedRows = reportData.map((_, index) => index);
+      setExpandedRows(newExpandedRows);
+    }
+  };
   return (
     <>
       <Header />
@@ -299,6 +309,14 @@ const ManagerEmployeeReport = () => {
                       />
                     </div>
                   </div>
+                 
+                </div>
+                <div className="d-flex justify-content-end mt-3 mr-4">
+                  <Button onClick={handleExpandAll} className="text-info">
+                    {!expandedRows || expandedRows.length < reportData.length
+                      ? "Expand All"
+                      : "Collapse All"}
+                  </Button>
                 </div>
               </div>
             </div>
@@ -308,7 +326,7 @@ const ManagerEmployeeReport = () => {
                 {/* table */}
                 <table
                   id="reportTablepw"
-                  className="table table-striped table-hover mt-5"
+                  className="table table-striped table-hover mt-2"
                 >
                   <thead>
                     <tr className="table-info">
@@ -347,7 +365,7 @@ const ManagerEmployeeReport = () => {
                               <td>{item.total_actual_time} hrs.</td>
                               <td>{efficiency} %</td>
                             </tr>
-                            {expandedRow === index && (
+                            {(expandedRows.includes(index) || expandedRow === index) && (
                               <tr>
                                 <td colSpan="12">
                                   <table className="col-12 mx-auto">
@@ -359,8 +377,8 @@ const ManagerEmployeeReport = () => {
                                         <th>Start Date</th>
                                         <th>End Date</th>
                                         <th>Status</th>
-                                        <th>Allocated Time</th>
-                                        <th>Actual Time</th>
+                                        <th>Alloc. Time</th>
+                                        <th>Act. Time</th>
                                         <th>%&nbsp;Work Done</th>
                                       </tr>
                                     </thead>
