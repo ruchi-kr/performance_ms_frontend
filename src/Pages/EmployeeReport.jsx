@@ -87,7 +87,14 @@ const EmployeeReport = () => {
     }
   };
 
+  useEffect(() => { 
+    console.log("report data", reportData);
+    const EfficiencySums= reportData && reportData.reduce((sum, task) => sum + (task.per_task_efficiency || 0), 0)
+    setModuleEfficiencySums(EfficiencySums)
+    console.log("efficiency sums data", moduleEfficiencySums);
+  }, [reportData]);        
 
+ 
   useEffect(() => {
     getEmployeeReportHandler(currentPage);
   }, [currentPage, search]);
@@ -162,9 +169,6 @@ const handleExcel = () => {
     XLSX.writeFile(wb, 'employee_reportPW.xlsx');
 };
 
-
-
-
   
   // to pdf file function
   const exportToPDF = () => {
@@ -219,6 +223,32 @@ const handleExcel = () => {
     doc.autoTable(content); // Ensure you're using autoTable correctly here
     doc.save('employee_reportPW.pdf');
   };
+
+const[moduleEfficiencySums, setModuleEfficiencySums] = useState([]);
+  
+// const calculateAverageEfficiency = (tasks) => {
+//   const totalEfficiency = tasks.reduce(
+//     (sum, task) => sum + (task.per_task_efficiency || 0),
+//     0
+//   );
+//   return totalEfficiency / tasks.length;
+// };
+const calculateAverageEfficiency = (modules) => {
+  if (!modules || modules.length === 0) return 0;
+
+  const totalEfficiency = modules.reduce((sum, module) => {
+    if (!module.tasks || module.tasks.length === 0) return sum;
+    return sum + module.tasks.reduce((moduleSum, task) => moduleSum + (task.per_task_efficiency || 0), 0);
+  }, 0);
+
+  const totalTasks = modules.reduce((sum, module) => sum + (module.tasks ? module.tasks.length : 0), 0);
+
+  // return totalEfficiency / totalTasks;
+  const averageEfficiency = totalTasks !== 0 ? (totalEfficiency / totalTasks).toFixed(2) : 0;
+
+  return parseFloat(averageEfficiency);
+};
+
 
   return (
     <>
@@ -307,7 +337,7 @@ const handleExcel = () => {
             <div className="row">
               <div className="col-11 mx-auto">
                 {/* table */}
-                <table id="reportTablepw" className="table table-striped table-hover mt-3">
+                <table id="reportTablepw" className="table table-striped mt-3">
                   <thead>
                     <tr>
                       <th scope="col">S.No.</th>
@@ -317,12 +347,14 @@ const handleExcel = () => {
 
                       <th scope="col">Alloc hrs</th>
                       <th scope="col">Man hrs</th>
+                      <th scope="col">Efficiency</th>
                     </tr>
                   </thead>
 
                   <tbody className="table-group-divider">
                     {reportData &&
                       reportData.map((item, index) => (
+                       
                         <React.Fragment key={item.user_id}>
                           <tr onClick={() => handleRowClick(index)}>
                             <th scope="row">{index + 1}</th>
@@ -332,7 +364,6 @@ const handleExcel = () => {
                             >
                               {item.project_name}
                             </NavLink>
-                              
                             </td>
                             <td>
                               {item.schedule_start_date.slice(8, 10)}/
@@ -347,6 +378,9 @@ const handleExcel = () => {
 
                             <td>{item.total_allocated_hours}</td>
                             <td>{item.total_actual_hours}</td>
+                            <td>
+                  {item.modules && calculateAverageEfficiency(item.modules)} %
+                </td>
                           </tr>
                           {(expandedRows.includes(index) || expandedRow === index) &&   (
                             <tr>
@@ -356,20 +390,23 @@ const handleExcel = () => {
                                     <tr>
                                       <th>Module Name</th>
                                       <th>Task</th>
-                                      <th>Date</th>
+                                      {/* <th>Start Date</th>
+                                      <th>End Date</th> */}
+                                      <th className="text-xs d-flex flex-column">
+  Start Date
+  <span>End Date</span>
+</th>
                                       <th>Status</th>
-                                      <th>Allocated Time</th>
-                                      <th>Actual Time</th>
+                                      <th>Alloc hrs</th>
+                                      <th>Actual hrs</th>
+                                      {/* <th>per task</th> */}
                                     </tr>
                                   </thead>
                                   <tbody>
-                                   
-                                       {item.modules &&
+                                    {item.modules &&
                                       (item.modules).map(
                                         (module, moduleIndex) => (
                                           <React.Fragment key={moduleIndex}>
-
-                                         
                                           <tr className="module-row">
                                             <td className="text-capitalize text-primary" colSpan="6" >{module.module_name}</td>
                                           </tr>
@@ -379,22 +416,45 @@ const handleExcel = () => {
                                                 <tr key={taskIndex} className="task-row">
                                                   <td></td>
                                                   <td>{task.task_name}</td>
-                                                  <td>
+                                                  {/* <td>
                                                     {task.created_at.slice(8, 10)}/
                                                     {task.created_at.slice(5, 7)}/
                                                     {task.created_at.slice(0, 4)}
                                                   </td>
+                                                  { task.updated_at ?<td>
+                                                    {task.updated_at?.slice(8, 10)}/
+                                                    {task.updated_at?.slice(5, 7)}/
+                                                    {task.updated_at?.slice(0, 4)}
+                                                  </td> : <td className=" text-primary">---</td>} */}
+                                                  <td className="text-xs d-flex flex-column">
+  <span>
+    {task.created_at.slice(8, 10)}/
+    {task.created_at.slice(5, 7)}/
+    {task.created_at.slice(0, 4)}
+  </span>
+  {task.updated_at ? (
+    <span>
+      {task.updated_at.slice(8, 10)}/
+      {task.updated_at.slice(5, 7)}/
+      {task.updated_at.slice(0, 4)}
+    </span>
+  ) : (
+    <td className="text-primary">---</td>
+  )}
+</td>
                                                   <td>{task.status}</td>
                                                   <td>{task.employee_allocated_time}</td>
                                                   <td>{task.employee_actual_time}</td>
+                                                  {/* <td>{!task.per_task_efficiency ? "---": task.per_task_efficiency}</td> */}
                                                 </tr>
                                               )
                                             ))}
-                                           
+                                           {/* <td>
+                  {module.tasks.reduce((sum, task) => sum + (task.per_task_efficiency || 0), 0)}
+                </td> */}
                                            </React.Fragment>
                                         ))}
-                                     
-                                    
+                                   
                                   </tbody>
                                 </table>
                               </td>

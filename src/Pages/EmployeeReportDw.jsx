@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DatePicker, Button } from "antd";
 import moment from "moment";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
 const EmployeeReportDateWise = () => {
   const user_id = sessionStorage.getItem('id');
@@ -172,7 +173,8 @@ const EmployeeReportDateWise = () => {
                     format={dateFormat}
                     showTime={false}
                     allowClear
-                    onClear={handleDateClear}
+                    onClear={handleDateClear}                   
+                    // defaultValue={dayjs().subtract(30, "day")}
                   />
                 </div>
               </div>
@@ -190,6 +192,8 @@ const EmployeeReportDateWise = () => {
                     showTime={false}
                     allowClear
                     onClear={handleDateClear}
+                    // defaultValue={ dayjs()}
+
                   />
                 </div>
               </div>

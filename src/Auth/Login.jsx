@@ -66,7 +66,9 @@ const [reload,setReload]=useState(false)
         }
         // window.location.reload();
         console.log("navigated successfully");
-        // window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); 
       } else {
         setReload(true)
         // toast.error(result.data.error);

@@ -194,7 +194,6 @@ useEffect(() => {
     setTotalAllocatedTime(sumAllocatedTime);
   }, [taskRecords.length > 0 ? taskRecords : '']);
   
-
   console.log("total allocated time",totalAllocatedTime)
   
 
