@@ -23,6 +23,7 @@ const ProjectReport = () => {
   const [search, setSearch] = useState("");
   const [reportData, setReportData] = useState([]);
   const [projectActualStartDate, setProjectActualStartDate] = useState(null);
+  const [projectActualEndDate, setProjectActualEndDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [fromDate, setFromDate] = useState(null);
   const [projectTotalManDaysData, setProjectTotalManDaysData] = useState([]);
@@ -108,6 +109,20 @@ const ProjectReport = () => {
     }
     fetchScheduleStartDate();
   }, []);
+  useEffect(() => {
+    async function fetchActualEndDate() {
+      const projectExtraDetails = await axios.get(
+        `http://localhost:8000/api/project/actualEndDate/${manager_id}`,
+        CONFIG_OBJ
+      );
+      console.log(
+        "project extra details actual end date---------->",
+        projectExtraDetails.data
+      );
+      setProjectActualEndDate(projectExtraDetails.data);
+    }
+    fetchActualEndDate();
+  }, []);
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber == 0 ? 1 : pageNumber);
     getEmployeeReportHandler(pageNumber == 0 ? 1 : pageNumber);
@@ -117,6 +132,12 @@ const ProjectReport = () => {
       (item) => item?.project_id === projectId
     );
     return project ? project?.actual_start_date : null;
+  };
+  const findActualEndDate = (projectId) => {
+    const project = projectActualEndDate?.find(
+      (item) => item?.project_id === projectId
+    );
+    return project ? project?.actual_end_date : null;
   };
   // search functionality
   useEffect(() => {
@@ -244,7 +265,7 @@ const ProjectReport = () => {
                     </label>
 
                     <Search
-                      placeholder="search by project name"
+                      placeholder="Search Project"
                       allowClear
                       onSearch={onSearch}
                       style={{
@@ -293,6 +314,7 @@ const ProjectReport = () => {
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "flex-start",
+                      marginLeft: "auto",
                     }}
                   >
                     <label className="text-capitalize textcolumntitle fw-bold text-info">
@@ -323,14 +345,14 @@ const ProjectReport = () => {
                     <div className=" d-flex gap-3">
                       <FontAwesomeIcon
                         icon={faFileExcel}
-                        size="2xl"
+                        size="xl"
                         style={{ color: "#74C0FC" }}
                         onClick={exportToExcel}
                       />
                       <FontAwesomeIcon
                         icon={faFilePdf}
                         style={{ color: "#ee445e" }}
-                        size="2xl"
+                        size="xl"
                         onClick={exportToPDF}
                       />
                     </div>
@@ -343,14 +365,14 @@ const ProjectReport = () => {
               </div>
             </div>
             <div className="row">
-              <div className="col-11 mx-auto">
+              <div className="col-11   mx-auto">
                 {/* table */}
                 <table
                   id="reportTablepw"
-                  className="table table-striped table-hover mt-2"
+                  className="table table-striped mt-2 table-sm"
                 >
                   <thead>
-                    <tr className="table-info">
+                    <tr className="">
                       <th scope="col" className="text-center">
                         S.No.
                       </th>
@@ -359,17 +381,19 @@ const ProjectReport = () => {
                       <th scope="col">
                         <div className="d-flex flex-column">
                           <span>Schd. St. Dt.</span>
-                          <span>Schd. Ed. Dt.</span>
+                          <span>Schd. End Dt.</span>
                         </div>
                       </th>
                       <th scope="col">
-                        <div>Act. St. Date</div>
-                        <div>Act. Ed. Date</div>
+                        <div className="d-flex flex-column justify-content-center">
+                          <span>Act. St. Date</span>
+                          <span>Act. End Date</span>
+                        </div>
                       </th>
                       <th scope="col">
                         <div className="d-flex flex-column">
-                          <span>Project Planned</span>
-                          <span> Hours</span>
+                          <span>Project</span>
+                          <span>Planned Hours</span>
                         </div>
                       </th>
                       <th scope="col" className="text-center ">
@@ -389,9 +413,7 @@ const ProjectReport = () => {
                       );
                       return (
                         <tr key={item.user_id}>
-                          <th scope="row" className="text-center">
-                            {index + 1}.
-                          </th>
+                          <td className="text-center">{index + 1}.</td>
                           <td className="text-capitalize">
                             {item.project_name}
                           </td>
@@ -409,28 +431,42 @@ const ProjectReport = () => {
                             </div>
                           </td>
                           <td>
-                            <div>
-                              {findActualStartDate(item?.project_id) !== null
-                                ? moment
-                                    .utc(findActualStartDate(item?.project_id))
-                                    .format("DD/MM/YYYY")
-                                : "Not yet started"}
+                            <div className="d-flex flex-column justify-content-center">
+                              <span>
+                                {findActualStartDate(item?.project_id) !== null
+                                  ? moment
+                                      .utc(
+                                        findActualStartDate(item?.project_id)
+                                      )
+                                      .format("DD/MM/YYYY")
+                                  : "-"}
+                              </span>
+                              <span className="">
+                                {item.stage === "completed"
+                                  ? findActualEndDate(item?.project_id) !== null
+                                    ? moment
+                                        .utc(
+                                          findActualEndDate(item?.project_id)
+                                        )
+                                        .format("DD/MM/YYYY")
+                                    : "-"
+                                  : "-"}
+                              </span>
                             </div>
-                            <div className="">In-process</div>
                           </td>
                           <td>{item.total_allocated_man_days}</td>
                           <td>
                             <table
-                              className="mx-auto"
+                              className="mx-auto table table-sm table-borderless"
                               style={{ width: "100%" }}
                             >
                               <thead>
                                 <tr>
                                   <th scope="col">S.No.</th>
                                   <th scope="col">Name</th>
-                                  <th scope="col">Alloc. Time</th>
+                                  <th scope="col">Alloc. hrs.</th>
                                   <th scope="col">
-                                    <div>Act. Time</div>
+                                    <div>Act. hrs.</div>
                                   </th>
                                 </tr>
                               </thead>
@@ -438,9 +474,9 @@ const ProjectReport = () => {
                                 {item?.report?.map((i, nestedIndex) =>
                                   i.name !== null ? (
                                     <tr className="">
-                                      <th scope="row" className="text-center">
+                                      <td className="text-center">
                                         {`${index + 1}.${nestedIndex + 1}`}
-                                      </th>
+                                      </td>
                                       <td className="text-capitalize">
                                         {i.name}
                                       </td>
@@ -456,37 +492,44 @@ const ProjectReport = () => {
                                   )
                                 )}
                                 {totalAllocatedTime - totalActualTime < 0 ? (
-                                  <tr className="table-danger">
+                                  <tr
+                                    style={{
+                                      borderTop: "2px solid red",
+                                      borderBottom: "2px solid red",
+                                    }}
+                                  >
                                     <td colSpan={2}>
-                                      <span style={{ fontWeight: "bolder" }}>
-                                        Grand Total
-                                      </span>
+                                      <span>Grand Total</span>
+                                    </td>
+                                    <td className="text-danger">
+                                      <span>{totalAllocatedTime}</span>
                                     </td>
                                     <td className="">
-                                      <span style={{ fontWeight: "bolder" }}>
-                                        {totalAllocatedTime}
-                                      </span>
-                                    </td>
-                                    <td className="">
-                                      <span style={{ fontWeight: "bolder" }}>
+                                      <span className="text-danger">
                                         {totalActualTime}
                                       </span>
                                     </td>
                                   </tr>
                                 ) : (
-                                  <tr className="table-info">
+                                  <tr
+                                    className=""
+                                    style={{
+                                      borderTop: "2px solid #dee2e6",
+                                      borderBottom: "2px solid #dee2e6",
+                                    }}
+                                  >
                                     <td colSpan={2}>
-                                      <span style={{ fontWeight: "bolder" }}>
-                                        Grand total
-                                      </span>
+                                      <p className=" text-primary">
+                                        Grand Total
+                                      </p>
                                     </td>
                                     <td className="">
-                                      <span style={{ fontWeight: "bolder" }}>
+                                      <span className="text-primary">
                                         {totalAllocatedTime}
                                       </span>
                                     </td>
-                                    <td className="">
-                                      <span style={{ fontWeight: "bolder" }}>
+                                    <td>
+                                      <span className="text-primary">
                                         {totalActualTime}
                                       </span>
                                     </td>

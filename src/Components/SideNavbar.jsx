@@ -174,17 +174,13 @@ const SideNavbar = () => {
                   <li className="nav-item btnhovergrey mt-3">
                     <Link
                       className={`nav-link text-white text-decoration-none ${
-                        window.location.pathname ===
-                        `/systemsettings/`
+                        window.location.pathname === `/systemsettings/`
                           ? "bg-cyan"
                           : ""
                       }`}
                       to="/systemsettings"
                     >
-                      <FontAwesomeIcon
-                        className="nav-icon"
-                        icon={faGear}
-                      />
+                      <FontAwesomeIcon className="nav-icon" icon={faGear} />
                       <p>System Settings</p>
                     </Link>
                   </li>
@@ -298,6 +294,24 @@ const SideNavbar = () => {
                           <p>Team</p>
                         </Link>
                       </li>
+                      <li className="nav-item btnhovergrey mt-3">
+                        <NavLink
+                          className={`nav-link text-white text-decoration-none ${
+                            window.location.pathname ===
+                            `/projectplan/:project_id=null`
+                              ? "bg-cyan"
+                              : ""
+                          }`}
+                          to="/projectplan/?project_id=null"
+                          // onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
+                        >
+                          <FontAwesomeIcon
+                            className="nav-icon"
+                            icon={faFolderOpen}
+                          />
+                          <p>Project Plan</p>
+                        </NavLink>
+                      </li>
                       {/* <li className="nav-item btnhovergrey mt-3">
                                                     <Link className={`nav-link text-white ${window.location.pathname === '' ? 'bg-cyan' : ''}`} to="/manager/report/project">
                                                         <FontAwesomeIcon className='nav-icon' icon={faFolderOpen} />
@@ -314,70 +328,51 @@ const SideNavbar = () => {
                           <i className="fas fa-angle-left right"></i>
                         </a>
                         {/* <ul className="nav nav-treeview mt-3"> */}
-                          <div>
-                            <li className="nav-item">
-                              <Link
-                                className={`nav-link text-white ${
-                                  window.location.pathname ===
-                                  "/reportproject-wise"
-                                    ? "bg-cyan"
-                                    : ""
-                                }`}
-                                to="/manager/report/project"
-                              >
-                                <i className="far fa-circle nav-icon" />
-                                <p>Project Report</p>
-                              </Link>
-                            </li>
-                            <li className="nav-item">
-                              <Link
-                                className={`nav-link text-white ${
-                                  window.location.pathname ===
-                                  "/reportdate-wise"
-                                    ? "bg-cyan"
-                                    : ""
-                                }`}
-                                to="/manager/report/project/detailed"
-                              >
-                                <i className="far fa-circle nav-icon" />
-                                <p>Project Detailed Report</p>
-                              </Link>
-                            </li>
-                            <li className="nav-item">
-                              <Link
-                                className={`nav-link text-white ${
-                                  window.location.pathname ===
-                                  "/reportdate-wise"
-                                    ? "bg-cyan"
-                                    : ""
-                                }`}
-                                to="/manager/report/employee"
-                              >
-                                <i className="far fa-circle nav-icon" />
-                                <p>Employee Detailed Report</p>
-                              </Link>
-                            </li>
-                          </div>
+                        <div>
+                          <li className="nav-item">
+                            <Link
+                              className={`nav-link text-white ${
+                                window.location.pathname ===
+                                "/reportproject-wise"
+                                  ? "bg-cyan"
+                                  : ""
+                              }`}
+                              to="/manager/report/project"
+                            >
+                              <i className="far fa-circle nav-icon" />
+                              <p>Project Report</p>
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link
+                              className={`nav-link text-white ${
+                                window.location.pathname === "/reportdate-wise"
+                                  ? "bg-cyan"
+                                  : ""
+                              }`}
+                              to="/manager/report/project/detailed"
+                            >
+                              <i className="far fa-circle nav-icon" />
+                              <p>Project Detailed Report</p>
+                            </Link>
+                          </li>
+                          <li className="nav-item">
+                            <Link
+                              className={`nav-link text-white ${
+                                window.location.pathname === "/reportdate-wise"
+                                  ? "bg-cyan"
+                                  : ""
+                              }`}
+                              to="/manager/report/employee"
+                            >
+                              <i className="far fa-circle nav-icon" />
+                              <p>Employee Detailed Report</p>
+                            </Link>
+                          </li>
+                        </div>
                         {/* </ul> */}
                       </li>
-                        <li className="nav-item btnhovergrey mt-3">
-                    <NavLink
-                      className={`nav-link text-white text-decoration-none ${
-                        window.location.pathname ===
-                        `/projectplan/:project_id=null`
-                          ? "bg-cyan"
-                          : ""
-                      }`}
-                      to="/projectplan/?project_id=null"
-                      // onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
-                    >
-                      <FontAwesomeIcon
-                        className="nav-icon"
-                        icon={faFolderOpen}
-                      />
-                      <p>Project Plan</p>
-                    </NavLink>
-                  </li>
+                     
                       <li className="nav-item fixed-bottom ">
                         <button
                           className="nav-link text-white text-left"
