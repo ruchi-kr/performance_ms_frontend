@@ -4,7 +4,17 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { getEmployeeReport, CONFIG_OBJ } from "../Config";
-import { Input, DatePicker, Button, Select, Tag, Flex, Progress } from "antd";
+import {
+  Input,
+  DatePicker,
+  Button,
+  Select,
+  Tag,
+  Flex,
+  Progress,
+  Col,
+  Row,
+} from "antd";
 import moment from "moment";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
@@ -120,9 +130,7 @@ const ManagerProjectReport = () => {
     // Can not select days before today and today
     return current && current >= dayjs().endOf("day");
   };
-  const handleProjectStageChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+
   // export to excel and pdf file function
   const exportToExcel = async () => {
     window.confirm("Do you want to download record!");
@@ -208,12 +216,17 @@ const ManagerProjectReport = () => {
               <div className="col-11 mx-auto">
                 <h3 className="text-primary">Projects Detailed Report</h3>
                 <hr className="bg-primary border-4" />
-                <div className="d-flex justify-content-between">
-                  <div className="col-2">
+                <Row gutter={48}>
+                  <Col
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
                     <label className="text-capitalize fw-bold text-info">
                       Employee Search
                     </label>
-
                     <Search
                       placeholder="Search Employee"
                       allowClear
@@ -224,94 +237,80 @@ const ManagerProjectReport = () => {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
-                  </div>
-                  <div className="d-flex align-items-center">
-                    <div className="col-sm-4 col-md-3 col-lg-8">
-                      <div className="mb-1">
-                        <label className="text-capitalize textcolumntitle fw-bold text-info">
-                          Select Date Range
-                        </label>
-                        <RangePicker
-                          disabledDate={disabledDate}
-                          onChange={handleDateRangeChange}
-                          defaultValue={[dayjs().subtract(30, "day"), dayjs()]}
-                          placeholder="From Date"
-                          style={{
-                            width: "100%",
-                            boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)",
-                          }}
-                          className="rounded-2"
-                          format={dateFormat}
-                          showTime={false}
-                        />
-                      </div>
-                    </div>
+                  </Col>
+                  <Col
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <label className="text-capitalize textcolumntitle fw-bold text-info">
+                      Project Stage
+                    </label>
+                    <Select
+                      defaultValue="All stages"
+                      style={{
+                        width: 160,
+                      }}
+                      onChange={(value) => setProjectStageFilter(value)}
+                      options={[
+                        {
+                          value: "all",
+                          label: "All Stages",
+                        },
+                        {
+                          value: "completed",
+                          label: "Completed",
+                        },
+                      ]}
+                    />
+                  </Col>
+                  <Col
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <label className="text-capitalize textcolumntitle fw-bold text-info">
+                      Select Date Range
+                    </label>
+                    <RangePicker
+                      disabledDate={disabledDate}
+                      onChange={handleDateRangeChange}
+                      defaultValue={[dayjs().subtract(30, "day"), dayjs()]}
+                      placeholder="From Date"
+                      style={{
+                        width: "100%",
+                        boxShadow: "2px 2px 3px rgba(0, 0, 0, 0.1)",
+                      }}
+                      className="rounded-2"
+                      format={dateFormat}
+                      showTime={false}
+                    />
+                  </Col>
+                </Row>
 
-                    {/* <div className="col-sm-4 col-md-1 col-lg-1 ">
-                      <Button
-                        className="py-1 px-2 mt-3 btn btn-info btn-sm rounded-2"
-                        onClick={handleSearchByDateRange}
-                      >
-                        Search
-                      </Button>
-                    </div> */}
-                  </div>
-                  <div className="d-flex align-items-center">
-                    <div className="col-sm-4 col-md-3 col-lg-8">
-                      <div className="mb-1">
-                        <label className="text-capitalize textcolumntitle fw-bold text-info">
-                          Project Stage Filter
-                        </label>
-                        <Select
-                          defaultValue="all stages"
-                          style={{
-                            width: 120,
-                          }}
-                          // onChange={handleProjectStageChange}
-                          onChange={(value)=>setProjectStageFilter(value)}
-                          options={[
-                            {
-                              value: "completed",
-                              label: "Completed",
-                            },
-                            {
-                              value: "all",
-                              label: "All Stages",
-                            },
-                          ]}
-                        />
-                      </div>
-                    </div>
-
-                    {/* <div className="col-sm-4 col-md-1 col-lg-1 ">
-                      <Button
-                        className="py-1 px-2 mt-3 btn btn-info btn-sm rounded-2"
-                        onClick={handleSearchByDateRange}
-                      >
-                        Search
-                      </Button>
-                    </div> */}
-                  </div>
-                  <div className="row ">
-                    <div className="col-2 mt-4 d-flex justify-content-end">
-                      <div className="d-flex gap-3">
-                        <FontAwesomeIcon
-                          icon={faFileExcel}
-                          size="2xl"
-                          style={{ color: "#74C0FC" }}
-                          onClick={exportToExcel}
-                        />
-                        <FontAwesomeIcon
-                          icon={faFilePdf}
-                          style={{ color: "#ee445e" }}
-                          size="2xl"
-                          onClick={exportToPDF}
-                        />
-                      </div>
+                <div className="row ">
+                  <div className="d-flex justify-content-end mt-3 mr-2">
+                    <div className="d-flex gap-3">
+                      <FontAwesomeIcon
+                        icon={faFileExcel}
+                        size="2xl"
+                        style={{ color: "#74C0FC" }}
+                        onClick={exportToExcel}
+                      />
+                      <FontAwesomeIcon
+                        icon={faFilePdf}
+                        style={{ color: "#ee445e" }}
+                        size="2xl"
+                        onClick={exportToPDF}
+                      />
                     </div>
                   </div>
                 </div>
-                <div className="d-flex justify-content-end mt-3 mr-4">
+                <div className="d-flex justify-content-end mt-3 mr-2">
                   <Button onClick={handleExpandAll} className="text-info">
                     {!expandedRows || expandedRows.length < reportData.length
                       ? "Expand All"
@@ -327,13 +326,10 @@ const ManagerProjectReport = () => {
             <div className="row">
               <div className="col-11 mx-auto">
                 {/* table */}
-                <table
-                  id="reportTablepw"
-                  className="table table-striped table-hover mt-2"
-                >
+                <table id="reportTablepw" className="table table-striped  mt-2">
                   <thead>
                     <tr>
-                      <th scope="col">S.No.</th>
+                      <th scope="col" className="text-center">S.No.</th>
                       <th scope="col">Project Name</th>
                       <th scope="col">
                         <div className="d-flex flex-column">
@@ -398,8 +394,9 @@ const ManagerProjectReport = () => {
                               <tr>
                                 <td colSpan="12">
                                   <table className="col-12 mx-auto">
-                                    <thead className="table-info">
+                                    <thead className="">
                                       <tr>
+                                        <th className="text-center">S.No.</th>
                                         <th>Employee Name</th>
                                         <th>Module Name</th>
                                         <th>Task</th>
@@ -423,6 +420,9 @@ const ManagerProjectReport = () => {
                                         item?.tasks_details.map(
                                           (task, taskIndex) => (
                                             <tr key={taskIndex}>
+                                              <td className="text-center">{`${index + 1}.${
+                                                taskIndex + 1
+                                              }`}</td>
                                               <td className="text-capitalize">
                                                 {task.name}
                                               </td>
