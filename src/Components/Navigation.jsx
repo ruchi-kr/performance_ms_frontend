@@ -30,8 +30,11 @@ import ProjectPlan2 from "../PlanPages/ProjectPlan2";
 import AddModuleTasks from "../Pages/AddModuleTasks";
 import SystemSettings from "../Pages/SystemSettings";
 import AssignTeamNew from "../Pages/AssignTeamNew";
+
+import EmployeeReportDwCopy from "../Pages/EmployeeReportDwCopy";
 export const nav = [
     // public
+    { path: "/reportcopy", element: <EmployeeReportDwCopy />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
     { path: "/", element: <Login />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
     { path: "/login", element: <Login />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
     { path: "/forgot", element: <Forgot />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
