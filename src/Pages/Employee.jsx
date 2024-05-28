@@ -663,7 +663,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               disabled={
                                 record.formDisabled ||
                                 formDisabled ||
-                                (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
+                                (dayjs(currentTime).hour() >= 12 && record.adhoc != 1)
                               }
                             >
                               {/* <Option
@@ -726,7 +726,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                 miscellaneous ||
                                 record.formDisabled ||
                                 formDisabled ||
-                                (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
+                                (dayjs(currentTime).hour() >= 12 && record.adhoc !== 1)
                               }
                             >
                               {moduleList?.map((module) => (
@@ -838,7 +838,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                miscellaneous || 
                                record.formDisabled ||
                                 formDisabled ||
-                                (dayjs(currentTime).hour() >= 12 && adhoc !== 1)
+                                (dayjs(currentTime).hour() >= 12 && record.adhoc !== 1)
                               }
                             >
                               {taskList?.map((task) => (
@@ -877,7 +877,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               disabled={
                                 record.formDisabled ||
                                 formDisabled ||
-                                (dayjs(currentTime).hour() >= 12 && adhoc != 1)
+                                (dayjs(currentTime).hour() >= 12 && record.adhoc != 1)
                               }
                               min="1"
                               max="24"
