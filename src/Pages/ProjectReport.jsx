@@ -41,6 +41,7 @@ const ProjectReport = () => {
         CONFIG_OBJ
       );
       console.log("totoal man hrs data", resp.data.data);
+
       setProjectTotalManDaysData(resp.data.data);
       setLoadingSecondApi(false);
     } catch (error) {
@@ -61,7 +62,14 @@ const ProjectReport = () => {
       console.log("report data", response.data);
       // setReportData(response.data);
       setLoadingFirstApi(false);
-      const newresp = response.data?.map((item) => {
+      const temp = response.data.map((team) => {
+        return {
+          ...team,
+          report: team.report.filter((task) => task.employee_id !== null),
+        };
+      });
+      console.log("modified values", temp);
+      const newresp = temp?.map((item) => {
         const match = projectTotalManDaysData.find(
           (i) => i.project_id === item.project_id
         );
@@ -258,7 +266,7 @@ const ProjectReport = () => {
                           }}
                           className="rounded-2"
                           format={"DD/MM/YYYY"}
-                          defaultValue={[dayjs().subtract(28, "day"), dayjs()]}
+                          defaultValue={[dayjs().subtract(30, "day"), dayjs()]}
                           showTime={false}
                         />
                       </div>
@@ -281,6 +289,10 @@ const ProjectReport = () => {
                     </div>
                   </div>
                 </div>
+                <div className="d-flex justify-content-end mt-3 mr-2">
+                  <span className="text-danger">*</span>
+                  <span>Time in hours</span>
+                </div>
               </div>
             </div>
             <div className="row">
@@ -288,7 +300,8 @@ const ProjectReport = () => {
                 {/* table */}
                 <table
                   id="reportTablepw"
-                  className="table table-striped table-hover mt-5"
+                  className="table table-striped table-hover mt-2"
+                
                 >
                   <thead>
                     <tr className="table-info">
@@ -296,19 +309,23 @@ const ProjectReport = () => {
                       <th scope="col">Project Name</th>
 
                       <th scope="col">
-                        <div>Schd. Start Date</div>
-                        <div>Schd. End Date</div>
+                        <div className="d-flex flex-column">
+                          <span>Schd. St. Dt.</span>
+                          <span>Schd. End Dt.</span>
+                        </div>
                       </th>
                       <th scope="col">
-                        <div>Act. Start Date</div>
+                        <div>Act. St. Date</div>
                         <div>Act. End Date</div>
                       </th>
                       <th scope="col">
-                        <div>Planned total</div>
-                        <div>Man Hours</div>
+                        <div className="d-flex flex-column">
+                          <span>Project Planned</span>
+                          <span > hours</span>
+                        </div>
                       </th>
                       <th scope="col" className="text-center ">
-                        Acutal Man Hours
+                        Actual Man Hours
                       </th>
                     </tr>
                   </thead>
@@ -349,12 +366,13 @@ const ProjectReport = () => {
                                     .format("DD/MM/YYYY")
                                 : "Not yet started"}
                             </div>
+                            <div className="">In-process</div>
                           </td>
-                          <td className="text-capitalize">
-                            {item.total_allocated_man_days} MHRS
+                          <td >
+                            {item.total_allocated_man_days}
                           </td>
                           <td>
-                            <table className="mx-auto">
+                            <table className="mx-auto" style={{ width: "100%" }}>
                               <thead>
                                 <tr>
                                   <th scope="col">S.No.</th>
@@ -363,25 +381,25 @@ const ProjectReport = () => {
                                   {/* <th scope="col">Act. Time Taken</th> */}
                                   <th scope="col">
                                     <div>Act. Time</div>
-                                    <div>Taken</div>
+                                    
                                   </th>
                                 </tr>
                               </thead>
                               <tbody>
-                                {item?.report?.map((i, index) =>
+                                {item?.report?.map((i, nestedIndex) =>
                                   i.name !== null ? (
                                     <tr className="">
                                       <th scope="row" className="text-center">
-                                        {index}
+                                        {nestedIndex + 1}
                                       </th>
                                       <td className="text-capitalize">
                                         {i.name}{" "}
                                       </td>
                                       <td className="">
-                                        {i.total_allocated_time} hrs.
+                                        {i.total_allocated_time}
                                       </td>
                                       <td className="">
-                                        {i.total_actual_time} hrs.
+                                        {i.total_actual_time}
                                       </td>
                                     </tr>
                                   ) : (
@@ -392,17 +410,17 @@ const ProjectReport = () => {
                                   <tr className="table-danger">
                                     <td colSpan={2}>
                                       <span style={{ fontWeight: "bolder" }}>
-                                        Grand total
+                                        Grand Total
                                       </span>
                                     </td>
                                     <td className="">
                                       <span style={{ fontWeight: "bolder" }}>
-                                        {totalAllocatedTime} hrs.
+                                        {totalAllocatedTime}
                                       </span>
                                     </td>
                                     <td className="">
                                       <span style={{ fontWeight: "bolder" }}>
-                                        {totalActualTime} hrs.
+                                        {totalActualTime}
                                       </span>
                                     </td>
                                   </tr>
@@ -413,12 +431,12 @@ const ProjectReport = () => {
                                         Grand total
                                       </span>
                                     </td>
-                                    <td className="text-center">
+                                    <td className="">
                                       <span style={{ fontWeight: "bolder" }}>
                                         {totalAllocatedTime}
                                       </span>
                                     </td>
-                                    <td className="text-center">
+                                    <td className="">
                                       <span style={{ fontWeight: "bolder" }}>
                                         {totalActualTime}
                                       </span>
