@@ -203,11 +203,14 @@ const ManagerEmployeeReport = () => {
   const handleExpandAll = () => {
     if (expandedRows.length === reportData.length) {
       setExpandedRows([]);
+      setExpandedRow(null)
     } else {
       const newExpandedRows = reportData.map((_, index) => index);
       setExpandedRows(newExpandedRows);
     }
+    
   };
+  
   return (
     <>
       <Header />

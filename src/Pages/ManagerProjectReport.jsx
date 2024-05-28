@@ -108,6 +108,7 @@ const ManagerProjectReport = () => {
   const handleExpandAll = () => {
     if (expandedRows.length === reportData.length) {
       setExpandedRows([]);
+      setExpandedRow(null);
     } else {
       const newExpandedRows = reportData.map((_, index) => index);
       setExpandedRows(newExpandedRows);
@@ -275,8 +276,7 @@ const ManagerProjectReport = () => {
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "flex-start",
-                      marginLeft:"auto"
-                     
+                      marginLeft: "auto",
                     }}
                   >
                     <label className="text-capitalize textcolumntitle fw-bold text-info">
@@ -297,7 +297,6 @@ const ManagerProjectReport = () => {
                   </Col>
                 </Row>
 
-               
                 <div className="d-flex justify-content-end mt-3 mr-2">
                   <Button onClick={handleExpandAll} className="text-info mr-3">
                     {!expandedRows || expandedRows.length < reportData.length
@@ -368,18 +367,18 @@ const ManagerProjectReport = () => {
                               <td className="text-capitalize ">
                                 {item.project_name}
                               </td>
-                              <td >
+                              <td>
                                 <div className="d-flex flex-column ">
-                                <span className="text-sm">
-                                  {moment
-                                    .utc(item.schedule_start_date)
-                                    .format("DD/MM/YYYY")}
-                                </span >
-                                <span className="text-sm">
-                                  {moment
-                                    .utc(item.schedule_end_date)
-                                    .format("DD/MM/YYYY")}
-                                </span>
+                                  <span className="text-sm">
+                                    {moment
+                                      .utc(item.schedule_start_date)
+                                      .format("DD/MM/YYYY")}
+                                  </span>
+                                  <span className="text-sm">
+                                    {moment
+                                      .utc(item.schedule_end_date)
+                                      .format("DD/MM/YYYY")}
+                                  </span>
                                 </div>
                               </td>
 
@@ -494,41 +493,41 @@ const ManagerProjectReport = () => {
                                                   </Flex>
                                                 </Flex>
                                                 {(() => {
-                                                    let className =
-                                                      "text-capitalize ";
-                                                    let style = {};
+                                                  let className =
+                                                    "text-capitalize ";
+                                                  let style = {};
 
-                                                    switch (task.status) {
-                                                      case "completed":
-                                                        className +=
-                                                          "text-success";
-                                                        break;
-                                                      case "inprocess":
-                                                        style.color = "orange";
+                                                  switch (task.status) {
+                                                    case "completed":
+                                                      className +=
+                                                        "text-success";
+                                                      break;
+                                                    case "inprocess":
+                                                      style.color = "orange";
 
-                                                        break;
-                                                      case "not started":
-                                                        style.color = "red";
-                                                        break;
-                                                      case "transfer":
-                                                        style.color = "blue";
-                                                        break;
-                                                      default:
-                                                        className +=
-                                                          "text-secondary";
-                                                        style.color = "gray";
-                                                        break;
-                                                    }
+                                                      break;
+                                                    case "not started":
+                                                      style.color = "red";
+                                                      break;
+                                                    case "transfer":
+                                                      style.color = "blue";
+                                                      break;
+                                                    default:
+                                                      className +=
+                                                        "text-secondary";
+                                                      style.color = "gray";
+                                                      break;
+                                                  }
 
-                                                    return (
-                                                      <td
-                                                        className={className}
-                                                        style={style}
-                                                      >
-                                                        {task.status}
-                                                      </td>
-                                                    );
-                                                  })()}
+                                                  return (
+                                                    <td
+                                                      className={className}
+                                                      style={style}
+                                                    >
+                                                      {task.status}
+                                                    </td>
+                                                  );
+                                                })()}
                                               </td>
                                             </tr>
                                           )
