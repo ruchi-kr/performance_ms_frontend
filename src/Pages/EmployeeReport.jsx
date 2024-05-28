@@ -326,7 +326,7 @@ const calculateAverageEfficiency = (modules) => {
             </div>
             <div className="row d-flex justify-content-end">
               <div className="col-2">
-                <div className=" d-flex gap-3">
+                <div className=" d-flex gap-3 align-items-center">
                 <Button onClick={handleExpandAll} className="text-info">{!expandedRows || expandedRows.length < reportData.length ? 'Expand' : 'Collapse'}</Button>
                  <FontAwesomeIcon icon={faFileExcel} size="xl" style={{ color: "#74C0FC", }} onClick={handleExcel} />
                   <FontAwesomeIcon icon={faFilePdf} style={{ color: "#ee445e", }} size="xl" onClick={exportToPDF} />
@@ -347,7 +347,7 @@ const calculateAverageEfficiency = (modules) => {
 
                       <th scope="col">Alloc hrs</th>
                       <th scope="col">Man hrs</th>
-                      <th scope="col">Efficiency</th>
+                      <th scope="col">Efficiency (%)</th>
                     </tr>
                   </thead>
 
@@ -379,7 +379,7 @@ const calculateAverageEfficiency = (modules) => {
                             <td>{item.total_allocated_hours}</td>
                             <td>{item.total_actual_hours}</td>
                             <td>
-                  {item.modules && calculateAverageEfficiency(item.modules)} %
+                  {item.modules && calculateAverageEfficiency(item.modules)}
                 </td>
                           </tr>
                           {(expandedRows.includes(index) || expandedRow === index) &&   (
@@ -392,7 +392,7 @@ const calculateAverageEfficiency = (modules) => {
                                       <th>Task</th>
                                       {/* <th>Start Date</th>
                                       <th>End Date</th> */}
-                                      <th className="text-xs d-flex flex-column">
+                                      <th className="text-sm d-flex flex-column">
   Start Date
   <span>End Date</span>
 </th>
@@ -426,7 +426,7 @@ const calculateAverageEfficiency = (modules) => {
                                                     {task.updated_at?.slice(5, 7)}/
                                                     {task.updated_at?.slice(0, 4)}
                                                   </td> : <td className=" text-primary">---</td>} */}
-                                                  <td className="text-xs d-flex flex-column">
+                                                  <td className="text-sm d-flex flex-column">
   <span>
     {task.created_at.slice(8, 10)}/
     {task.created_at.slice(5, 7)}/

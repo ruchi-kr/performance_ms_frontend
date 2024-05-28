@@ -6,9 +6,9 @@ import {
   faBell,
   faArrowRightFromBracket,
 } from "@fortawesome/free-solid-svg-icons";
-import { Avatar } from "antd";
+import { Avatar,Upload, message  } from "antd";
 import { useDispatch } from "react-redux";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined,PlusOutlined,EditOutlined } from "@ant-design/icons";
 import { persistStore } from "redux-persist";
 import { persistor } from "../redux/store";
 
@@ -40,6 +40,41 @@ const Header = () => {
     }, 100);
     navigate("/login");
   };
+
+  // for uploading the profile image
+  const avatar = (
+    <Avatar
+      size={{ xs: 16, sm: 24, md: 32, lg: 32, xl: 40, xxl: 40 }}
+      className="d-lg-block d-md-none d-none bg-info"
+    >
+      {initial}
+    </Avatar>
+  );
+  const [avatarUrl, setAvatarUrl] = useState('');
+
+  const beforeUpload = file => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must be smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  }
+
+  const handleChange = async info => {
+    if (info.file.status === 'done') {
+      message.success(`${info.file.name} file uploaded successfully`);
+      // Update the avatar URL after successful upload
+      setAvatarUrl(info.file.response.data.url);
+    } else if (info.file.status === 'error') {
+      message.error(`${info.file.name} file upload failed.`);
+    }
+  };
+
+
   return (
     <>
       {/* Navbar */}
@@ -72,13 +107,39 @@ const Header = () => {
               icon={<UserOutlined />}
               className="d-lg-block d-md-none d-none bg-secondary"
             /> */}
-            <Avatar
+            <div>
+            {/* <Avatar
               size={{ xs: 16, sm: 24, md: 32, lg: 32, xl: 40, xxl: 40 }}
               className="d-lg-block d-md-none d-none bg-info"
             >
-              {/* Display the first letter of the user's name as the avatar */}
               {initial}
-            </Avatar>
+            </Avatar> */}
+            <Upload
+      name="avatar"
+      listType="picture"
+      showUploadList={false}
+      action="http://localhost:8000/api/uploadprofile" // Replace with your API endpoint
+      beforeUpload={beforeUpload}
+      onChange={handleChange}
+      accept=".jpg,.jpeg,.png"
+      maxCount={1}
+    >
+      {avatarUrl ? (
+        <Avatar size={64} src={avatarUrl} />
+      ) : (
+        <Avatar
+        size={{ xs: 16, sm: 24, md: 32, lg: 32, xl: 40, xxl: 40 }}
+        className="d-lg-block d-md-none d-none bg-info"
+        // icon={<PlusOutlined className="text-xs"/>}
+      >
+        <div className="d-flex text-sm align-items-center justify-content-center flex-column">
+        {initial}<EditOutlined className="text-xs"/>
+          </div>
+      </Avatar>
+      )}
+    </Upload>
+            </div>
+            
             {/* </div> */}
             <div className="info" style={{ lineHeight: "0.2" }}>
               <p className="text-white">{username}</p>
