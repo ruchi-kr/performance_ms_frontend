@@ -265,6 +265,10 @@ const ManagerEmployeeReport = () => {
                           label: "All Stages",
                         },
                         {
+                          value: "inprocess",
+                          label: "Inprocess",
+                        },
+                        {
                           value: "completed",
                           label: "Completed",
                         },

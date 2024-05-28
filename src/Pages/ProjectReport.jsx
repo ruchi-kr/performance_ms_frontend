@@ -6,7 +6,7 @@ import Footer from "../Components/Footer";
 import moment from "moment";
 import { getEmployeeReport, CONFIG_OBJ } from "../Config";
 import dayjs from "dayjs";
-import { Input, Button, DatePicker, Tag } from "antd";
+import { Input, Button, DatePicker, Tag, Row, Col, Select } from "antd";
 import { toast } from "react-toastify";
 import { NavLink } from "react-router-dom";
 import * as XLSX from "xlsx";
@@ -19,9 +19,7 @@ const { RangePicker } = DatePicker;
 const ProjectReport = () => {
   const user_id = sessionStorage.getItem("id");
   // for pagination
-  const pageSize = 10; // Number of items per page
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [search, setSearch] = useState("");
   const [reportData, setReportData] = useState([]);
   const [projectActualStartDate, setProjectActualStartDate] = useState(null);
@@ -30,9 +28,10 @@ const ProjectReport = () => {
   const [projectTotalManDaysData, setProjectTotalManDaysData] = useState([]);
   const [loadingFirstApi, setLoadingFirstApi] = useState(true);
   const [loadingSecondApi, setLoadingSecondApi] = useState(true);
+  const [projectStageFilter, setProjectStageFilter] = useState("all");
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user?.employee_id;
-  // console.log("manager id", manager_id);
+
   // get all reports function
   const getTotalManDays = async () => {
     try {
@@ -55,7 +54,7 @@ const ProjectReport = () => {
       // const response = await axios.get(`${getEmployeeReport}/${user_id}?page=${page}&pageSize=${pageSize}&name=${search}`);
       // ?page=${page}&pageSize=${pageSize}
       response = await axios.get(
-        `http://localhost:8000/api/project/report/${manager_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&page=${currentPage}&pageSize=${10}`,
+        `http://localhost:8000/api/project/report/${manager_id}/?search=${search}&toDate=${toDate}&fromDate=${fromDate}&stage=${projectStageFilter}&page=${currentPage}&pageSize=${10}`,
         CONFIG_OBJ
       );
 
@@ -96,7 +95,7 @@ const ProjectReport = () => {
   }, [projectTotalManDaysData]);
   useEffect(() => {
     getEmployeeReportHandler();
-  }, [toDate, fromDate]);
+  }, [toDate, fromDate, projectStageFilter]);
 
   useEffect(() => {
     async function fetchScheduleStartDate() {
@@ -147,7 +146,6 @@ const ProjectReport = () => {
     }
   };
   const disabledDate = (current) => {
-    // Can not select days before today and today
     return current && current >= dayjs().endOf("day");
   };
   // export to excel and pdf file function
@@ -231,10 +229,16 @@ const ProjectReport = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">All Project Reports</h3>
+                <h3 className="text-primary">All Projects Reports</h3>
                 <hr className="bg-primary border-4" />
-                <div className="d-flex justify-content-between">
-                  <div className="col-2">
+                <Row gutter={24}>
+                  <Col
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
                     <label className="text-capitalize fw-bold text-info">
                       project name
                     </label>
@@ -250,26 +254,65 @@ const ProjectReport = () => {
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
-                  </div>
+                  </Col>
+                  <Col
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <label className="text-capitalize textcolumntitle fw-bold text-info">
+                      Project Stage
+                    </label>
+
+                    <Select
+                      defaultValue="All stages"
+                      style={{
+                        width: 160,
+                      }}
+                      onChange={(value) => setProjectStageFilter(value)}
+                      options={[
+                        {
+                          value: "all",
+                          label: "All Stages",
+                        },
+                        {
+                          value: "completed",
+                          label: "Completed",
+                        },
+                      ]}
+                    />
+                  </Col>
+                  <Col
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <label className="text-capitalize textcolumntitle fw-bold text-info">
+                      Select Date Range
+                    </label>
+                    <RangePicker
+                      disabledDate={disabledDate}
+                      onChange={handleDateRangeChange}
+                      style={{
+                        width: "100%",
+                        // boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)",
+                      }}
+                      className="rounded-2"
+                      format={"DD/MM/YYYY"}
+                      defaultValue={[dayjs().subtract(30, "day"), dayjs()]}
+                      showTime={false}
+                    />
+                  </Col>
+                </Row>
+                <div className="d-flex justify-content-between">
+                  <div className="col-2"></div>
                   <div className="flex-end">
                     <div className="col-sm-4 col-md-3 col-lg-8">
-                      <div className="mb-3">
-                        <label className="text-capitalize textcolumntitle fw-bold text-info">
-                          Select Date Range
-                        </label>
-                        <RangePicker
-                          disabledDate={disabledDate}
-                          onChange={handleDateRangeChange}
-                          style={{
-                            width: "100%",
-                            // boxShadow: "3px 3px 5px rgba(0, 0, 0, 0.2)",
-                          }}
-                          className="rounded-2"
-                          format={"DD/MM/YYYY"}
-                          defaultValue={[dayjs().subtract(30, "day"), dayjs()]}
-                          showTime={false}
-                        />
-                      </div>
+                      <div className="mb-3"></div>
                     </div>
                   </div>
                   <div className="col-2 mt-4 d-flex justify-content-end">
@@ -301,27 +344,28 @@ const ProjectReport = () => {
                 <table
                   id="reportTablepw"
                   className="table table-striped table-hover mt-2"
-                
                 >
                   <thead>
                     <tr className="table-info">
-                      <th scope="col">S.No.</th>
+                      <th scope="col" className="text-center">
+                        S.No.
+                      </th>
                       <th scope="col">Project Name</th>
 
                       <th scope="col">
                         <div className="d-flex flex-column">
                           <span>Schd. St. Dt.</span>
-                          <span>Schd. End Dt.</span>
+                          <span>Schd. Ed. Dt.</span>
                         </div>
                       </th>
                       <th scope="col">
                         <div>Act. St. Date</div>
-                        <div>Act. End Date</div>
+                        <div>Act. Ed. Date</div>
                       </th>
                       <th scope="col">
                         <div className="d-flex flex-column">
                           <span>Project Planned</span>
-                          <span > hours</span>
+                          <span> Hours</span>
                         </div>
                       </th>
                       <th scope="col" className="text-center ">
@@ -341,7 +385,9 @@ const ProjectReport = () => {
                       );
                       return (
                         <tr key={item.user_id}>
-                          <th scope="row">{index + 1}</th>
+                          <th scope="row" className="text-center">
+                            {index + 1}.
+                          </th>
                           <td className="text-capitalize">
                             {item.project_name}
                           </td>
@@ -368,20 +414,19 @@ const ProjectReport = () => {
                             </div>
                             <div className="">In-process</div>
                           </td>
-                          <td >
-                            {item.total_allocated_man_days}
-                          </td>
+                          <td>{item.total_allocated_man_days}</td>
                           <td>
-                            <table className="mx-auto" style={{ width: "100%" }}>
+                            <table
+                              className="mx-auto"
+                              style={{ width: "100%" }}
+                            >
                               <thead>
                                 <tr>
                                   <th scope="col">S.No.</th>
                                   <th scope="col">Name</th>
                                   <th scope="col">Alloc. Time</th>
-                                  {/* <th scope="col">Act. Time Taken</th> */}
                                   <th scope="col">
                                     <div>Act. Time</div>
-                                    
                                   </th>
                                 </tr>
                               </thead>
@@ -390,10 +435,10 @@ const ProjectReport = () => {
                                   i.name !== null ? (
                                     <tr className="">
                                       <th scope="row" className="text-center">
-                                        {nestedIndex + 1}
+                                        {`${index + 1}.${nestedIndex + 1}`}
                                       </th>
                                       <td className="text-capitalize">
-                                        {i.name}{" "}
+                                        {i.name}
                                       </td>
                                       <td className="">
                                         {i.total_allocated_time}
@@ -451,52 +496,6 @@ const ProjectReport = () => {
                     })}
                   </tbody>
                 </table>
-                {/* pagination */}
-                <div className="row float-right">
-                  {/* <nav
-                    aria-label="Page navigation example"
-                    className="d-flex align-self-end mt-3"
-                  >
-                    <ul className="pagination">
-                      <li className="page-item">
-                        <a
-                          className="page-link"
-                          href="#"
-                          aria-label="Previous"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                          <span aria-hidden="true">«</span>
-                        </a>
-                      </li>
-                      {Array.from({ length: totalPages }, (_, index) => (
-                        <li
-                          key={index}
-                          className={`page-item ${
-                            currentPage === index + 1 ? "active" : ""
-                          }`}
-                        >
-                          <a
-                            className="page-link"
-                            href="#"
-                            onClick={() => handlePageChange(index + 1)}
-                          >
-                            {index + 1}
-                          </a>
-                        </li>
-                      ))}
-                      <li className="page-item">
-                        <a
-                          className="page-link"
-                          href="#"
-                          aria-label="Next"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                          <span aria-hidden="true">»</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </nav> */}
-                </div>
               </div>
             </div>
           </div>

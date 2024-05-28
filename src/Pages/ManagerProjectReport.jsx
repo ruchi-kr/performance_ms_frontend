@@ -260,6 +260,10 @@ const ManagerProjectReport = () => {
                           label: "All Stages",
                         },
                         {
+                          value: "inprocess",
+                          label: "Inprocess",
+                        },
+                        {
                           value: "completed",
                           label: "Completed",
                         },
@@ -329,7 +333,9 @@ const ManagerProjectReport = () => {
                 <table id="reportTablepw" className="table table-striped  mt-2">
                   <thead>
                     <tr>
-                      <th scope="col" className="text-center">S.No.</th>
+                      <th scope="col" className="text-center">
+                        S.No.
+                      </th>
                       <th scope="col">Project Name</th>
                       <th scope="col">
                         <div className="d-flex flex-column">
@@ -420,9 +426,9 @@ const ManagerProjectReport = () => {
                                         item?.tasks_details.map(
                                           (task, taskIndex) => (
                                             <tr key={taskIndex}>
-                                              <td className="text-center">{`${index + 1}.${
-                                                taskIndex + 1
-                                              }`}</td>
+                                              <td className="text-center">{`${
+                                                index + 1
+                                              }.${taskIndex + 1}`}</td>
                                               <td className="text-capitalize">
                                                 {task.name}
                                               </td>
