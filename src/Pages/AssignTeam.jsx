@@ -3,7 +3,7 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar.jsx";
 import Header from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
-import { getAllEmployees,CONFIG_OBJ } from "../Config.js";
+import { getAllEmployees, CONFIG_OBJ } from "../Config.js";
 import { toast } from "react-toastify";
 import {
   Col,
@@ -70,14 +70,14 @@ const AssignTeam = () => {
   const fetchAll = async () => {
     try {
       const resp = await axios.get(
-        `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,CONFIG_OBJ
+        `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
+        CONFIG_OBJ
       );
       console.log("team data ******", resp.data.data);
       setTeamsData(resp.data.data);
     } catch (error) {
       console.log(error);
     }
-   
   };
   useEffect(() => {
     fetchAll();
@@ -88,7 +88,8 @@ const AssignTeam = () => {
     const getAllEmployees = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/admin/getEmployeeslist",CONFIG_OBJ
+          "http://localhost:8000/api/admin/getEmployeeslist",
+          CONFIG_OBJ
         );
         console.log("employee list get all employees", response.data);
         const filteredUsers = response?.data?.filter(
@@ -110,7 +111,8 @@ const AssignTeam = () => {
     const fetchProject = async () => {
       try {
         const resp = await axios.get(
-          "http://localhost:8000/api/admin/getProjects",CONFIG_OBJ
+          "http://localhost:8000/api/admin/getProjects",
+          CONFIG_OBJ
         );
         console.log("project data", resp.data);
         console.log("teams data", teamsData);
@@ -126,7 +128,6 @@ const AssignTeam = () => {
       } catch (error) {
         console.log(error);
       }
-      
     };
     fetchProject();
   }, [teamsData]);
@@ -181,7 +182,8 @@ const AssignTeam = () => {
             console.log("form data", values);
             axios.post(
               `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
-              { ...values, employee_id: selectedRowKeys },CONFIG_OBJ,
+              { ...values, employee_id: selectedRowKeys },
+              CONFIG_OBJ
             );
             setIsAdding(true);
             setSelectedRowKeys([]);
@@ -210,10 +212,11 @@ const AssignTeam = () => {
                 ...values,
                 reporting_manager_id: managerEmployeeId,
                 employee_id: selectedRowKeys,
-              },CONFIG_OBJ
+              },
+              CONFIG_OBJ
             );
             setIsEditing(false);
-            setIsAdding(true)
+            setIsAdding(true);
             fetchAll();
             form.resetFields();
             setSelectedRowKeys([]);
@@ -237,7 +240,8 @@ const AssignTeam = () => {
           try {
             console.log("form data", values);
             axios.post(
-              `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,CONFIG_OBJ,
+              `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
+              CONFIG_OBJ,
               values
             );
             setIsAdding(false);
@@ -260,7 +264,8 @@ const AssignTeam = () => {
             console.log("team id", editingId);
             console.log("form data", values);
             axios.patch(
-              `http://localhost:8000/api/user/project/teams/${editingId}`,CONFIG_OBJ,
+              `http://localhost:8000/api/user/project/teams/${editingId}`,
+              CONFIG_OBJ,
               {
                 ...values,
                 reporting_manager_id: managerEmployeeId,
@@ -290,7 +295,8 @@ const AssignTeam = () => {
         async onOk() {
           try {
             await axios.delete(
-              "http://localhost:8000/api/user/project/teams/" + id,CONFIG_OBJ
+              "http://localhost:8000/api/user/project/teams/" + id,
+              CONFIG_OBJ
             );
             fetchAll();
           } catch (err) {
@@ -473,7 +479,7 @@ const AssignTeam = () => {
           <div className="container-fluid bg-white">
             {/* 1st row */}
             <div className="row my-5">
-              <div className="col-12 mx-auto">
+              <div className="col-11 mx-auto">
                 <div className="d-flex justify-content-between">
                   <h3 className="text-primary">Teams Details New</h3>
 
@@ -500,21 +506,19 @@ const AssignTeam = () => {
                     {modifiedTeamsData?.map((data, index) => {
                       return (
                         <tr key={data?.team_id}>
-                          <th scope="row">{index + 1}</th>
-                          <th scope="row" className="text-capitalize">
+                          <td>{index + 1}</td>
+                          <td className="text-capitalize">
                             {data?.project_name}
-                          </th>
-                          <th scope="row">
-                            <Tag
-                              color={"purple"}
-                              key={data?.schedule_start_date}
-                            >
-                              {formatDate(data?.schedule_start_date)}
-                            </Tag>
-                            <Tag color={"purple"} key={data?.schedule_end_date}>
-                              {formatDate(data?.schedule_end_date)}
-                            </Tag>
-                          </th>
+                          </td>
+                          <td>
+                            <div className="d-flex flex-column">
+                              <span>
+                                {formatDate(data?.schedule_start_date)}
+                              </span>
+
+                              <span>{formatDate(data?.schedule_end_date)}</span>
+                            </div>
+                          </td>
                           <td className="text-capitalize">
                             {data?.employee_details?.map((item) => (
                               <NavLink
@@ -547,7 +551,7 @@ const AssignTeam = () => {
                     })}
                   </tbody>
                 </table>
-                <div style={{ width: "70%", margin: "auto" }}>
+                <div style={{ width: "90%", margin: "auto",marginTop:"5rem" }}>
                   <Title level={3} className="text-primary">
                     {isEditing ? "Edit Team Members" : "Add Team Members"}
                   </Title>

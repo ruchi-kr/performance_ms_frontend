@@ -216,7 +216,7 @@ const ManagerProjectReport = () => {
               <div className="col-11 mx-auto">
                 <h3 className="text-primary">Projects Detailed Report</h3>
                 <hr className="bg-primary border-4" />
-                <Row gutter={48}>
+                <Row gutter={24}>
                   <Col
                     style={{
                       display: "flex",
@@ -275,6 +275,8 @@ const ManagerProjectReport = () => {
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "flex-start",
+                      marginLeft:"auto"
+                     
                     }}
                   >
                     <label className="text-capitalize textcolumntitle fw-bold text-info">
@@ -287,7 +289,6 @@ const ManagerProjectReport = () => {
                       placeholder="From Date"
                       style={{
                         width: "100%",
-                        boxShadow: "2px 2px 3px rgba(0, 0, 0, 0.1)",
                       }}
                       className="rounded-2"
                       format={dateFormat}
@@ -296,30 +297,27 @@ const ManagerProjectReport = () => {
                   </Col>
                 </Row>
 
-                <div className="row ">
-                  <div className="d-flex justify-content-end mt-3 mr-2">
-                    <div className="d-flex gap-3">
-                      <FontAwesomeIcon
-                        icon={faFileExcel}
-                        size="2xl"
-                        style={{ color: "#74C0FC" }}
-                        onClick={exportToExcel}
-                      />
-                      <FontAwesomeIcon
-                        icon={faFilePdf}
-                        style={{ color: "#ee445e" }}
-                        size="2xl"
-                        onClick={exportToPDF}
-                      />
-                    </div>
-                  </div>
-                </div>
+               
                 <div className="d-flex justify-content-end mt-3 mr-2">
-                  <Button onClick={handleExpandAll} className="text-info">
+                  <Button onClick={handleExpandAll} className="text-info mr-3">
                     {!expandedRows || expandedRows.length < reportData.length
-                      ? "Expand All"
-                      : "Collapse All"}
+                      ? "Expand"
+                      : "Collapse"}
                   </Button>
+                  <div className="d-flex gap-3 align-items-center">
+                    <FontAwesomeIcon
+                      icon={faFileExcel}
+                      size="xl"
+                      style={{ color: "#74C0FC" }}
+                      onClick={exportToExcel}
+                    />
+                    <FontAwesomeIcon
+                      icon={faFilePdf}
+                      style={{ color: "#ee445e" }}
+                      size="xl"
+                      onClick={exportToPDF}
+                    />
+                  </div>
                 </div>
                 <div className="d-flex justify-content-end mt-3 mr-2">
                   <span className="text-danger">*</span>
@@ -366,23 +364,23 @@ const ManagerProjectReport = () => {
                         return (
                           <React.Fragment key={item.employee_id}>
                             <tr onClick={() => handleRowClick(index)}>
-                              <th scope="row" className=" text-center">
-                                {index + 1}.
-                              </th>
+                              <td className=" text-center">{index + 1}.</td>
                               <td className="text-capitalize ">
                                 {item.project_name}
                               </td>
-                              <td className="d-flex flex-column ">
-                                <span>
+                              <td >
+                                <div className="d-flex flex-column ">
+                                <span className="text-sm">
                                   {moment
                                     .utc(item.schedule_start_date)
                                     .format("DD/MM/YYYY")}
-                                </span>
-                                <span>
+                                </span >
+                                <span className="text-sm">
                                   {moment
                                     .utc(item.schedule_end_date)
                                     .format("DD/MM/YYYY")}
                                 </span>
+                                </div>
                               </td>
 
                               <td className="text-capitalize text-center ">
@@ -496,32 +494,41 @@ const ManagerProjectReport = () => {
                                                   </Flex>
                                                 </Flex>
                                                 {(() => {
-                                                  let className =
-                                                    "text-capitalize ";
-                                                  switch (task.status) {
-                                                    case "completed":
-                                                      className +=
-                                                        "text-success";
-                                                      break;
-                                                    case "in progress":
-                                                      className +=
-                                                        "text-warning"; // Adjust the class name as needed
-                                                      break;
-                                                    case "not started":
-                                                      className +=
-                                                        "text-danger"; // Adjust the class name as needed
-                                                      break;
-                                                    default:
-                                                      className +=
-                                                        "text-secondary";
-                                                      break;
-                                                  }
-                                                  return (
-                                                    <td className={className}>
-                                                      {task.status}
-                                                    </td>
-                                                  );
-                                                })()}
+                                                    let className =
+                                                      "text-capitalize ";
+                                                    let style = {};
+
+                                                    switch (task.status) {
+                                                      case "completed":
+                                                        className +=
+                                                          "text-success";
+                                                        break;
+                                                      case "inprocess":
+                                                        style.color = "orange";
+
+                                                        break;
+                                                      case "not started":
+                                                        style.color = "red";
+                                                        break;
+                                                      case "transfer":
+                                                        style.color = "blue";
+                                                        break;
+                                                      default:
+                                                        className +=
+                                                          "text-secondary";
+                                                        style.color = "gray";
+                                                        break;
+                                                    }
+
+                                                    return (
+                                                      <td
+                                                        className={className}
+                                                        style={style}
+                                                      >
+                                                        {task.status}
+                                                      </td>
+                                                    );
+                                                  })()}
                                               </td>
                                             </tr>
                                           )

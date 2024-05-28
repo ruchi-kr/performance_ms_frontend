@@ -280,6 +280,7 @@ const ManagerEmployeeReport = () => {
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "flex-start",
+                      marginLeft: "auto",
                     }}
                   >
                     <label className="text-capitalize textcolumntitle fw-bold text-info">
@@ -299,31 +300,31 @@ const ManagerEmployeeReport = () => {
                     />
                   </Col>
                 </Row>
-                <div className="row ">
+                <div className="row mt-3 ">
                   <div className="d-flex justify-content-end mt-3 mr-2">
-                    <div className="d-flex gap-3">
+                    <div className="d-flex gap-3 align-items-center">
+                      <Button onClick={handleExpandAll} className="text-info">
+                        {!expandedRows ||
+                        expandedRows.length < reportData.length
+                          ? "Expand"
+                          : "Collapse "}
+                      </Button>
                       <FontAwesomeIcon
                         icon={faFileExcel}
-                        size="2xl"
+                        size="xl"
                         style={{ color: "#74C0FC" }}
                         onClick={exportToExcel}
                       />
                       <FontAwesomeIcon
                         icon={faFilePdf}
                         style={{ color: "#ee445e" }}
-                        size="2xl"
+                        size="xl"
                         onClick={exportToPDF}
                       />
                     </div>
                   </div>
                 </div>
-                <div className="d-flex justify-content-end mt-3 mr-2">
-                  <Button onClick={handleExpandAll} className="text-info">
-                    {!expandedRows || expandedRows.length < reportData.length
-                      ? "Expand All"
-                      : "Collapse All"}
-                  </Button>
-                </div>
+
                 <div className="d-flex justify-content-end mt-3 mr-2">
                   <span className="text-danger">*</span>
                   <span>Time in hours</span>
@@ -345,7 +346,7 @@ const ManagerEmployeeReport = () => {
                         Actual Man hrs
                       </th>
                       <th scope="col" className=" text-center">
-                        Efficiency %
+                        Efficiency (%)
                       </th>
                     </tr>
                   </thead>
@@ -360,7 +361,7 @@ const ManagerEmployeeReport = () => {
                         return (
                           <React.Fragment key={item.employee_id}>
                             <tr onClick={() => handleRowClick(index)}>
-                              <th scope="row">{index + 1}</th>
+                              <td>{index + 1}.</td>
                               <td className="text-capitalize">
                                 <NavLink
                                   to={`/manager/report/employee/${item.employee_id}`}
@@ -412,7 +413,9 @@ const ManagerEmployeeReport = () => {
                                         item?.tasks_details.map(
                                           (task, taskIndex) => (
                                             <tr key={taskIndex}>
-                                              <td>{`${index+1}.${taskIndex+1}`}</td>
+                                              <td>{`${index + 1}.${
+                                                taskIndex + 1
+                                              }`}</td>
                                               <td className="text-capitalize">
                                                 {task.project_name}
                                               </td>
@@ -477,26 +480,35 @@ const ManagerEmployeeReport = () => {
                                                   {(() => {
                                                     let className =
                                                       "text-capitalize ";
+                                                    let style = {};
+
                                                     switch (task.status) {
                                                       case "completed":
                                                         className +=
                                                           "text-success";
                                                         break;
-                                                      case "in progress":
-                                                        className +=
-                                                          "text-warning";
+                                                      case "inprocess":
+                                                        style.color = "orange";
+
                                                         break;
                                                       case "not started":
-                                                        className +=
-                                                          "text-danger";
+                                                        style.color = "red";
+                                                        break;
+                                                      case "transfer":
+                                                        style.color = "blue";
                                                         break;
                                                       default:
                                                         className +=
                                                           "text-secondary";
+                                                        style.color = "gray";
                                                         break;
                                                     }
+
                                                     return (
-                                                      <td className={className}>
+                                                      <td
+                                                        className={className}
+                                                        style={style}
+                                                      >
                                                         {task.status}
                                                       </td>
                                                     );
