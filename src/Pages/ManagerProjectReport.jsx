@@ -108,7 +108,7 @@ const ManagerProjectReport = () => {
   const handleExpandAll = () => {
     if (expandedRows.length === reportData.length) {
       setExpandedRows([]);
-      setExpandedRow(null);
+      // setExpandedRow(null);
     } else {
       const newExpandedRows = reportData.map((_, index) => index);
       setExpandedRows(newExpandedRows);

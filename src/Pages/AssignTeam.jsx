@@ -3,8 +3,9 @@ import axios from "axios";
 import SideNavbar from "../Components/SideNavbar.jsx";
 import Header from "../Components/Header.jsx";
 import Footer from "../Components/Footer.jsx";
-import { getAllEmployees, CONFIG_OBJ } from "../Config.js";
 import { toast } from "react-toastify";
+
+import { getAllEmployees, CONFIG_OBJ } from "../Config.js";
 import {
   Col,
   Form,
@@ -171,63 +172,67 @@ const AssignTeam = () => {
       employee_id: employee.employee_id,
     });
   };
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     console.log("form values", { ...values, employee_id: selectedRowKeys });
     if (isAdding && !isEditing) {
       console.log("Adding values");
-      form
-        .validateFields()
-        .then((values) => {
-          try {
-            console.log("form data", values);
-            axios.post(
-              `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
-              { ...values, employee_id: selectedRowKeys },
-              CONFIG_OBJ
-            );
-            setIsAdding(true);
-            setSelectedRowKeys([]);
+      // form
+      //   .validateFields()
+      //   .then((values) => {
 
-            setModalVisible(false);
-            form.resetFields();
-            fetchAll();
-          } catch (error) {
-            console.log(error);
-          }
-        })
-        .catch((errorInfo) => {
-          console.log("Validation failed:", errorInfo);
-        });
+      //   })
+      //   .catch((errorInfo) => {
+      //     console.log("Validation failed:", errorInfo);
+      //   });
+      try {
+        console.log("form data", values);
+        const resp=await axios.post(
+          `http://localhost:8000/api/user/project/teams/${managerEmployeeId}`,
+          { ...values, employee_id: selectedRowKeys },
+          CONFIG_OBJ
+        );
+        setIsAdding(true);
+        setSelectedRowKeys([]);
+
+        setModalVisible(false);
+        form.resetFields();
+        fetchAll();
+        toast.success("Data added successfully")
+      } catch (error) {
+        console.log(error.response.data.msg);
+        toast.error(error.response.data.msg)
+      }
     } else if (!isAdding && isEditing) {
-      console.log("editing values", values.team_id);
-      form
-        .validateFields()
-        .then((values) => {
-          try {
-            console.log("team id", editingId);
-            console.log("form data", values);
-            axios.patch(
-              `http://localhost:8000/api/user/project/teams/${editingId}`,
-              {
-                ...values,
-                reporting_manager_id: managerEmployeeId,
-                employee_id: selectedRowKeys,
-              },
-              CONFIG_OBJ
-            );
-            setIsEditing(false);
-            setIsAdding(true);
-            fetchAll();
-            form.resetFields();
-            setSelectedRowKeys([]);
-            setModalVisible(false);
-          } catch (error) {
-            console.log(error);
-          }
-        })
-        .catch((errorInfo) => {
-          console.log("Validation failed:", errorInfo);
-        });
+      // console.log("editing values", values.team_id);
+      // form
+      //   .validateFields()
+      //   .then((values) => {
+
+      //   })
+      //   .catch((errorInfo) => {
+      //     console.log("Validation failed:", errorInfo);
+      //   });
+      try {
+        console.log("team id", editingId);
+        console.log("form data", values);
+        await axios.patch(
+          `http://localhost:8000/api/user/project/teams/${editingId}`,
+          {
+            ...values,
+            reporting_manager_id: managerEmployeeId,
+            employee_id: selectedRowKeys,
+          },
+          CONFIG_OBJ
+        );
+        setIsEditing(false);
+        setIsAdding(true);
+        fetchAll();
+        form.resetFields();
+        setSelectedRowKeys([]);
+        setModalVisible(false);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
   // create project
@@ -551,7 +556,9 @@ const AssignTeam = () => {
                     })}
                   </tbody>
                 </table>
-                <div style={{ width: "90%", margin: "auto",marginTop:"5rem" }}>
+                <div
+                  style={{ width: "90%", margin: "auto", marginTop: "5rem" }}
+                >
                   <Title level={3} className="text-primary">
                     {isEditing ? "Edit Team Members" : "Add Team Members"}
                   </Title>
