@@ -246,7 +246,7 @@ const calculateAverageEfficiency = (modules) => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">Project-wise Reports</h3>
+                <h3 className="text-primary">Project-wise Report</h3>
                 <hr className="bg-primary border-4" />
                 <div className="d-flex justify-content-between">
                   <div className="col-2">
@@ -370,9 +370,9 @@ const calculateAverageEfficiency = (modules) => {
                 </td>
                           </tr>
                           {(expandedRows.includes(index) || expandedRow === index) &&   (
-                            <tr>
+                            <tr >
                               <td colSpan="12">
-                                <table className="col-11 mx-auto">
+                                <table className="col-11 mx-auto ">
                                   <thead>
                                     <tr>
                                       <th>S. No.</th>

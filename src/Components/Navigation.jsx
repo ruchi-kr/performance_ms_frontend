@@ -34,7 +34,7 @@ import AssignTeamNew from "../Pages/AssignTeamNew";
 import EmployeeReportDwCopy from "../Pages/EmployeeReportDwCopy";
 export const nav = [
     // public
-    { path: "/reportcopy", element: <EmployeeReportDwCopy />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
+    { path: "/reportcopy", element: <EmployeeReportDw />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
     { path: "/", element: <Login />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
     { path: "/login", element: <Login />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
     { path: "/forgot", element: <Forgot />, isPrivate: false, isAdmin: false, isManager: false, isEmployee: false },
@@ -62,10 +62,10 @@ export const nav = [
     { path: "/manager/report/employee/:employee_id", element: <ManagerParticularEmployeeReport />, isPrivate: true, isAdmin: false, isManager: true, isEmployee: false },
     { path: "/manager/report/project/detailed", element: <ManagerProjectReport />, isPrivate: true, isAdmin: false, isManager: true, isEmployee: false },
 // employee url
-    { path: "/employee", element: <Employee />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
+    { path: "/dts", element: <Employee />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
     { path: "/plan", element: <Employee />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
     { path: "/reportproject-wise", element: <EmployeeReport />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
-    { path: "/reportdate-wise", element: <EmployeeReportDw />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
+    { path: "/reportdate-wise", element: <EmployeeReportDwCopy />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
     // employee manager admin url
     { path: "/projectplan2/", element: <ProjectPlan />, isPrivate: true, isAdmin: true, isManager: true, isEmployee: true },
     { path: "/projectplan/", element: <ProjectPlan2 />, isPrivate: true, isAdmin: true, isManager: true, isEmployee: true },

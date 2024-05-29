@@ -208,11 +208,11 @@ const SideNavbar = () => {
                       <li className="nav-item btnhovergrey mt-3">
                         <Link
                           className={`nav-link text-white ${
-                            window.location.pathname === "/employee"
+                            window.location.pathname === "/dts"
                               ? "bg-cyan"
                               : ""
                           }`}
-                          to="/employee"
+                          to="/dts"
                         >
                           <FontAwesomeIcon
                             className="nav-icon"

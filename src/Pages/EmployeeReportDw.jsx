@@ -155,7 +155,7 @@ const EmployeeReportDateWise = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className='text-primary'>Date-wise Reports</h3>
+                <h3 className='text-primary'>Date-wise Report</h3>
                 <hr className='bg-primary border-4' />
               </div>
             </div>
