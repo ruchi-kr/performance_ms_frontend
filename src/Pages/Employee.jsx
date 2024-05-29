@@ -5,6 +5,7 @@ import {
   CheckOutlined,
   EditOutlined,
   PercentageOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import SideNavbar from "../Components/SideNavbar";
@@ -23,7 +24,7 @@ import {
 } from "../Config.js";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { Select, Modal, Input, Button, Popover } from "antd";
+import { Select, Modal, Input, Button, Popover,Skeleton,Spin } from "antd";
 import dayjs from "dayjs";
 import {
   getAllModules,
@@ -33,6 +34,7 @@ import {
   getProjectPlan,
 } from "../Config.js";
 import { Space } from "antd";
+import DTSSkeleton from "../Skeleton/DTSSkeleton.jsx";
 const { TextArea } = Input;
 
 const { Option } = Select;
@@ -44,6 +46,7 @@ const getDisabledStateFromStorage = () => {
 };
 
 const Employee = () => {
+  const [loadingskeleton, setLoadingSkeleton] = useState(true);
   const [showSelect, setShowSelect] = useState(false);
   // for adhoc
   const [adhoc, setAdhoc] = useState(0);
@@ -182,7 +185,7 @@ useEffect(() => {
       console.log("task records", response.data);
       setTaskRecords(response.data);
       setFormDisabled(true);
-      
+      setLoadingSkeleton(false);
       // setAdhoc(response.data.adhoc)
       // console.log("adhoc value",adhoc)
     } catch (error) {
@@ -522,10 +525,28 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
 
   return (
     <>
+    
       <Header />
       <SideNavbar />
+     
       <div className="content-wrapper bg-white">
         <div className="content">
+        {
+      loadingskeleton ? 
+      // <Skeleton paragraph={{ rows: 20 }} active /> 
+      <div className="d-flex justify-content-center align-items-center" style={{height:"100vh"}}>
+      <Spin
+      
+    indicator={
+      <LoadingOutlined      
+        style={{
+          fontSize: 24,
+        }}
+        spin
+      />}
+  />
+  </div>
+      : 
           <div className="container-fluid bg-white">
             <div className="row my-5">
               <div className="col-11 mx-auto">
@@ -1119,8 +1140,10 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
               </div>
             </div>
           </div>
+}
         </div>
       </div>
+ 
       <Footer />
     </>
   );

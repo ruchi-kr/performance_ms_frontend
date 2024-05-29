@@ -34,10 +34,10 @@ const Header = () => {
     sessionStorage.clear();
     localStorage.clear();
 
-    setTimeout(function () {
-      window.location.reload();
-      console.log("reload");
-    }, 100);
+    // setTimeout(function () {
+    //   window.location.reload();
+    //   console.log("reload");
+    // }, 100);
     navigate("/login");
   };
 

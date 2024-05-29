@@ -9,7 +9,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { faFilePdf, faFileExcel } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { DatePicker, Button } from "antd";
+import { DatePicker, Button, Progress } from "antd";
 import moment from "moment";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
@@ -155,7 +155,7 @@ const EmployeeReportDateWise = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className='text-primary'>Date-wise Reports</h3>
+                <h3 className='text-primary'>Date-wise Report</h3>
                 <hr className='bg-primary border-4' />
               </div>
             </div>
@@ -289,10 +289,17 @@ const EmployeeReportDateWise = () => {
                                   <td></td>
                                   <td></td>
                                   <td></td>
-                                  <td>{task.task_name}</td>
+                                  <td className="text-capitalize">{task.task_name}</td>
                                   {/* <td>{task.status}</td> */}
-                                  <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                                  <td>{task.task_percent}</td>
+                                  <td className="text-capitalize" style={{color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                                  <Progress
+      percent={task.task_percent}
+      status={task.task_percent === 100 ? "" : "active"}  
+      strokeColor={{
+        from: "#108ee9",
+        to: "#87d068",
+      }}
+    />
                                    <td>{task.employee_allocated_time}</td>
                                   <td>{task.employee_actual_time}</td>
                                 </tr>
