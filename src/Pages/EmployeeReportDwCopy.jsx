@@ -251,17 +251,17 @@ const EmployeeReportDateWise = () => {
                     <tr>
                       <th rowSpan={4}>S.No.</th>
                       <th rowSpan={4}>Date</th>
-                      <th colSpan={6}>Activities</th> {/* Spanning 5 columns */}
+                      <th colSpan={7}>Activities</th> {/* Spanning 5 columns */}
                     </tr>
                     <tr>
-                      <th colSpan={6} className="text-primary">
+                      <th colSpan={7} className="text-primary">
                         Project Name
                       </th>{" "}
                       {/* Spanning 5 columns */}
                     </tr>
                     <tr>
                       <th></th>
-                      <th colSpan={6} className="text-success">
+                      <th colSpan={7} className="text-success">
                         Module Name
                       </th>{" "}
                       {/* Spanning 5 columns */}
@@ -271,111 +271,15 @@ const EmployeeReportDateWise = () => {
                       <th></th>
                       <th>Task</th>
                       <th>Status</th>
+                      <th>% Completion</th>
                       <th>Alloc hrs</th>
                       <th>Act hrs</th>
                     </tr>
                   </thead>
-                  {/* <tbody>
-                    {reportData.map((report, index) => {
-                      const projects = report.projects;
-                      const firstProject = projects[0];
-                      const lastProject = projects[projects.length - 1];
-                      const date =
-                        report.date.slice(8, 10) +
-                        "/" +
-                        report.date.slice(5, 7) +
-                        "/" +
-                        report.date.slice(0, 4);
-
-                      console.log("stored date", date);
-                      return (
-                        <React.Fragment key={index}>
-                          <tr>
-                            <td>{index + 1}</td>
-                            <td>{date}</td>
-                            <td colSpan={5}>
-                              <b className="text-primary text-capitalize">
-                                {firstProject.project_name}
-                              </b>
-                            </td>
-                          </tr>
-                          {projects.map((project, projectIndex) => (
-                            <React.Fragment key={projectIndex}>
-                              {projectIndex === 0 ||
-                              project.date != lastProject.date ? null : (
-                                <tr>
-                                  <td></td>
-                                  <td></td>
-                                  <td colSpan={5}>
-                                    <b className="text-primary text-capitalize">
-                                      {project.project_name}
-                                    </b>
-                                  </td>
-                                </tr>
-                              )}
-
-                              {project.modules.map((module, moduleIndex) => (
-                                <React.Fragment
-                                  key={`${index}-${projectIndex}-${moduleIndex}`}
-                                >
-                                  <tr
-                                    key={`${index}-${projectIndex}-${moduleIndex}`}
-                                  >
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td
-                                      colSpan={4}
-                                      className="text-capitalize text-success"
-                                    >
-                                      {module.module_name}
-                                    </td>
-                                  </tr>
-
-                                  {module.tasks.map((task, taskIndex) => (
-                                    <tr
-                                      key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}
-                                    >
-                                      <td></td>
-                                      <td></td>
-                                      <td></td>
-                                      <td></td>
-                                      <td>{task.task_name}</td>
-                                    
-                                      <td
-                                        style={{
-                                          color:
-                                            task.status === "inprocess"
-                                              ? "orange"
-                                              : task.status === "notstarted"
-                                              ? "red"
-                                              : task.status === "transfer"
-                                              ? "blue"
-                                              : "green",
-                                        }}
-                                      >
-                                        {task.status === "transfer"
-                                          ? "Transfered"
-                                          : task.status}
-                                      </td>
-                                      <td>{task.employee_allocated_time}</td>
-                                      <td>{task.employee_actual_time}</td>
-                                    </tr>
-                                  ))}
-                                </React.Fragment>
-                              ))}
-                            </React.Fragment>
-                          ))}
-                        </React.Fragment>
-                      );
-                    })}
-                  </tbody> */}
-                  {/* new tbody */}
-                  <tbody>
+                
+{/* <tbody>
   {reportData.map((report, index) => {
     const projects = report.projects;
-    const firstProject = projects[0];
-    const lastProject = projects[projects.length - 1];
     const date = report.date.slice(8, 10) + '/' + report.date.slice(5, 7) + '/' + report.date.slice(0, 4);
 
     console.log("stored date", date);
@@ -383,21 +287,21 @@ const EmployeeReportDateWise = () => {
 
     return (
       <React.Fragment key={index}>
-        <tr>
+        <tr className="">
           <td>{index + 1}</td>
           <td>{date}</td>
-          <td colSpan={6}>
+          <td colSpan={6} className="d-none">
             <b className='text-primary text-capitalize'>
-              {firstProject.project_name}
+              {projects[0].project_name}
             </b>
           </td>
         </tr>
         {projects.map((project, projectIndex) => {
-          const isFirstProject = projectIndex === 0;
-          const isLastProject = project === lastProject;
+          // previousProjectName = project.project_name;
+          const currentProjectName = project.project_name;
           const isSameProject = project.project_name === previousProjectName;
-
-          if (!isFirstProject && !isSameProject) {
+          if ((currentProjectName != previousProjectName) && !isSameProject) {
+            previousProjectName = currentProjectName; // Update previous project name
             return (
               <React.Fragment key={projectIndex}>
                 <tr>
@@ -405,103 +309,158 @@ const EmployeeReportDateWise = () => {
                   <td></td>
                   <td colSpan={6}>
                     <b className='text-primary text-capitalize'>
-                      {project.project_name}
+                      {currentProjectName}
                     </b>
                   </td>
                 </tr>
+                {project.modules.map((module, moduleIndex) => (
+                  <React.Fragment key={`${index}-${projectIndex}-${moduleIndex}`}>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td colSpan={5} className='text-capitalize text-success'>{module.module_name}</td>                          
+                    </tr>
+                    {module.tasks.map((task, taskIndex) => (
+                      <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{task.task_name}</td>
+                        <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                        <td>{task.employee_allocated_time}</td>
+                        <td>{task.employee_actual_time}</td>
+                      </tr>
+                    ))}
+                  </React.Fragment>
+                ))}
               </React.Fragment>
             );
           }
-
-          previousProjectName = project.project_name;
-
-          return (
-            <React.Fragment key={projectIndex}>
-            
-           
-           {(project.modules).map((module, moduleIndex) => (
-                                <React.Fragment key={`${index}-${projectIndex}-${moduleIndex}`}>
-                                <tr key={`${index}-${projectIndex}-${moduleIndex}`}>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                  <td colSpan={5} className='text-capitalize text-success'>{module.module_name}</td>                          
-                                </tr>
-                                
-                             
-                              {(module.tasks).map((task, taskIndex) => (
-                                <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                  <td>{task.task_name}</td>
-                                  {/* <td>{task.status}</td> */}
-                                  <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                                   <td>{task.employee_allocated_time}</td>
-                                  <td>{task.employee_actual_time}</td>
-                                </tr>
-                              ))}
-                              </React.Fragment>
-                               ))}
+          return project.modules.map((module, moduleIndex) => (
+            <React.Fragment key={`${index}-${projectIndex}-${moduleIndex}`}>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colSpan={5} className='text-capitalize text-success'>{module.module_name}</td>                          
+              </tr>
+              {module.tasks.map((task, taskIndex) => (
+                <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>{task.task_name}</td>
+                  <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                  <td>{task.employee_allocated_time}</td>
+                  <td>{task.employee_actual_time}</td>
+                </tr>
+              ))}
             </React.Fragment>
-          );
+          ));
         })}
       </React.Fragment>
     );
   })}
-</tbody>
-{/* <tbody>
+</tbody> */}
+<tbody>
   {reportData.map((report, index) => {
     const projects = report.projects;
-    const firstProject = projects[0];
-    const lastProject = projects[projects.length - 1];
-    const date = report.date.slice(8, 10) + "/" + report.date.slice(5, 7) + "/" + report.date.slice(0, 4);
+    const date = report.date.slice(8, 10) + '/' + report.date.slice(5, 7) + '/' + report.date.slice(0, 4);
 
     console.log("stored date", date);
-
-    // const memoizedProjectNames = useMemo(() => {
-    //   const names = [];
-    //   projects.forEach((project) => {
-    //     if (!names.includes(project.project_name)) {
-    //       names.push(project.project_name);
-    //     }
-    //   });
-    //   return names;
-    // }, [projects]);
+    let previousProjectName = null;
+    let previousModuleName = null;
 
     return (
       <React.Fragment key={index}>
-        <tr>
+        <tr className="">
           <td>{index + 1}</td>
           <td>{date}</td>
-          <td colSpan={5}>
-            <b className="text-primary text-capitalize">{firstProject.project_name}</b>
-          </td>
+          {/* <td colSpan={6} className="d-none">
+            <b className='text-primary text-capitalize'>
+              {projects[0].project_name}
+            </b>
+          </td> */}
         </tr>
-        {memoizedProjectNames.map((projectName, projectIndex) => (
-          <React.Fragment key={projectIndex}>
-            <tr>
-              <td></td>
-              <td></td>
-              <td colSpan={5}>
-                <b className="text-primary text-capitalize">{projectName}</b>
-              </td>
-            </tr> 
-            {projects
-              .filter((project) => project.project_name === projectName)
-              .flatMap((project) => project.modules)
-              .map((module, moduleIndex) => (
+        {projects.map((project, projectIndex) => {
+          const currentProjectName = project.project_name;
+          const isSameProject = currentProjectName === previousProjectName;
+          if (!isSameProject) {
+            previousProjectName = currentProjectName; // Update previous project name
+            return (
+              <React.Fragment key={projectIndex}>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td colSpan={7}>
+                    <b className='text-primary text-capitalize'>
+                      {currentProjectName}
+                    </b>
+                  </td>
+                </tr>
+                {project.modules.map((module, moduleIndex) => {
+                  const currentModuleName = module.module_name;
+                  const isSameModule = currentModuleName === previousModuleName;
+                  if (!isSameModule) {
+                    previousModuleName = currentModuleName; // Update previous module name
+                    return (
+                      <React.Fragment key={`${index}-${projectIndex}-${moduleIndex}`}>
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td colSpan={6} className='text-capitalize text-success'>{currentModuleName}</td>                          
+                        </tr>
+                        {module.tasks.map((task, taskIndex) => (
+                          <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>{task.task_name}</td>
+                            <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                            <td>{task.task_percent}</td>
+                            <td>{task.employee_allocated_time}</td>
+                            <td>{task.employee_actual_time}</td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    );
+                  }
+                  return module.tasks.map((task, taskIndex) => (
+                    <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>{task.task_name}</td>
+                      <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                      <td>{task.task_percent}</td>
+                      <td>{task.employee_allocated_time}</td>
+                      <td>{task.employee_actual_time}</td>
+                    </tr>
+                  ));
+                })}
+              </React.Fragment>
+            );
+          }
+          // Return modules directly if it's the same project
+          return project.modules.map((module, moduleIndex) => {
+            const currentModuleName = module.module_name;
+            const isSameModule = currentModuleName === previousModuleName;
+            if (!isSameModule) {
+              previousModuleName = currentModuleName; // Update previous module name
+              return (
                 <React.Fragment key={`${index}-${projectIndex}-${moduleIndex}`}>
                   <tr>
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td colSpan={4} className="text-capitalize text-success">
-                      {module.module_name}
-                    </td>
+                    <td colSpan={6} className='text-capitalize text-success'>{module.module_name}</td>                          
                   </tr>
-
                   {module.tasks.map((task, taskIndex) => (
                     <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
                       <td></td>
@@ -509,41 +468,37 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td></td>
                       <td>{task.task_name}</td>
-                      <td
-                        style={{
-                          color:
-                            task.status === "inprocess"
-                              ? "orange"
-                              : task.status === "notstarted"
-                              ? "red"
-                              : task.status === "transfer"
-                              ? "blue"
-                              : "green",
-                        }}
-                      >
-                        {task.status === "transfer" ? "Transfered" : task.status}
-                      </td>
+                      <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                      <td>{task.task_percent}</td>
                       <td>{task.employee_allocated_time}</td>
                       <td>{task.employee_actual_time}</td>
                     </tr>
                   ))}
                 </React.Fragment>
-              ))}
-          </React.Fragment>
-        ))}
-        {lastProject.project_name !== firstProject.project_name && (
-          <tr>
-            <td></td>
-            <td></td>
-            <td colSpan={5}>
-              <b className="text-primary text-capitalize">{lastProject.project_name}</b>
-            </td>
-          </tr>
-        )}
+              );
+            }
+            // Return tasks directly if it's the same module
+            return module.tasks.map((task, taskIndex) => (
+              <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>{task.task_name}</td>
+                <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                <td>{task.task_percent}</td>
+                <td>{task.employee_allocated_time}</td>
+                <td>{task.employee_actual_time}</td>
+              </tr>
+            ));
+          });
+        })}
       </React.Fragment>
     );
   })}
-</tbody> */}
+</tbody>
+
+
                 </table>
                 {/* PAGINATION */}
                 <div className="row float-right">

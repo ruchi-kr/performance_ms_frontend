@@ -132,8 +132,9 @@ const Header = () => {
         className="d-lg-block d-md-none d-none bg-info"
         // icon={<PlusOutlined className="text-xs"/>}
       >
-        <div className="d-flex text-sm align-items-center justify-content-center flex-column">
-        {initial}<EditOutlined className="text-xs"/>
+        <div className="d-flex align-items-center justify-content-center flex-column">
+        {initial}
+        {/* <EditOutlined className="text-xs"/> */}
           </div>
       </Avatar>
       )}
