@@ -9,7 +9,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DatePicker, Button } from "antd";
+import { DatePicker, Button,Progress } from "antd";
 import moment from "moment";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
@@ -277,94 +277,7 @@ const EmployeeReportDateWise = () => {
                     </tr>
                   </thead>
                 
-{/* <tbody>
-  {reportData.map((report, index) => {
-    const projects = report.projects;
-    const date = report.date.slice(8, 10) + '/' + report.date.slice(5, 7) + '/' + report.date.slice(0, 4);
 
-    console.log("stored date", date);
-    let previousProjectName = null;
-
-    return (
-      <React.Fragment key={index}>
-        <tr className="">
-          <td>{index + 1}</td>
-          <td>{date}</td>
-          <td colSpan={6} className="d-none">
-            <b className='text-primary text-capitalize'>
-              {projects[0].project_name}
-            </b>
-          </td>
-        </tr>
-        {projects.map((project, projectIndex) => {
-          // previousProjectName = project.project_name;
-          const currentProjectName = project.project_name;
-          const isSameProject = project.project_name === previousProjectName;
-          if ((currentProjectName != previousProjectName) && !isSameProject) {
-            previousProjectName = currentProjectName; // Update previous project name
-            return (
-              <React.Fragment key={projectIndex}>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td colSpan={6}>
-                    <b className='text-primary text-capitalize'>
-                      {currentProjectName}
-                    </b>
-                  </td>
-                </tr>
-                {project.modules.map((module, moduleIndex) => (
-                  <React.Fragment key={`${index}-${projectIndex}-${moduleIndex}`}>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td colSpan={5} className='text-capitalize text-success'>{module.module_name}</td>                          
-                    </tr>
-                    {module.tasks.map((task, taskIndex) => (
-                      <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>{task.task_name}</td>
-                        <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                        <td>{task.employee_allocated_time}</td>
-                        <td>{task.employee_actual_time}</td>
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </React.Fragment>
-            );
-          }
-          return project.modules.map((module, moduleIndex) => (
-            <React.Fragment key={`${index}-${projectIndex}-${moduleIndex}`}>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td colSpan={5} className='text-capitalize text-success'>{module.module_name}</td>                          
-              </tr>
-              {module.tasks.map((task, taskIndex) => (
-                <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>{task.task_name}</td>
-                  <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                  <td>{task.employee_allocated_time}</td>
-                  <td>{task.employee_actual_time}</td>
-                </tr>
-              ))}
-            </React.Fragment>
-          ));
-        })}
-      </React.Fragment>
-    );
-  })}
-</tbody> */}
 <tbody>
   {reportData.map((report, index) => {
     const projects = report.projects;
@@ -420,9 +333,16 @@ const EmployeeReportDateWise = () => {
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td>{task.task_name}</td>
-                            <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                            <td>{task.task_percent}</td>
+                            <td className="text-capitalize">{task.task_name}</td>
+                            <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                            <Progress
+      percent={task.task_percent}
+      status={task.task_percent === 100 ? "" : "active"}  
+      strokeColor={{
+        from: "#108ee9",
+        to: "#87d068",
+      }}
+    />
                             <td>{task.employee_allocated_time}</td>
                             <td>{task.employee_actual_time}</td>
                           </tr>
@@ -436,9 +356,16 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td>{task.task_name}</td>
-                      <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                      <td>{task.task_percent}</td>
+                      <td className="text-capitalize">{task.task_name}</td>
+                      <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                      <Progress
+      percent={task.task_percent}
+      status={task.task_percent === 100 ? "" : "active"}  
+      strokeColor={{
+        from: "#108ee9",
+        to: "#87d068",
+      }}
+    />
                       <td>{task.employee_allocated_time}</td>
                       <td>{task.employee_actual_time}</td>
                     </tr>
@@ -467,9 +394,16 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td>{task.task_name}</td>
-                      <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                      <td>{task.task_percent}</td>
+                      <td className="text-capitalize">{task.task_name}</td>
+                      <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                      <Progress
+      percent={task.task_percent}
+      status={task.task_percent === 100 ? "" : "active"}  
+      strokeColor={{
+        from: "#108ee9",
+        to: "#87d068",
+      }}
+    />
                       <td>{task.employee_allocated_time}</td>
                       <td>{task.employee_actual_time}</td>
                     </tr>
@@ -484,9 +418,16 @@ const EmployeeReportDateWise = () => {
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>{task.task_name}</td>
-                <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                <td>{task.task_percent}</td>
+                <td className="text-capitalize">{task.task_name}</td>
+                <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                <Progress
+      percent={task.task_percent}
+      status={task.task_percent === 100 ? "" : "active"}  
+      strokeColor={{
+        from: "#108ee9",
+        to: "#87d068",
+      }}
+    />
                 <td>{task.employee_allocated_time}</td>
                 <td>{task.employee_actual_time}</td>
               </tr>

@@ -1,3 +1,19 @@
+ <Flex vertical gap="middle">
+                                                  <Flex
+                                                    vertical
+                                                    gap="small"
+                                                    style={{
+                                                      width: 120,
+                                                    }}
+                                                  >
+                                                    <Progress
+                                                      percent={Number(
+                                                        task.task_percent
+                                                      )}
+                                                      size={[120, 15]}
+                                                    />
+                                                  </Flex>
+
 import React, { useState } from 'react';
 import { Form, Select } from 'antd';
 

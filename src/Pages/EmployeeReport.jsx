@@ -4,7 +4,7 @@ import SideNavbar from "../Components/SideNavbar";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { getEmployeeReport, CONFIG_OBJ } from "../Config";
-import { Input, DatePicker, Button } from "antd";
+import { Input, DatePicker, Button,Flex, Progress } from "antd";
 import moment from "moment";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
@@ -87,13 +87,7 @@ const EmployeeReport = () => {
     }
   };
 
-  useEffect(() => { 
-    console.log("report data", reportData);
-    const EfficiencySums= reportData && reportData.reduce((sum, task) => sum + (task.per_task_efficiency || 0), 0)
-    setModuleEfficiencySums(EfficiencySums)
-    console.log("efficiency sums data", moduleEfficiencySums);
-  }, [reportData]);        
-
+ 
  
   useEffect(() => {
     getEmployeeReportHandler(currentPage);
@@ -331,7 +325,7 @@ const calculateAverageEfficiency = (modules) => {
               <div className="col-11 mx-auto">
                 {/* table */}
                 <table id="reportTablepw" className="table table-striped mt-3">
-                  <thead>
+                  <thead className="sticky-top">
                     <tr>
                       <th scope="col">S.No.</th>
                       <th scope="col">Project Name</th>
@@ -381,6 +375,7 @@ const calculateAverageEfficiency = (modules) => {
                                 <table className="col-11 mx-auto">
                                   <thead>
                                     <tr>
+                                      <th>S. No.</th>
                                       <th>Module Name</th>
                                       <th>Task</th>
                                       {/* <th>Start Date</th>
@@ -390,7 +385,7 @@ const calculateAverageEfficiency = (modules) => {
   <span>End Date</span>
 </th>
                                       <th>Status</th>
-                                      <th>% completion</th>
+                                      <th>% Completion</th>
                                       <th>Alloc hrs</th>
                                       <th>Actual hrs</th>
                                       {/* <th>per task</th> */}
@@ -402,6 +397,7 @@ const calculateAverageEfficiency = (modules) => {
                                         (module, moduleIndex) => (
                                           <React.Fragment key={moduleIndex}>
                                           <tr className="module-row">
+                                            <td className="text-primary">{index+1}.{moduleIndex+1}</td>
                                             <td className="text-capitalize text-primary" colSpan="7" >{module.module_name}</td>
                                           </tr>
                                             {module.tasks && ((module.tasks).map(
@@ -409,7 +405,9 @@ const calculateAverageEfficiency = (modules) => {
                                               
                                                 <tr key={taskIndex} className="task-row">
                                                   <td></td>
-                                                  <td>{task.task_name}</td>
+                                                  <td>{index+1}.{moduleIndex+1} {String.fromCharCode(97 + taskIndex)}</td>
+                                                  {/* <td></td> */}
+                                                  <td className="text-capitalize">{task.task_name}</td>
                                                   {/* <td>
                                                     {task.created_at.slice(8, 10)}/
                                                     {task.created_at.slice(5, 7)}/
@@ -436,8 +434,17 @@ const calculateAverageEfficiency = (modules) => {
     <td className="text-primary">---</td>
   )}
 </td>
-                                                  <td>{task.status}</td>
-                                                  <td>{task.task_percent}</td>
+<td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                                              {/* <td>{task.status}</td> */}
+                                                  {/* <td>{task.task_percent}</td> */}
+                                                  <Progress
+      percent={task.task_percent}
+      status={task.task_percent === 100 ? "" : "active"}  
+      strokeColor={{
+        from: "#108ee9",
+        to: "#87d068",
+      }}
+    />
                                                   <td>{task.employee_allocated_time}</td>
                                                   <td>{task.employee_actual_time}</td>
                                                   {/* <td>{!task.per_task_efficiency ? "---": task.per_task_efficiency}</td> */}
