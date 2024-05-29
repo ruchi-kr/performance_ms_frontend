@@ -112,7 +112,6 @@ const EmployeeReport = () => {
       setExpandedRow(index);
     }
   };
-
   
 // Function to handle expand all rows
 const [expandedRows, setExpandedRows] = useState([]);
@@ -120,6 +119,7 @@ const [expandedRows, setExpandedRows] = useState([]);
 const handleExpandAll = () => {
   if (expandedRows.length === reportData.length) {
     setExpandedRows([]);
+    setExpandedRow(null);
   } else {
     const newExpandedRows = reportData.map((_, index) => index);
     setExpandedRows(newExpandedRows);
@@ -225,14 +225,7 @@ const handleExcel = () => {
   };
 
 const[moduleEfficiencySums, setModuleEfficiencySums] = useState([]);
-  
-// const calculateAverageEfficiency = (tasks) => {
-//   const totalEfficiency = tasks.reduce(
-//     (sum, task) => sum + (task.per_task_efficiency || 0),
-//     0
-//   );
-//   return totalEfficiency / tasks.length;
-// };
+ 
 const calculateAverageEfficiency = (modules) => {
   if (!modules || modules.length === 0) return 0;
 
@@ -347,7 +340,7 @@ const calculateAverageEfficiency = (modules) => {
 
                       <th scope="col">Alloc hrs</th>
                       <th scope="col">Man hrs</th>
-                      <th scope="col">Efficiency (%)</th>
+                      <th scope="col">My Efficiency (%)</th>
                     </tr>
                   </thead>
 
@@ -397,6 +390,7 @@ const calculateAverageEfficiency = (modules) => {
   <span>End Date</span>
 </th>
                                       <th>Status</th>
+                                      <th>% completion</th>
                                       <th>Alloc hrs</th>
                                       <th>Actual hrs</th>
                                       {/* <th>per task</th> */}
@@ -408,7 +402,7 @@ const calculateAverageEfficiency = (modules) => {
                                         (module, moduleIndex) => (
                                           <React.Fragment key={moduleIndex}>
                                           <tr className="module-row">
-                                            <td className="text-capitalize text-primary" colSpan="6" >{module.module_name}</td>
+                                            <td className="text-capitalize text-primary" colSpan="7" >{module.module_name}</td>
                                           </tr>
                                             {module.tasks && ((module.tasks).map(
                                               (task, taskIndex) => (
@@ -443,6 +437,7 @@ const calculateAverageEfficiency = (modules) => {
   )}
 </td>
                                                   <td>{task.status}</td>
+                                                  <td>{task.task_percent}</td>
                                                   <td>{task.employee_allocated_time}</td>
                                                   <td>{task.employee_actual_time}</td>
                                                   {/* <td>{!task.per_task_efficiency ? "---": task.per_task_efficiency}</td> */}

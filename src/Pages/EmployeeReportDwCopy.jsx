@@ -251,17 +251,17 @@ const EmployeeReportDateWise = () => {
                     <tr>
                       <th rowSpan={4}>S.No.</th>
                       <th rowSpan={4}>Date</th>
-                      <th colSpan={6}>Activities</th> {/* Spanning 5 columns */}
+                      <th colSpan={7}>Activities</th> {/* Spanning 5 columns */}
                     </tr>
                     <tr>
-                      <th colSpan={6} className="text-primary">
+                      <th colSpan={7} className="text-primary">
                         Project Name
                       </th>{" "}
                       {/* Spanning 5 columns */}
                     </tr>
                     <tr>
                       <th></th>
-                      <th colSpan={6} className="text-success">
+                      <th colSpan={7} className="text-success">
                         Module Name
                       </th>{" "}
                       {/* Spanning 5 columns */}
@@ -271,6 +271,7 @@ const EmployeeReportDateWise = () => {
                       <th></th>
                       <th>Task</th>
                       <th>Status</th>
+                      <th>% Completion</th>
                       <th>Alloc hrs</th>
                       <th>Act hrs</th>
                     </tr>
@@ -394,7 +395,7 @@ const EmployeeReportDateWise = () => {
                 <tr>
                   <td></td>
                   <td></td>
-                  <td colSpan={6}>
+                  <td colSpan={7}>
                     <b className='text-primary text-capitalize'>
                       {currentProjectName}
                     </b>
@@ -411,7 +412,7 @@ const EmployeeReportDateWise = () => {
                           <td></td>
                           <td></td>
                           <td></td>
-                          <td colSpan={5} className='text-capitalize text-success'>{currentModuleName}</td>                          
+                          <td colSpan={6} className='text-capitalize text-success'>{currentModuleName}</td>                          
                         </tr>
                         {module.tasks.map((task, taskIndex) => (
                           <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
@@ -421,6 +422,7 @@ const EmployeeReportDateWise = () => {
                             <td></td>
                             <td>{task.task_name}</td>
                             <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                            <td>{task.task_percent}</td>
                             <td>{task.employee_allocated_time}</td>
                             <td>{task.employee_actual_time}</td>
                           </tr>
@@ -436,6 +438,7 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td>{task.task_name}</td>
                       <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                      <td>{task.task_percent}</td>
                       <td>{task.employee_allocated_time}</td>
                       <td>{task.employee_actual_time}</td>
                     </tr>
@@ -456,7 +459,7 @@ const EmployeeReportDateWise = () => {
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td colSpan={5} className='text-capitalize text-success'>{module.module_name}</td>                          
+                    <td colSpan={6} className='text-capitalize text-success'>{module.module_name}</td>                          
                   </tr>
                   {module.tasks.map((task, taskIndex) => (
                     <tr key={`${index}-${projectIndex}-${moduleIndex}-${taskIndex}`}>
@@ -466,6 +469,7 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td>{task.task_name}</td>
                       <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                      <td>{task.task_percent}</td>
                       <td>{task.employee_allocated_time}</td>
                       <td>{task.employee_actual_time}</td>
                     </tr>
@@ -482,6 +486,7 @@ const EmployeeReportDateWise = () => {
                 <td></td>
                 <td>{task.task_name}</td>
                 <td style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                <td>{task.task_percent}</td>
                 <td>{task.employee_allocated_time}</td>
                 <td>{task.employee_actual_time}</td>
               </tr>
