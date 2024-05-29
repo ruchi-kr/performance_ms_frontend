@@ -366,11 +366,12 @@ const ManagerEmployeeReport = () => {
                             <tr onClick={() => handleRowClick(index)}>
                               <td>{index + 1}.</td>
                               <td className="text-capitalize">
-                                <NavLink
+                                {/* <NavLink
                                   to={`/manager/report/employee/${item.employee_id}`}
-                                >
-                                  <Tag color={"blue"}>{item.name}</Tag>
-                                </NavLink>
+                                > */}
+                                  {/* <Tag color={"blue"}>{item.name}</Tag> */}
+                                  {item.name}
+                                {/* </NavLink> */}
                               </td>
                               <td className="text-center">
                                 {item.total_allocated_time}{" "}

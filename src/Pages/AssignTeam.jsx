@@ -112,10 +112,10 @@ const AssignTeam = () => {
     const fetchProject = async () => {
       try {
         const resp = await axios.get(
-          "http://localhost:8000/api/admin/getProjects",
+          `http://localhost:8000/api/user/projectsNotUnderOtherManagers/${managerEmployeeId}`,
           CONFIG_OBJ
         );
-        console.log("project data", resp.data);
+        console.log("project data--->", resp.data);
         console.log("teams data", teamsData);
         const filteredProjects = resp.data?.filter(
           (project) =>
