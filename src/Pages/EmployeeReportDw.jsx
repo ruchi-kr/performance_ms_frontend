@@ -115,9 +115,10 @@ const EmployeeReportDateWise = () => {
 
     // Extract headers and data from the table
     const headers = [
-      ['S.No.', 'Date', 'Activities', '', '', ''],
-      ['', '', 'Project Name', '', '', ''],
-      ['', '', 'Task', 'Status', 'Alloc hrs', 'Act hrs'],
+      ['S.No.', 'Date', 'Activities', '', '', '','',''],
+      ['', '', 'Project Name', '', '', '','','',''],
+      ['', '', '','Module Name', '', '', '','','',''],
+      ['', '', '','Task', 'Status','% Completion' ,'Alloc hrs', 'Act hrs'],
     ];
     const data = [];
     const rows = table.querySelectorAll('tr');

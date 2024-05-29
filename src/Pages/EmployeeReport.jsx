@@ -149,7 +149,7 @@ const handleExcel = () => {
 
     for (let rowNum = start.r; rowNum <= end.r; rowNum++) {
         const cell = ws[XLSX.utils.encode_cell({ r: rowNum, c: start.c })];
-        if (cell && cell.t === 's' && cell.v.startsWith('TaskDateStatusAllocated TimeActual Timetask')) {
+        if (cell && cell.t === 's' && cell.v.startsWith('S. No.Module NameTaskStart DateEnd DateStatus% CompletionAlloc hrsActual hrs')) {
             for (let i = start.c; i <= end.c; i++) {
                 delete ws[XLSX.utils.encode_cell({ r: rowNum, c: i })];
             }
@@ -190,7 +190,7 @@ const handleExcel = () => {
       ];
       data.push(row);
       if(expandedRows.includes(index) || expandedRow === index) {
-        const taskheaders = [['Task', 'Date', 'status', 'Alloc hrs', 'Man hrs']];
+        const taskheaders = [['S. No.', 'Module Name','Task', 'Date', 'status', 'Alloc hrs', 'Man hrs']];
         data.push(taskheaders[0]); // Include task headers
         JSON.parse(item.tasks).forEach(task => {
           // const taskheaders = [['Task', 'Date', 'status', 'Alloc hrs', 'Man hrs']];
