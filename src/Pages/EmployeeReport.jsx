@@ -11,9 +11,10 @@ import dayjs from "dayjs";
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { faFilePdf, faFileExcel } from '@fortawesome/free-regular-svg-icons';
+import { faFilePdf, faFileExcel} from '@fortawesome/free-regular-svg-icons';
+import {faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 
@@ -161,6 +162,12 @@ const handleExcel = () => {
     ws['!ref'] = XLSX.utils.encode_range(start, newEnd);
 
     XLSX.writeFile(wb, 'employee_reportPW.xlsx');
+};
+
+
+const handleExpandRowClick = (index) => {
+  // Redirect to another page with the index of the expanded row
+  return `/expanded-row/${index}`;
 };
 
   
@@ -348,9 +355,17 @@ const calculateAverageEfficiency = (modules) => {
                             <td className="text-capitalize">
                             <NavLink
                               to={`/projectplan/?project_id=${item.project_id}`}
+                              className="text-decoration-underline"
                             >
                               {item.project_name}
-                            </NavLink>
+
+                            </NavLink>&nbsp; &nbsp; <Link to={handleExpandRowClick(index)}>
+                  <FontAwesomeIcon
+                    icon={faArrowUpRightFromSquare}
+                    size="xs"
+                    // Add any additional onClick logic if needed
+                  />
+                </Link>
                             </td>
                             <td>
                               {item.schedule_start_date.slice(8, 10)}/
@@ -467,7 +482,7 @@ const calculateAverageEfficiency = (modules) => {
                   </tbody>
                 </table>
                 {/* pagination */}
-                <div className="row float-right">
+                {/* <div className="row float-right">
                   <nav
                     aria-label="Page navigation example"
                     className="d-flex align-self-end mt-3"
@@ -510,7 +525,7 @@ const calculateAverageEfficiency = (modules) => {
                       </li>
                     </ul>
                   </nav>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

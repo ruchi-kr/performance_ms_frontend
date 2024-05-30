@@ -31,6 +31,8 @@ import AddModuleTasks from "../Pages/AddModuleTasks";
 import SystemSettings from "../Pages/SystemSettings";
 import AssignTeamNew from "../Pages/AssignTeamNew";
 
+import EmployeeReportPwBifur from "../Pages/EmployeeReportPwBifur";
+
 import EmployeeReportDwCopy from "../Pages/EmployeeReportDwCopy";
 export const nav = [
     // public
@@ -66,6 +68,8 @@ export const nav = [
     { path: "/plan", element: <Employee />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
     { path: "/reportproject-wise", element: <EmployeeReport />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
     { path: "/reportdate-wise", element: <EmployeeReportDwCopy />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
+    { path: "/expanded-row/:expandedRowIndex", element: <EmployeeReportPwBifur />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
+
     // employee manager admin url
     { path: "/projectplan2/", element: <ProjectPlan />, isPrivate: true, isAdmin: true, isManager: true, isEmployee: true },
     { path: "/projectplan/", element: <ProjectPlan2 />, isPrivate: true, isAdmin: true, isManager: true, isEmployee: true },
