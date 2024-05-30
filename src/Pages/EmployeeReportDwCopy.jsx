@@ -109,7 +109,7 @@ const EmployeeReportDateWise = () => {
     const size = "A4"; // Use A1, A2, A3 or A4
     const orientation = "landscape"; // 'portrait' or 'landscape'
 
-    const marginLeft = 40;
+    const marginLeft = 30;
     const doc = new jsPDF(orientation, unit, size);
 
     doc.setFontSize(15);
@@ -118,10 +118,11 @@ const EmployeeReportDateWise = () => {
     const table = document.getElementById("reportTable");
 
     // Extract headers and data from the table
-    const headers = [
-      ["S.No.", "Date", "Activities", "", "", ""],
-      ["", "", "Project Name", "", "", ""],
-      ["", "", "Task", "Status", "Alloc hrs", "Act hrs"],
+   const headers = [
+      ['S.No.', 'Date', 'Activities', '', '', '','','',''],
+      ['', '', 'Project Name', '', '', '','','',''],
+      ['', '', '','Module Name', '', '', '','',''],
+      ['', '', '','','Task', 'Status','% Completion' ,'Alloc hrs', 'Act hrs'],
     ];
     const data = [];
     const rows = table.querySelectorAll("tr");
@@ -141,12 +142,12 @@ const EmployeeReportDateWise = () => {
       }
     });
     const content = {
-      startY: 50,
+      startY: 70,
       head: headers,
       body: data,
     };
 
-    doc.text(title, marginLeft, 40);
+    doc.text(title, marginLeft, 30);
     doc.autoTable(content);
     doc.save("employee_reportDW.pdf");
   };
@@ -335,14 +336,14 @@ const EmployeeReportDateWise = () => {
                             <td></td>
                             <td className="text-capitalize">{task.task_name}</td>
                             <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                            <Progress
+                            <td><Progress
       percent={task.task_percent}
       status={task.task_percent === 100 ? "" : "active"}  
       strokeColor={{
         from: "#108ee9",
         to: "#87d068",
       }}
-    />
+    /></td>
                             <td>{task.employee_allocated_time}</td>
                             <td>{task.employee_actual_time}</td>
                           </tr>
@@ -358,14 +359,14 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td className="text-capitalize">{task.task_name}</td>
                       <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                      <Progress
+                      <td><Progress
       percent={task.task_percent}
       status={task.task_percent === 100 ? "" : "active"}  
       strokeColor={{
         from: "#108ee9",
         to: "#87d068",
       }}
-    />
+    /> </td>
                       <td>{task.employee_allocated_time}</td>
                       <td>{task.employee_actual_time}</td>
                     </tr>
@@ -396,14 +397,14 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td className="text-capitalize">{task.task_name}</td>
                       <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                      <Progress
+                      <td><Progress
       percent={task.task_percent}
       status={task.task_percent === 100 ? "" : "active"}  
       strokeColor={{
         from: "#108ee9",
         to: "#87d068",
       }}
-    />
+    /></td>
                       <td>{task.employee_allocated_time}</td>
                       <td>{task.employee_actual_time}</td>
                     </tr>
@@ -420,14 +421,14 @@ const EmployeeReportDateWise = () => {
                 <td></td>
                 <td className="text-capitalize">{task.task_name}</td>
                 <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                <Progress
+                <td><Progress
       percent={task.task_percent}
       status={task.task_percent === 100 ? "" : "active"}  
       strokeColor={{
         from: "#108ee9",
         to: "#87d068",
       }}
-    />
+    /></td>
                 <td>{task.employee_allocated_time}</td>
                 <td>{task.employee_actual_time}</td>
               </tr>
