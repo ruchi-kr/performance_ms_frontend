@@ -23,6 +23,7 @@ import "jspdf-autotable";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
+import { NavLink, useNavigate } from "react-router-dom";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 
@@ -39,6 +40,7 @@ const ManagerProjectReport = () => {
   const [projectStageFilter, setProjectStageFilter] = useState("all");
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user?.employee_id;
+  const navigate = useNavigate();
   console.log("manager id", manager_id);
   console.log("dates", dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"));
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
@@ -131,7 +133,16 @@ const ManagerProjectReport = () => {
     // Can not select days before today and today
     return current && current >= dayjs().endOf("day");
   };
-
+  const handleNavigation = (project_id) => {
+    console.clear();
+    const filteredReportData = reportData.filter(
+      (item) => item.project_id === project_id
+    );
+    console.log(filteredReportData);
+    navigate(`/manager/report/project/detailed/${project_id}`, {
+      state: { data: filteredReportData },
+    });
+  };
   // export to excel and pdf file function
   const exportToExcel = async () => {
     window.confirm("Do you want to download record!");
@@ -325,7 +336,7 @@ const ManagerProjectReport = () => {
               </div>
             </div>
             <div className="row">
-              <div className="col-11 mx-auto">
+              <div className="col-12 mx-auto">
                 {/* table */}
                 <table id="reportTablepw" className="table table-striped  mt-2">
                   <thead>
@@ -344,10 +355,25 @@ const ManagerProjectReport = () => {
                         Project Planned hrs
                       </th>
                       <th scope="col" className=" text-center">
+                        % of Project Completed
+                      </th>
+                      <th scope="col" className=" text-center">
                         Allocated Man hrs
                       </th>
                       <th scope="col" className=" text-center">
                         Actual Man hrs
+                      </th>
+                      <th scope="col" className=" text-center">
+                        Time Variance
+                      </th>
+                      <th scope="col" className=" text-center">
+                        Allocated Time / Planned Hours (%)
+                      </th>
+                      <th scope="col" className=" text-center">
+                        Actual Time / Planned Hours (%)
+                      </th>
+                      <th scope="col" className=" text-center">
+                        Utilized Man Hours (%)
                       </th>
                     </tr>
                   </thead>
@@ -365,7 +391,19 @@ const ManagerProjectReport = () => {
                             <tr onClick={() => handleRowClick(index)}>
                               <td className=" text-center">{index + 1}.</td>
                               <td className="text-capitalize ">
-                                {item.project_name}
+                                <NavLink
+                                  to={`/manager/report/project/detailed/${item.project_id}`}
+                                >
+                                  {item.project_name}
+                                </NavLink>
+                                {/* <div
+                                  onClick={() =>
+                                    handleNavigation(item.project_id)
+                                  }
+                                  style={{ cursor: "pointer", color: "blue" }}
+                                >
+                                  {item.project_name}
+                                </div> */}
                               </td>
                               <td>
                                 <div className="d-flex flex-column ">
@@ -382,14 +420,40 @@ const ManagerProjectReport = () => {
                                 </div>
                               </td>
 
-                              <td className="text-capitalize text-center ">
+                              <td className=" text-center ">
                                 {item.total_allocated_man_days}
                               </td>
+                              <td className=" text-center ">some %</td>
                               <td className=" text-center">
                                 {item.total_allocated_time}
                               </td>
                               <td className=" text-center">
                                 {item.total_actual_time}
+                              </td>
+
+                              <td className=" text-center">
+                                {Math.max(item.max_time_variance, 0)}
+                              </td>
+                              <td className=" text-center">
+                                {(
+                                  (item.total_allocated_time /
+                                    item.total_allocated_man_days) *
+                                  100
+                                ).toPrecision(2)}
+                              </td>
+                              <td className=" text-center">
+                                {(
+                                  (item.total_actual_time /
+                                    item.total_allocated_man_days) *
+                                  100
+                                ).toPrecision(2)}
+                              </td>
+                              <td className=" text-center">
+                                {(
+                                  (item.total_actual_time /
+                                    item.total_allocated_man_days) *
+                                  100
+                                ).toPrecision(2)}
                               </td>
                             </tr>
                             {(expandedRows.includes(index) ||
@@ -485,10 +549,19 @@ const ManagerProjectReport = () => {
                                                     }}
                                                   >
                                                     <Progress
-                                                      percent={Number(
+                                                      percent={
                                                         task.task_percent
-                                                      )}
-                                                      size={[120, 15]}
+                                                      }
+                                                      status={
+                                                        task.task_percent ===
+                                                        100
+                                                          ? ""
+                                                          : "active"
+                                                      }
+                                                      strokeColor={{
+                                                        from: "#108ee9",
+                                                        to: "#87d068",
+                                                      }}
                                                     />
                                                   </Flex>
                                                 </Flex>
@@ -520,12 +593,12 @@ const ManagerProjectReport = () => {
                                                   }
 
                                                   return (
-                                                    <td
+                                                    <span
                                                       className={className}
                                                       style={style}
                                                     >
                                                       {task.status}
-                                                    </td>
+                                                    </span>
                                                   );
                                                 })()}
                                               </td>

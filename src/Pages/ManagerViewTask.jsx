@@ -170,6 +170,8 @@ const ManagerViewTask = () => {
         totalWeightedPercentage += weightedPercentage;
         totalWeightedActualHours += weightedPercentage;
         count++;
+      }else{
+        count++;
       }
       //
 

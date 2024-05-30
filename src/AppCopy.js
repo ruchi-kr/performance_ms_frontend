@@ -29,6 +29,7 @@ import ProjectPlan from "./PlanPages/ProjectPlan";
 import ProjectPlan2 from "./PlanPages/ProjectPlan2";
 import AddModuleTasks from "./Pages/AddModuleTasks";
 import AssignTeamNew from "./Pages/AssignTeamNew";
+import ManagerParticularProjectReport from "./Pages/ManagerParticularProjectReport";
 
 function App() {
   const status = sessionStorage.getItem("status");
@@ -87,6 +88,10 @@ function App() {
             <Route
               path="/manager/report/project/detailed"
               element={<ManagerProjectReport />}
+            />
+            <Route
+              path="/manager/report/project/detailed/:project_id"
+              element={<ManagerParticularProjectReport />}
             />
 
             <Route path="*" element={<ErrorPage />}></Route>
