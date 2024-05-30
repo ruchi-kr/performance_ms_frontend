@@ -16,18 +16,8 @@ import {
   Row,
 } from "antd";
 import {
-  ArrowUpOutlined,
   ArrowLeftOutlined,
-  DeleteFilled,
-  EditFilled,
-  EditOutlined,
-  DeleteOutlined,
-  InfoCircleOutlined,
-  PlusCircleOutlined,
-  MinusCircleOutlined,
-  PlusOutlined,
-  SettingOutlined,
-  ExclamationCircleFilled,
+  
 } from "@ant-design/icons";
 import moment from "moment";
 import dayjs from "dayjs";
