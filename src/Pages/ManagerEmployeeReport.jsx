@@ -187,8 +187,8 @@ const ManagerEmployeeReport = () => {
           (task.allocated_time / task.actual_time) * task.task_percent;
         totalWeightedPercentage += weightedPercentage;
         totalWeightedActualHours += weightedPercentage;
-        count++;
       }
+      count++;
       if (task.status === "completed") completed++;
       else if (task.status === "inprocess") inprocess++;
       else if (task.status === "transfer") transfered++;
@@ -203,14 +203,13 @@ const ManagerEmployeeReport = () => {
   const handleExpandAll = () => {
     if (expandedRows.length === reportData.length) {
       setExpandedRows([]);
-      setExpandedRow(null)
+      setExpandedRow(null);
     } else {
       const newExpandedRows = reportData.map((_, index) => index);
       setExpandedRows(newExpandedRows);
     }
-    
   };
-  
+
   return (
     <>
       <Header />
@@ -366,12 +365,11 @@ const ManagerEmployeeReport = () => {
                             <tr onClick={() => handleRowClick(index)}>
                               <td>{index + 1}.</td>
                               <td className="text-capitalize">
-                                {/* <NavLink
+                                <NavLink
                                   to={`/manager/report/employee/${item.employee_id}`}
-                                > */}
-                                  {/* <Tag color={"blue"}>{item.name}</Tag> */}
+                                >
                                   {item.name}
-                                {/* </NavLink> */}
+                                </NavLink>
                               </td>
                               <td className="text-center">
                                 {item.total_allocated_time}{" "}
@@ -475,10 +473,19 @@ const ManagerEmployeeReport = () => {
                                                     }}
                                                   >
                                                     <Progress
-                                                      percent={Number(
+                                                      percent={
                                                         task.task_percent
-                                                      )}
-                                                      size={[120, 15]}
+                                                      }
+                                                      status={
+                                                        task.task_percent ===
+                                                        100
+                                                          ? ""
+                                                          : "active"
+                                                      }
+                                                      strokeColor={{
+                                                        from: "#108ee9",
+                                                        to: "#87d068",
+                                                      }}
                                                     />
                                                   </Flex>
                                                   {(() => {
@@ -509,12 +516,12 @@ const ManagerEmployeeReport = () => {
                                                     }
 
                                                     return (
-                                                      <td
+                                                      <span
                                                         className={className}
                                                         style={style}
                                                       >
                                                         {task.status}
-                                                      </td>
+                                                      </span>
                                                     );
                                                   })()}
                                                 </Flex>

@@ -66,7 +66,7 @@ const ManagerViewTask = () => {
 
   const getProjects = async (value) => {
     try {
-      const result = await axios.get(`${getAllProjects}`,CONFIG_OBJ);
+      const result = await axios.get(`${getAllProjects}`, CONFIG_OBJ);
       setProjectList(result.data);
       console.log("project list", result.data);
     } catch (error) {
@@ -81,7 +81,8 @@ const ManagerViewTask = () => {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/project/employee/report/${manager_id}/${employee_id}/null`,CONFIG_OBJ
+        `http://localhost:8000/api/project/employee/report/${manager_id}/${employee_id}/null`,
+        CONFIG_OBJ
       );
       setTaskRecords(response.data.data);
 
@@ -128,7 +129,8 @@ const ManagerViewTask = () => {
       if (task.id) {
         // If the task already has an ID, it's an existing task, so update it
         const response1 = await axios.patch(
-          `http://localhost:8000/api/project/task/${task.id}`,CONFIG_OBJ,
+          `http://localhost:8000/api/project/task/${task.id}`,
+          CONFIG_OBJ,
           task
         );
         if (response1.status === 200) {
@@ -138,7 +140,7 @@ const ManagerViewTask = () => {
         }
       } else {
         // If the task doesn't have an ID, it's a new task, so create it
-        const response2 = await axios.post(`${addTask}`,CONFIG_OBJ, task);
+        const response2 = await axios.post(`${addTask}`, CONFIG_OBJ, task);
         if (response2.status === 200) {
           toast.success("Task added Successfully");
         } else {
@@ -170,6 +172,8 @@ const ManagerViewTask = () => {
         totalWeightedPercentage += weightedPercentage;
         totalWeightedActualHours += weightedPercentage;
         count++;
+      } else {
+        count++;
       }
       //
 
@@ -182,7 +186,7 @@ const ManagerViewTask = () => {
     console.log("total allocated hours", totalAllocatedHours);
     const efficiency = totalWeightedPercentage / count;
     console.log("efficencyyyyyy", efficiency);
-    setEfficency(Math.ceil(efficiency));
+    setEfficency(efficiency.toFixed(2));
     setTotalTasks(count);
     setCompletedTasks(completed);
     setInprocessTasks(inprocess);
@@ -303,11 +307,16 @@ const ManagerViewTask = () => {
                   <h3 className="text-primary text-capitalize">
                     {taskRecords[0]?.name} Daily Task Sheet
                   </h3>
-                  <NavLink to={"/assignteam"}>
-                    <ArrowLeftOutlined />
-                    &nbsp;
-                    <i class="bi bi-backspace">back to Teams</i>
-                  </NavLink>
+
+                  <Col>
+                    <NavLink
+                      to={`/assignteam`}
+                      className=" d-flex align-items-center"
+                    >
+                      <ArrowLeftOutlined style={{ fontSize: "1.5rem" }} />
+                      &nbsp; Back{" "}
+                    </NavLink>
+                  </Col>
                 </div>
                 <hr className="bg-primary border-4" />
                 <table className="table table-bordered table-hover table-responsive-sm mt-5">
@@ -330,9 +339,9 @@ const ManagerViewTask = () => {
                       </th>
                       <th className="form-label lightgreen fs-6">
                         <div>Alc.hrs | Act.hrs</div>
-                        <div className="w-100">
+                        {/* <div className="w-100">
                           <Divider style={{ backgroundColor: "lightgray" }} />
-                        </div>
+                        </div> */}
 
                         <div>
                           %&nbsp; Work Done
@@ -364,17 +373,18 @@ const ManagerViewTask = () => {
                         <td className="text-center">{index + 1}.</td>
                         <td>
                           {
-                            <NavLink
-                              to={`/view/project/tasks/${record.project_id}`}
-                            >
-                              <Tag
-                                color={"orange"}
-                                style={{ fontSize: "1rem" }}
-                                className="text-warning text-capitalize"
-                              >
-                                {record.project_name}
-                              </Tag>
-                            </NavLink>
+                            // <NavLink
+                            //   to={`/view/project/tasks/${record.project_id}`}
+                            // >
+                            //   <Tag
+                            //     color={"orange"}
+                            //     style={{ fontSize: "1rem" }}
+                            //     className="text-warning text-capitalize"
+                            //   >
+                            //     {record.project_name}
+                            //   </Tag>
+                            // </NavLink>
+                            record.project_name
                           }
                         </td>
                         <td className="w-4">
@@ -432,8 +442,14 @@ const ManagerViewTask = () => {
                               }}
                             >
                               <Progress
-                                percent={Number(record.task_percent)}
-                                size={[120, 15]}
+                                percent={record.task_percent}
+                                status={
+                                  record.task_percent === 100 ? "" : "active"
+                                }
+                                strokeColor={{
+                                  from: "#108ee9",
+                                  to: "#87d068",
+                                }}
                               />
                             </Flex>
                           </Flex>
@@ -465,7 +481,9 @@ const ManagerViewTask = () => {
                           <Popover
                             placement="left"
                             title={"Remarks"}
-                            content={record.remarks ? record.remarks : "No remarks"}
+                            content={
+                              record.remarks ? record.remarks : "No remarks"
+                            }
                             overlayStyle={{ maxWidth: "20rem" }}
                           >
                             <TextArea
