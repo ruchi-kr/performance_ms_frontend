@@ -30,6 +30,8 @@ import ProjectPlan2 from "../PlanPages/ProjectPlan2";
 import AddModuleTasks from "../Pages/AddModuleTasks";
 import SystemSettings from "../Pages/SystemSettings";
 import AssignTeamNew from "../Pages/AssignTeamNew";
+
+import EmployeeReportPwBifur from "../Pages/EmployeeReportPwBifur";
 import EmployeeReportDwCopy from "../Pages/EmployeeReportDwCopy";
 import ManagerParticularProjectReport from "../Pages/ManagerParticularProjectReport";
 export const nav = [
@@ -262,6 +264,8 @@ export const nav = [
     isManager: false,
     isEmployee: true,
   },
+    { path: "/expanded-row/:expandedRowIndex", element: <EmployeeReportPwBifur />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
+
   // employee manager admin url
   {
     path: "/projectplan2/",

@@ -119,10 +119,10 @@ const EmployeeReportDateWise = () => {
 
     // Extract headers and data from the table
    const headers = [
-      ['S.No.', 'Date', 'Activities', '', '', '','','',''],
+      ['S.No.', 'Date', '', '', '', '','','',''],
       ['', '', 'Project Name', '', '', '','','',''],
       ['', '', '','Module Name', '', '', '','',''],
-      ['', '', '','','Task', 'Status','% Completion' ,'Alloc hrs', 'Act hrs'],
+      ['', '', '','','Task','Alloc hrs', 'Act hrs', '% Completion' ,'Status'],
     ];
     const data = [];
     const rows = table.querySelectorAll("tr");
@@ -174,7 +174,7 @@ const EmployeeReportDateWise = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-11 mx-auto">
-                <h3 className="text-primary">Date-wise Report</h3>
+                <h3 className="text-primary">Employee Daily Task Report</h3>
                 <hr className="bg-primary border-4" />
               </div>
             </div>
@@ -252,7 +252,7 @@ const EmployeeReportDateWise = () => {
                     <tr>
                       <th rowSpan={4}>S.No.</th>
                       <th rowSpan={4}>Date</th>
-                      <th colSpan={7}>Activities</th> {/* Spanning 5 columns */}
+                      {/* <th colSpan={7}>Activities</th> Spanning 5 columns */}
                     </tr>
                     <tr>
                       <th colSpan={7} className="text-primary">
@@ -271,10 +271,10 @@ const EmployeeReportDateWise = () => {
                       <th></th>
                       <th></th>
                       <th>Task</th>
-                      <th>Status</th>
-                      <th>% Completion</th>
                       <th>Alloc hrs</th>
                       <th>Act hrs</th>
+                      <th>% Completion</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
                 
@@ -335,7 +335,8 @@ const EmployeeReportDateWise = () => {
                             <td></td>
                             <td></td>
                             <td className="text-capitalize">{task.task_name}</td>
-                            <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                            <td>{task.employee_allocated_time}</td>
+                            <td>{task.employee_actual_time}</td>
                             <td><Progress
       percent={task.task_percent}
       status={task.task_percent === 100 ? "" : "active"}  
@@ -344,8 +345,8 @@ const EmployeeReportDateWise = () => {
         to: "#87d068",
       }}
     /></td>
-                            <td>{task.employee_allocated_time}</td>
-                            <td>{task.employee_actual_time}</td>
+                                                  <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+      
                           </tr>
                         ))}
                       </React.Fragment>
@@ -358,17 +359,18 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td></td>
                       <td className="text-capitalize">{task.task_name}</td>
-                      <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                      <td><Progress
+                      <td>{task.employee_allocated_time}</td>
+                            <td>{task.employee_actual_time}</td>
+                            <td><Progress
       percent={task.task_percent}
       status={task.task_percent === 100 ? "" : "active"}  
       strokeColor={{
         from: "#108ee9",
         to: "#87d068",
       }}
-    /> </td>
-                      <td>{task.employee_allocated_time}</td>
-                      <td>{task.employee_actual_time}</td>
+    /></td>
+                                                  <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+      
                     </tr>
                   ));
                 })}
@@ -396,8 +398,9 @@ const EmployeeReportDateWise = () => {
                       <td></td>
                       <td></td>
                       <td className="text-capitalize">{task.task_name}</td>
-                      <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                      <td><Progress
+                      <td>{task.employee_allocated_time}</td>
+                            <td>{task.employee_actual_time}</td>
+                            <td><Progress
       percent={task.task_percent}
       status={task.task_percent === 100 ? "" : "active"}  
       strokeColor={{
@@ -405,8 +408,8 @@ const EmployeeReportDateWise = () => {
         to: "#87d068",
       }}
     /></td>
-                      <td>{task.employee_allocated_time}</td>
-                      <td>{task.employee_actual_time}</td>
+                                                  <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+      
                     </tr>
                   ))}
                 </React.Fragment>
@@ -420,8 +423,9 @@ const EmployeeReportDateWise = () => {
                 <td></td>
                 <td></td>
                 <td className="text-capitalize">{task.task_name}</td>
-                <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
-                <td><Progress
+                <td>{task.employee_allocated_time}</td>
+                            <td>{task.employee_actual_time}</td>
+                            <td><Progress
       percent={task.task_percent}
       status={task.task_percent === 100 ? "" : "active"}  
       strokeColor={{
@@ -429,8 +433,8 @@ const EmployeeReportDateWise = () => {
         to: "#87d068",
       }}
     /></td>
-                <td>{task.employee_allocated_time}</td>
-                <td>{task.employee_actual_time}</td>
+                                                  <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+      
               </tr>
             ));
           });

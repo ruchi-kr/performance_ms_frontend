@@ -115,7 +115,7 @@ const EmployeeReportDateWise = () => {
 
     // Extract headers and data from the table
     const headers = [
-      ['S.No.', 'Date', 'Activities', '', '', '','',''],
+      ['S.No.', 'Date', '', '', '', '','',''],
       ['', '', 'Project Name', '', '', '','','',''],
       ['', '', '','Module Name', '', '', '','','',''],
       ['', '', '','Task', 'Status','% Completion' ,'Alloc hrs', 'Act hrs'],
@@ -221,10 +221,10 @@ const EmployeeReportDateWise = () => {
                 <table id='reportTable' className="table table-bordered ">
                   <thead className='sticky-top border border-dark' style={{ zIndex: '10' }}>
                     <tr>
-                      <th rowSpan={4}>S.No.</th>
-                      <th rowSpan={4}>Date</th>
+                      <th rowSpan={3}>S.No.</th>
+                      <th rowSpan={3}>Date</th>
 
-                      <th colSpan={7}>Activities</th> {/* Spanning 5 columns */}
+                      {/* <th colSpan={7}>Activities</th> Spanning 5 columns */}
                     </tr>
                     <tr>
 

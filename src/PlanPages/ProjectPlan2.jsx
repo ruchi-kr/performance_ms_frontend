@@ -12,7 +12,7 @@ import {} from "../Config.js";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Col, Form, Input, Modal, Row, Select } from "antd";
-import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, EyeOutlined,LeftCircleOutlined } from "@ant-design/icons";
 import {
   LoadingOutlined,
   SmileOutlined,
@@ -261,8 +261,8 @@ const ProjectPlan = () => {
             <div className="row my-5">
               <div className="col-11 mx-auto">
                 {/* reporting manager master detailed table */}
-                <div className="d-flex justify-content-between">
-                  <h3 className="text-primary">Project Plan</h3>
+                <div className="d-flex align-items-center">
+                {user_type !== 1 && role ==="employee"?<Link to="/reportproject-wise"><LeftCircleOutlined style={{fontSize:"1.5rem"}}/></Link>:""}&nbsp;&nbsp;<h3 className="text-primary">Project Plan</h3>
                 </div>
                 <hr className="bg-primary border-4" />
                 <div className=" col-2 d-flex flex-column">

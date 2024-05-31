@@ -649,6 +649,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                           <td>
                             <Select
                               ref={projectRef}
+                              size="small"
                               showSearch
                               allowClear
                               onClear={() => handleProjectChange(index, "")}
@@ -705,6 +706,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                             </Select>
                             <Select
                               ref={moduleRef}
+                              size="small"
                               showSearch
                               allowClear
                               onClear={() => handleModuleChange(index, "")}
@@ -826,6 +828,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                             <Select
                               showSearch
                               allowClear
+                              size="small"
                               ref={taskRef}
                               placeholder="Select Task"
                               optionFilterProp="children"
@@ -879,6 +882,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                           <td>
                             <input
                               ref={allocatedTimeRef}
+                              
                               type="number"
                               name="allocated_time"
                               // style={{ width: "70px" }}
@@ -889,7 +893,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                     ? "3rem"
                                     : "100%",
                               }}
-                              className="form-control"
+                              className="form-control form-control-sm"
                               value={record.allocated_time}
                               onChange={(e) => {handleInputChange(index, e);
                                 focusNextInput(actualTimeRef);
@@ -924,7 +928,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                           : "100%",
                                     }}
                                     defaultValue={0}
-                                    className="form-control"
+                                    className="form-control form-control-sm"
                                     value={record.actual_time}
                                     onChange={(e) =>
                                       {handleInputChange(index, e);
@@ -952,7 +956,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                               : "100%",
                                         }}
                                         defaultValue={0}
-                                        className="form-control"
+                                        className="form-control form-control-sm"
                                         value={record.task_percent}
                                         onChange={(e) =>{
                                           handleInputChange(index, e);
@@ -979,7 +983,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                 <select
                                   ref={statusRef}
                                   name="status"
-                                  className="form-control"
+                                  className="form-control form-control-sm"
                                   value={record.status || "notstarted"}
                                   onChange={(e) =>
                                     {handleStatusChange(index, e.target.value);
@@ -1036,7 +1040,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                     minRows: 1,
                                     maxRows: 6,
                                   }}
-                                  className="form-control"
+                                  className="form-control form-control-sm"
                                   value={record.remarks}
                                   onChange={(e) => handleInputChange(index, e)}
                                   placeholder=""
@@ -1066,7 +1070,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                       minRows: 1,
                                       maxRows: 6,
                                     }}
-                                    className="form-control"
+                                    className="form-control form-control-sm"
                                     value={record.manager_remarks}
                                     onChange={(e) =>
                                       handleInputChange(index, e)
