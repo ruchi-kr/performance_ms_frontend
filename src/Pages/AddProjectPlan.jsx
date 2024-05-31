@@ -376,7 +376,7 @@ const AddProjectPlan = () => {
         );
         getModuleListHandler();
         form.resetFields(["module_name", "from_date", "to_date"]);
-        form.setFieldsValue({status:"notstarted"})
+        form.setFieldsValue({ status: "notstarted" });
         // handleReset();
         notification.success({
           message: "Module Added.",
@@ -563,6 +563,11 @@ const AddProjectPlan = () => {
       : null;
     // Disable dates that are before the start date or after the end date
     console.log("disabdwjkdkawd", startDate);
+    const today = moment();
+    if (endDate && endDate.endOf("day").isBefore(today.startOf("day"))) {
+      return true;
+    }
+
     return (
       current &&
       ((startDate && current < startDate.startOf("day")) ||
