@@ -32,7 +32,9 @@ const ManagerParticularProjectReport = () => {
   const location = useLocation();
   const dateFormat = "DD/MM/YYYY";
   const [fromDate, setFromDate] = useState(null);
+  // const [fromDate, setFromDate] = useState(dayjs().format("DD/MM/YYYY"));
   const [toDate, setToDate] = useState(null);
+  // const [toDate, setToDate] = useState(dayjs().subtract(30,'d').format("DD/MM/YYYY"));
   const [search, setSearch] = useState("");
   const user_id = sessionStorage.getItem("id");
   const pageSize = 20;
@@ -46,7 +48,7 @@ const ManagerParticularProjectReport = () => {
   console.log("dates", dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"));
   const { project_id } = useParams();
   const { data } = location.state || { data: {} };
-
+console.log("data------------------>",data)
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
   //        try {
   //            const response = await axios.get(
@@ -371,67 +373,78 @@ const ManagerParticularProjectReport = () => {
                     {data &&
                       data.map((item, index) => {
                         return (
-                          <tr>
-                            <td className=" text-center">{index + 1}.</td>
-                            <td className="text-capitalize ">
-                              {item.project_name}
-                            </td>
-                            <td>
-                              <div className="d-flex flex-column ">
-                                <span className="text-sm">
-                                  {moment
-                                    .utc(item.schedule_start_date)
-                                    .format("DD/MM/YYYY")}
-                                </span>
-                                <span className="text-sm">
-                                  {moment
-                                    .utc(item.schedule_end_date)
-                                    .format("DD/MM/YYYY")}
-                                </span>
-                              </div>
-                            </td>
-
-                            <td className=" text-center ">
-                              {item.total_allocated_man_days}
-                            </td>
-                            <td className=" text-center ">
-                              {parseFloat(
-                                item.total_uniqueTaskPercent /
-                                  item.total_planned_tasks
-                              ).toFixed(2)}
-                            </td>
-                            <td className=" text-center">
-                              {item.total_allocated_time}
-                            </td>
-                            <td className=" text-center">
-                              {item.total_actual_time}
-                            </td>
-
-                            <td className=" text-center">
-                                {item.delay_days>=0?<span className="text-danger">{item.delay_days+1}</span>:0}
+                            <tr>
+                              <td className=" text-center">{index + 1}.</td>
+                              <td className="text-capitalize ">
+                                {item.project_name}
                               </td>
-                            <td className=" text-center">
-                              {(
-                                (item.total_allocated_time /
-                                  item.total_allocated_man_days) *
-                                100
-                              ).toFixed(2)}
-                            </td>
-                            <td className=" text-center">
-                              {(
-                                (item.total_actual_time /
-                                  item.total_allocated_man_days) *
-                                100
-                              ).toFixed(2)}
-                            </td>
-                            <td className=" text-center">
-                              {(
-                                (item.total_actual_time /
-                                  item.total_allocated_time) *
-                                100
-                              ).toFixed(2)}
-                            </td>
-                          </tr>
+                              <td>
+                                <div className="d-flex flex-column ">
+                                  <span className="text-sm">
+                                    {moment
+                                      .utc(item.schedule_start_date)
+                                      .format("DD/MM/YYYY")}
+                                  </span>
+                                  <span className="text-sm">
+                                    {moment
+                                      .utc(item.schedule_end_date)
+                                      .format("DD/MM/YYYY")}
+                                  </span>
+                                </div>
+                              </td>
+
+                              <td className=" text-center ">
+                                {item.total_allocated_man_days}
+                              </td>
+                              <td className=" text-center ">
+                                {parseFloat(
+                                  item.total_uniqueTaskPercent /
+                                    item.total_planned_tasks
+                                ).toFixed(2)}
+                              </td>
+                              <td className=" text-center">
+                                {item.total_allocated_time==="null"?item.total_allocated_time:"0.00"}
+                              </td>
+                              <td className=" text-center">
+                                {item.total_actual_time==="null"?item.total_actual_time:"0.00"}
+                              </td>
+
+                              <td className=" text-center">
+                              {item.delay_days >= 0 ? (
+                                  item.delay_days===0?
+                                  <span >
+                                    {item.delay_days}
+                                  </span>:
+                                  <span className="text-danger">
+                                    {item.delay_days + 1}
+                                  </span>
+                                ) : (
+                                  "-"
+                                )}
+                                </td>
+                              <td className=" text-center">
+                                {(
+                                  (item.total_allocated_time /
+                                    item.total_allocated_man_days) *
+                                  100
+                                ).toFixed(2)}
+                              </td>
+                              <td className=" text-center">
+                                {(
+                                  (item.total_actual_time /
+                                    item.total_allocated_man_days) *
+                                  100
+                                ).toFixed(2)}
+                              </td>
+                              <td className=" text-center">
+                              
+                                {(item.total_actual_time==="null" || item.total_allocated_time==="null")?((
+                                  (item.total_actual_time /
+                                    item.total_allocated_time) *
+                                  100
+                                ).toFixed(2)):"0.00"}
+                              </td>
+                            </tr>
                         );
                       })}
                   </tbody>
@@ -484,7 +497,11 @@ const ManagerParticularProjectReport = () => {
                                                 index + 1
                                               }.${taskIndex + 1}`}</td>
                                               <td className="text-capitalize">
-                                                {task.name}
+                                              {task.name !== "null"
+                                                  ? task.name
+                                                  :  <span className="d-flex justify-content-center align-items-center">
+                                                  -
+                                                </span>}
                                               </td>
                                               <td className="text-capitalize">
                                                 {task.module_name}
@@ -497,9 +514,16 @@ const ManagerParticularProjectReport = () => {
                                               <td>
                                                 <div className="d-flex flex-column">
                                                   <span className="">
-                                                    {moment
-                                                      .utc(task.created_at)
-                                                      .format("DD/MM/YYYY")}
+                                                    {task.created_at !==
+                                                    "null" ? (
+                                                      moment
+                                                        .utc(task.created_at)
+                                                        .format("DD/MM/YYYY")
+                                                    ) : (
+                                                      <span className="d-flex justify-content-center align-items-center">
+                                                        -
+                                                      </span>
+                                                    )}
                                                   </span>
                                                   <span className="">
                                                     {task.status ===
@@ -516,84 +540,102 @@ const ManagerParticularProjectReport = () => {
                                                       <span className="d-flex justify-content-center align-items-center">
                                                         -
                                                       </span>
-                                                    ) : (
+                                                    ) : task.updated_at !==
+                                                      "null" ? (
                                                       moment
                                                         .utc(task.updated_at)
                                                         .format("DD/MM/YYYY")
+                                                    ) : (
+                                                      <span className="d-flex justify-content-center align-items-center">
+                                                        -
+                                                      </span>
                                                     )}
                                                   </span>
                                                 </div>
                                               </td>
-
                                               <td className="text-center">
-                                                {task.allocated_time}
+                                                {task.allocated_time !== null
+                                                  ? task.allocated_time
+                                                  : "-"}
                                               </td>
                                               <td className="text-center">
-                                                {task.actual_time}
+                                                {task.actual_time !== null
+                                                  ? task.actual_time
+                                                  : "-"}
                                               </td>
                                               <td>
                                                 {/* {task.task_percent} % */}
-                                                <Flex vertical gap="middle">
-                                                  <Flex
-                                                    vertical
-                                                    gap="small"
-                                                    style={{
-                                                      width: 120,
-                                                    }}
-                                                  >
-                                                    <Progress
-                                                      percent={
-                                                        task.task_percent
+                                                {item.task_percent !== null ? (
+                                                  <>
+                                                    <Flex vertical gap="middle">
+                                                      <Flex
+                                                        vertical
+                                                        gap="small"
+                                                        style={{
+                                                          width: 120,
+                                                        }}
+                                                      >
+                                                        <Progress
+                                                          percent={
+                                                            task.task_percent
+                                                          }
+                                                          status={
+                                                            task.task_percent ===
+                                                            100
+                                                              ? ""
+                                                              : "active"
+                                                          }
+                                                          strokeColor={{
+                                                            from: "#108ee9",
+                                                            to: "#87d068",
+                                                          }}
+                                                        />
+                                                      </Flex>
+                                                    </Flex>
+                                                    {(() => {
+                                                      let className =
+                                                        "text-capitalize ";
+                                                      let style = {};
+
+                                                      switch (task.status) {
+                                                        case "completed":
+                                                          className +=
+                                                            "text-success";
+                                                          break;
+                                                        case "inprocess":
+                                                          style.color =
+                                                            "orange";
+                                                          break;
+                                                        case "not started":
+                                                          style.color = "red";
+                                                          break;
+                                                        case "transfer":
+                                                          style.color = "blue";
+                                                          break;
+
+                                                        default:
+                                                          className +=
+                                                            "text-secondary";
+                                                          style.color = "gray";
+                                                          break;
                                                       }
-                                                      status={
-                                                        task.task_percent ===
-                                                        100
-                                                          ? ""
-                                                          : "active"
-                                                      }
-                                                      strokeColor={{
-                                                        from: "#108ee9",
-                                                        to: "#87d068",
-                                                      }}
-                                                    />
-                                                  </Flex>
-                                                </Flex>
-                                                {(() => {
-                                                  let className =
-                                                    "text-capitalize ";
-                                                  let style = {};
 
-                                                  switch (task.status) {
-                                                    case "completed":
-                                                      className +=
-                                                        "text-success";
-                                                      break;
-                                                    case "inprocess":
-                                                      style.color = "orange";
-
-                                                      break;
-                                                    case "not started":
-                                                      style.color = "red";
-                                                      break;
-                                                    case "transfer":
-                                                      style.color = "blue";
-                                                      break;
-                                                    default:
-                                                      className +=
-                                                        "text-secondary";
-                                                      style.color = "gray";
-                                                      break;
-                                                  }
-
-                                                  return (
-                                                    <span
-                                                      className={className}
-                                                      style={style}
-                                                    >
-                                                      {task.status}
-                                                    </span>
-                                                  );
-                                                })()}
+                                                      return (
+                                                        <span
+                                                          className={className}
+                                                          style={style}
+                                                        >
+                                                          {task.status ===
+                                                          "null"
+                                                            ? "Not Started"
+                                                            : task.status}
+                                                        </span>
+                                                      );
+                                                    })()}
+                                                  </>
+                                                ) : (
+                                                  "-"
+                                                )}
                                               </td>
                                             </tr>
                                           )
