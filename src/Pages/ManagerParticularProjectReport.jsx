@@ -15,10 +15,7 @@ import {
   Col,
   Row,
 } from "antd";
-import {
-  ArrowLeftOutlined,
-  
-} from "@ant-design/icons";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import moment from "moment";
 import dayjs from "dayjs";
 import * as XLSX from "xlsx";
@@ -33,8 +30,6 @@ const { RangePicker } = DatePicker;
 
 const ManagerParticularProjectReport = () => {
   const location = useLocation();
-  const { data } = location.state || {};
-  console.log("data----->", data);
   const dateFormat = "DD/MM/YYYY";
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -50,6 +45,8 @@ const ManagerParticularProjectReport = () => {
   console.log("manager id", manager_id);
   console.log("dates", dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"));
   const { project_id } = useParams();
+  const { data } = location.state || { data: {} };
+
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
   //        try {
   //            const response = await axios.get(
@@ -223,8 +220,21 @@ const ManagerParticularProjectReport = () => {
         <div className="content">
           <div className="container-fluid bg-white">
             <div className="row mt-5">
-              <div className="col-11 mx-auto">
-                <h3 className="text-primary">Project Detailed Report</h3>
+              <div className="col-12 mx-auto">
+                <h3 className="text-primary">
+                  Project Detailed Report
+                  {!fromDate && !toDate ? (
+                    <p className="text-md">
+                      {dayjs().subtract(30, "d").format("DD/MM/YYYY")}{" "}
+                      &nbsp;to&nbsp; {dayjs().format("DD/MM/YYYY")}
+                    </p>
+                  ) : (
+                    <p className="text-sm">
+                      {dayjs(toDate).format("DD/MM/YYYY")} &nbsp;to&nbsp;{" "}
+                      {dayjs(fromDate).format("DD/MM/YYYY")}
+                    </p>
+                  )}
+                </h3>
                 <hr className="bg-primary border-4" />
                 <Row gutter={24}>
                   <Col
@@ -248,38 +258,7 @@ const ManagerParticularProjectReport = () => {
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </Col>
-                  {/* <Col
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <label className="text-capitalize textcolumntitle fw-bold text-info">
-                      Project Stage
-                    </label>
-                    <Select
-                      defaultValue="All stages"
-                      style={{
-                        width: 160,
-                      }}
-                      onChange={(value) => setProjectStageFilter(value)}
-                      options={[
-                        {
-                          value: "all",
-                          label: "All Stages",
-                        },
-                        {
-                          value: "inprocess",
-                          label: "Inprocess",
-                        },
-                        {
-                          value: "completed",
-                          label: "Completed",
-                        },
-                      ]}
-                    />
-                  </Col> */}
+                  
                   <Col
                     style={{
                       display: "flex",
@@ -338,15 +317,14 @@ const ManagerParticularProjectReport = () => {
                     </NavLink>
                   </Col>
                   <div>
-                    <span className="text-danger">*</span>
-                    <span>Time in hours</span>
+                   
+                    <span>(Time in hours)</span>
                   </div>
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="col-12 mx-auto">
-                {/* table */}
                 <table id="reportTablepw" className="table table-striped  mt-2">
                   <thead>
                     <tr>
@@ -355,107 +333,124 @@ const ManagerParticularProjectReport = () => {
                       </th>
                       <th scope="col">Project Name</th>
                       <th scope="col">
-                        <div className="d-flex flex-column">
+                        <div
+                          className="d-flex flex-column"
+                          style={{ width: "6rem" }}
+                        >
                           <span>Schd. St. Dt.</span>
                           <span>Schd. End Dt.</span>
                         </div>
                       </th>
                       <th scope="col" className=" text-center">
-                        Project Planned hrs
+                        Project Planned Hours
                       </th>
                       <th scope="col" className=" text-center">
-                        % of Project Completed
+                        Project Completion Percentage
                       </th>
                       <th scope="col" className=" text-center">
-                        Allocated Man hrs
+                        Allocated Man Hours
                       </th>
                       <th scope="col" className=" text-center">
-                        Actual Man hrs
-                      </th>
-
-                      <th scope="col" className=" text-center">
-                        Time Variance
+                        Actual Man Hours
                       </th>
                       <th scope="col" className=" text-center">
-                        Allocated Time / Planned Hours (%)
+                        Delay Days
                       </th>
                       <th scope="col" className=" text-center">
-                        Actual Time / Planned Hours (%)
+                        Allocated Time/ Planned Hours (%)
                       </th>
                       <th scope="col" className=" text-center">
-                        Utilized Man Hours (%)
+                        Time Utilization/ Planned Hours (%)
+                      </th>
+                      <th scope="col" className=" text-center">
+                        Actual Time / Allocated Time (%)
                       </th>
                     </tr>
                   </thead>
+                  <tbody className="table-group-divider">
+                    {data &&
+                      data.map((item, index) => {
+                        return (
+                          <tr>
+                            <td className=" text-center">{index + 1}.</td>
+                            <td className="text-capitalize ">
+                              {item.project_name}
+                            </td>
+                            <td>
+                              <div className="d-flex flex-column ">
+                                <span className="text-sm">
+                                  {moment
+                                    .utc(item.schedule_start_date)
+                                    .format("DD/MM/YYYY")}
+                                </span>
+                                <span className="text-sm">
+                                  {moment
+                                    .utc(item.schedule_end_date)
+                                    .format("DD/MM/YYYY")}
+                                </span>
+                              </div>
+                            </td>
 
+                            <td className=" text-center ">
+                              {item.total_allocated_man_days}
+                            </td>
+                            <td className=" text-center ">
+                              {parseFloat(
+                                item.total_uniqueTaskPercent /
+                                  item.total_planned_tasks
+                              ).toFixed(2)}
+                            </td>
+                            <td className=" text-center">
+                              {item.total_allocated_time}
+                            </td>
+                            <td className=" text-center">
+                              {item.total_actual_time}
+                            </td>
+
+                            <td className=" text-center">
+                                {item.delay_days>=0?<span className="text-danger">{item.delay_days+1}</span>:0}
+                              </td>
+                            <td className=" text-center">
+                              {(
+                                (item.total_allocated_time /
+                                  item.total_allocated_man_days) *
+                                100
+                              ).toFixed(2)}
+                            </td>
+                            <td className=" text-center">
+                              {(
+                                (item.total_actual_time /
+                                  item.total_allocated_man_days) *
+                                100
+                              ).toFixed(2)}
+                            </td>
+                            <td className=" text-center">
+                              {(
+                                (item.total_actual_time /
+                                  item.total_allocated_time) *
+                                100
+                              ).toFixed(2)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+                <table id="reportTablepw" className="table table-striped  mt-2">
                   <tbody className="table-group-divider">
                     {reportData &&
                       reportData.map((item, index) => {
-                        let totalActualTime = item?.tasks_details?.reduce(
-                          (acc, i) => acc + i.planned_task_allocated_time,
+                        let totalAllocated = item.tasks_details.reduce(
+                          (acc, i) => acc + i.allocated_time,
                           0
                         );
-
+                        let totalActual = item.tasks_details.reduce(
+                          (acc, i) => acc + i.actual_time,
+                          0
+                        );
                         return (
                           <React.Fragment key={item.employee_id}>
-                            <tr onClick={() => handleRowClick(index)}>
-                              <td className=" text-center">{index + 1}.</td>
-                              <td className="text-capitalize ">
-                                {item.project_name}
-                              </td>
-                              <td>
-                                <div className="d-flex flex-column ">
-                                  <span className="text-sm">
-                                    {moment
-                                      .utc(item.schedule_start_date)
-                                      .format("DD/MM/YYYY")}
-                                  </span>
-                                  <span className="text-sm">
-                                    {moment
-                                      .utc(item.schedule_end_date)
-                                      .format("DD/MM/YYYY")}
-                                  </span>
-                                </div>
-                              </td>
-
-                              <td className=" text-center ">
-                                {item.total_allocated_man_days}
-                              </td>
-                              <td className=" text-center ">some %</td>
-                              <td className=" text-center">
-                                {item.total_allocated_time}
-                              </td>
-                              <td className=" text-center">
-                                {item.total_actual_time}
-                              </td>
-
-                              <td className=" text-center">
-                                {Math.max(item.max_time_variance, 0)}
-                              </td>
-                              <td className=" text-center">
-                                {(
-                                  (item.total_allocated_time /
-                                    item.total_allocated_man_days) *
-                                  100
-                                ).toPrecision(2)}
-                              </td>
-                              <td className=" text-center">
-                                {(
-                                  (item.total_actual_time /
-                                    item.total_allocated_man_days) *
-                                  100
-                                ).toPrecision(2)}
-                              </td>
-                              <td className=" text-center">
-                                {(
-                                  (item.total_actual_time /
-                                    item.total_allocated_man_days) *
-                                  100
-                                ).toPrecision(2)}
-                              </td>
-                            </tr>
-                            {(expandedRows.includes(index) ||
-                              expandedRow === index) && (
+                            {
                               <tr>
                                 <td colSpan="12">
                                   <table className="col-12 mx-auto">
@@ -477,7 +472,7 @@ const ManagerParticularProjectReport = () => {
                                         <th className=" text-center">
                                           Act. Time
                                         </th>
-                                        <th>%&nbsp;Work Done</th>
+                                        <th>Work Done</th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -501,12 +496,12 @@ const ManagerParticularProjectReport = () => {
                                               </td>
                                               <td>
                                                 <div className="d-flex flex-column">
-                                                  <span className="text-center">
+                                                  <span className="">
                                                     {moment
                                                       .utc(task.created_at)
                                                       .format("DD/MM/YYYY")}
                                                   </span>
-                                                  <span className="text-center">
+                                                  <span className="">
                                                     {task.status ===
                                                     "completed" ? (
                                                       moment
@@ -518,7 +513,7 @@ const ManagerParticularProjectReport = () => {
                                                         "inprocess" ||
                                                       task.status ===
                                                         "notstarted" ? (
-                                                      <span className="text-center">
+                                                      <span className="d-flex justify-content-center align-items-center">
                                                         -
                                                       </span>
                                                     ) : (
@@ -607,58 +602,12 @@ const ManagerParticularProjectReport = () => {
                                   </table>
                                 </td>
                               </tr>
-                            )}
+                            }
                           </React.Fragment>
                         );
                       })}
                   </tbody>
                 </table>
-                {/* pagination */}
-                <div className="row float-right">
-                  {/* <nav
-                    aria-label="Page navigation example"
-                    className="d-flex align-self-end mt-3"
-                  >
-                    <ul className="pagination">
-                      <li className="page-item">
-                        <a
-                          className="page-link"
-                          href="#"
-                          aria-label="Previous"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                          <span aria-hidden="true">«</span>
-                        </a>
-                      </li>
-                      {Array.from({ length: totalPages }, (_, index) => (
-                        <li
-                          key={index}
-                          className={`page-item ${
-                            currentPage === index + 1 ? "active" : ""
-                          }`}
-                        >
-                          <a
-                            className="page-link"
-                            href="#"
-                            onClick={() => handlePageChange(index + 1)}
-                          >
-                            {index + 1}
-                          </a>
-                        </li>
-                      ))}
-                      <li className="page-item">
-                        <a
-                          className="page-link"
-                          href="#"
-                          aria-label="Next"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                          <span aria-hidden="true">»</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </nav> */}
-                </div>
               </div>
             </div>
           </div>

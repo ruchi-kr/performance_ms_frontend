@@ -225,8 +225,21 @@ const ManagerProjectReport = () => {
         <div className="content">
           <div className="container-fluid bg-white">
             <div className="row mt-5">
-              <div className="col-11 mx-auto">
-                <h3 className="text-primary">Projects Detailed Report</h3>
+              <div className="col-12 mx-auto">
+                <h3 className="text-primary">
+                  Projects Detailed Report
+                  {!fromDate && !toDate ? (
+                    <p className="text-md">
+                      {dayjs().subtract(30,"d").format("DD/MM/YYYY")} &nbsp;to&nbsp;{" "}
+                      {dayjs().format("DD/MM/YYYY")}
+                    </p>
+                  ) : (
+                    <p className="text-sm">
+                      {dayjs(toDate).format("DD/MM/YYYY")} &nbsp;to&nbsp;{" "}
+                      {dayjs(fromDate).format("DD/MM/YYYY")}
+                    </p>
+                  )}
+                </h3>
                 <hr className="bg-primary border-4" />
                 <Row gutter={24}>
                   <Col
@@ -329,9 +342,8 @@ const ManagerProjectReport = () => {
                     />
                   </div>
                 </div>
-                <div className="d-flex justify-content-end mt-3 mr-2">
-                  <span className="text-danger">*</span>
-                  <span>Time in hours</span>
+                <div className="d-flex justify-content-end mt-3 ">
+                  <span>(Time in hours)</span>
                 </div>
               </div>
             </div>
@@ -346,34 +358,34 @@ const ManagerProjectReport = () => {
                       </th>
                       <th scope="col">Project Name</th>
                       <th scope="col">
-                        <div className="d-flex flex-column">
+                        <div className="d-flex flex-column" style={{width:"6rem"}}>
                           <span>Schd. St. Dt.</span>
                           <span>Schd. End Dt.</span>
                         </div>
                       </th>
                       <th scope="col" className=" text-center">
-                        Project Planned hrs
+                        Project Planned Hours
                       </th>
                       <th scope="col" className=" text-center">
-                        % of Project Completed
+                        Project Completion Percentage
                       </th>
                       <th scope="col" className=" text-center">
-                        Allocated Man hrs
+                        Allocated Man Hours
                       </th>
                       <th scope="col" className=" text-center">
-                        Actual Man hrs
+                        Actual Man Hours
                       </th>
                       <th scope="col" className=" text-center">
-                        Time Variance
+                        Delay Days
                       </th>
                       <th scope="col" className=" text-center">
-                        Allocated Time / Planned Hours (%)
+                        Allocated Time/ Planned Hours (%)
                       </th>
                       <th scope="col" className=" text-center">
-                        Actual Time / Planned Hours (%)
+                        Time Utilization/ Planned Hours (%)
                       </th>
                       <th scope="col" className=" text-center">
-                        Utilized Man Hours (%)
+                        Actual Time / Allocated Time (%)
                       </th>
                     </tr>
                   </thead>
@@ -381,8 +393,12 @@ const ManagerProjectReport = () => {
                   <tbody className="table-group-divider">
                     {reportData &&
                       reportData.map((item, index) => {
-                        let totalActualTime = item?.tasks_details?.reduce(
-                          (acc, i) => acc + i.planned_task_allocated_time,
+                        let totalAllocated = item.tasks_details.reduce(
+                          (acc, i) => acc + i.allocated_time,
+                          0
+                        );
+                        let totalActual = item.tasks_details.reduce(
+                          (acc, i) => acc + i.actual_time,
                           0
                         );
 
@@ -391,28 +407,28 @@ const ManagerProjectReport = () => {
                             <tr onClick={() => handleRowClick(index)}>
                               <td className=" text-center">{index + 1}.</td>
                               <td className="text-capitalize ">
-                                <NavLink
+                                {/* <NavLink
                                   to={`/manager/report/project/detailed/${item.project_id}`}
                                 >
                                   {item.project_name}
-                                </NavLink>
-                                {/* <div
+                                </NavLink> */}
+                                <div
                                   onClick={() =>
                                     handleNavigation(item.project_id)
                                   }
                                   style={{ cursor: "pointer", color: "blue" }}
                                 >
                                   {item.project_name}
-                                </div> */}
+                                </div>
                               </td>
                               <td>
                                 <div className="d-flex flex-column ">
-                                  <span className="text-sm">
+                                  <span className="">
                                     {moment
                                       .utc(item.schedule_start_date)
                                       .format("DD/MM/YYYY")}
                                   </span>
-                                  <span className="text-sm">
+                                  <span className="">
                                     {moment
                                       .utc(item.schedule_end_date)
                                       .format("DD/MM/YYYY")}
@@ -423,37 +439,42 @@ const ManagerProjectReport = () => {
                               <td className=" text-center ">
                                 {item.total_allocated_man_days}
                               </td>
-                              <td className=" text-center ">some %</td>
+                              <td className=" text-center ">
+                                {parseFloat(
+                                  item.total_uniqueTaskPercent /
+                                    item.total_planned_tasks
+                                ).toFixed(2)}
+                              </td>
                               <td className=" text-center">
-                                {item.total_allocated_time}
+                                {parseFloat(item.total_allocated_time).toFixed(
+                                  2
+                                )}
                               </td>
                               <td className=" text-center">
                                 {item.total_actual_time}
                               </td>
 
                               <td className=" text-center">
-                                {Math.max(item.max_time_variance, 0)}
+                                {item.delay_days>=0?<span className="text-danger">{item.delay_days+1}</span>:0}
                               </td>
                               <td className=" text-center">
                                 {(
                                   (item.total_allocated_time /
                                     item.total_allocated_man_days) *
                                   100
-                                ).toPrecision(2)}
+                                ).toFixed(2)}
                               </td>
                               <td className=" text-center">
                                 {(
                                   (item.total_actual_time /
                                     item.total_allocated_man_days) *
                                   100
-                                ).toPrecision(2)}
+                                ).toFixed(2)}
                               </td>
                               <td className=" text-center">
-                                {(
-                                  (item.total_actual_time /
-                                    item.total_allocated_man_days) *
-                                  100
-                                ).toPrecision(2)}
+                                {((totalActual / totalAllocated) * 100).toFixed(
+                                  2
+                                )}
                               </td>
                             </tr>
                             {(expandedRows.includes(index) ||
@@ -479,7 +500,7 @@ const ManagerProjectReport = () => {
                                         <th className=" text-center">
                                           Act. Time
                                         </th>
-                                        <th>%&nbsp;Work Done</th>
+                                        <th>Work Done</th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -503,12 +524,12 @@ const ManagerProjectReport = () => {
                                               </td>
                                               <td>
                                                 <div className="d-flex flex-column">
-                                                  <span className="text-center">
+                                                  <span className="">
                                                     {moment
                                                       .utc(task.created_at)
                                                       .format("DD/MM/YYYY")}
                                                   </span>
-                                                  <span className="text-center">
+                                                  <span className="">
                                                     {task.status ===
                                                     "completed" ? (
                                                       moment
@@ -520,8 +541,8 @@ const ManagerProjectReport = () => {
                                                         "inprocess" ||
                                                       task.status ===
                                                         "notstarted" ? (
-                                                      <span className="text-center">
-                                                        -
+                                                      <span className="d-flex justify-content-center align-items-center">
+                                                        - 
                                                       </span>
                                                     ) : (
                                                       moment

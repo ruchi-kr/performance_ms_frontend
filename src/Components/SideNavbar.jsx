@@ -33,15 +33,15 @@ const SideNavbar = () => {
         {/* Brand Logo */}
         {user_type == "1" ? (
           <>
-            <Link
+            {/* <Link
               to="/homepage"
               className="brand-link text-decoration-none  mt-4"
-            >
+            > */}
               {/* <img src="" alt="Logo" class="brand-image img-circle elevation-3" style={{opacity: .8}}/> */}
               <span class="brand-text text-info text-wrap fw-bolder ">
                 Performance Management System
               </span>
-            </Link>
+            {/* </Link> */}
           </>
         ) : (
           <>

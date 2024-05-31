@@ -44,7 +44,7 @@ const ManagerParticularEmployeeReport = () => {
   const { employee_id } = useParams();
   console.log("manager id", manager_id);
   // Function to handle expand all rows
-  const [expandedRows, setExpandedRows] = useState([]);
+  const [expandedRows, setExpandedRows] = useState([0]);
 
   const getEmployeeReportHandler = async (page) => {
     try {
