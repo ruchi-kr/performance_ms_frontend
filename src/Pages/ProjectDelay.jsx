@@ -24,7 +24,7 @@ import "jspdf-autotable";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams, useLocation } from "react-router-dom";
 const { Search } = Input;
 const { RangePicker } = DatePicker;
 
@@ -42,7 +42,10 @@ const ProjectDelay = () => {
   const user = JSON.parse(sessionStorage.getItem("user"));
   const manager_id = user?.employee_id;
   const navigate = useNavigate();
+  const location = useLocation();
   const { project_id } = useParams();
+  const queryParams = new URLSearchParams(location.search);
+  const project_name = queryParams.get("project_name").replace(/%20/g, " ");
   console.log("manager id", manager_id);
   console.log("dates", dayjs().subtract(1, "D"), dayjs().format("DD/MM/YYYY"));
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
@@ -228,7 +231,8 @@ const ProjectDelay = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-12 mx-auto">
-                <h3 className="text-primary">Project Modules Delay</h3>
+                <h3 className="text-primary text-capitalize">{project_name}</h3>
+                <h4 className="text-primary">Modules Delay</h4>
                 <hr className="bg-primary border-4" />
                 {/* <Row gutter={24}>
                   <Col
@@ -342,13 +346,12 @@ const ProjectDelay = () => {
                     </NavLink>
                   </Col>
                   <div>
-                   
                     <span>(Time in days)</span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className="row">
               <div className="col-12 mx-auto">
                 {/* table */}
@@ -404,14 +407,15 @@ const ProjectDelay = () => {
                           </div>
                         </td>
                         <td className="text-capitalize">
-                            <NavLink 
-                            to={`/manager/module/delay/${task.module_id}/?project_id=${project_id}`}
-                            >
                           {task.task_name !== null ? (
-                            task.task_name
+                            <NavLink
+                              to={`/manager/module/delay/${task.module_id}/?project_id=${project_id}&module_name=${task.module_name}&project_name=${project_name}`}
+                            >
+                              {task.task_name}
+                            </NavLink>
                           ) : (
                             <span className="center">-</span>
-                          )}</NavLink>
+                          )}
                         </td>
                         <td className="text-capitalize">
                           {task.max_delay_days !== null ? (
@@ -419,7 +423,6 @@ const ProjectDelay = () => {
                           ) : (
                             <span className="center">-</span>
                           )}
-                          
                         </td>
                       </tr>
                     ))}

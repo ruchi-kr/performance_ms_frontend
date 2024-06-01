@@ -474,15 +474,15 @@ const ManagerProjectReport = () => {
 
                               <td className=" text-center">
                                 <NavLink
-                                  to={`/manager/project/delay/${item.project_id}/?project_id=${item.project_id}`}
+                                  to={`/manager/project/delay/${item.project_id}/?project_id=${item.project_id}&project_name=${item.project_name}`}
                                 >
                                   {item.delay_days >= 0 ? (
                                     item.delay_days === 0 ? (
                                       <span>{item.delay_days}</span>
                                     ) : (
-                                      <span className="text-danger">
+                                      <Tag className="text-danger" color="red">
                                         {item.delay_days + 1}
-                                      </span>
+                                      </Tag>
                                     )
                                   ) : (
                                     "-"
