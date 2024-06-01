@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
   faArrowRightFromBracket,
+  faBars,
+  faMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { Avatar,Upload, message  } from "antd";
 import { useDispatch } from "react-redux";
@@ -86,14 +88,13 @@ const Header = () => {
         {/* Left navbar links */}
         <ul className="navbar-nav">
           <li className="nav-item">
-            <a
+            <div
               className="nav-link text-white"
               data-widget="pushmenu"
-              href="#"
               role="button"
             >
-              <i className="fas fa-bars" />
-            </a>
+             <FontAwesomeIcon icon={faBars} />
+            </div>
           </li>
         </ul>
         {/* Right navbar links */}
@@ -171,14 +172,13 @@ const Header = () => {
           </li>
 
           <li className="nav-item ">
-            <a
+            <div
               className="nav-link text-white"
               data-widget="fullscreen"
-              href="#"
               role="button"
             >
-              <i className="fas fa-expand-arrows-alt" />
-            </a>
+              <FontAwesomeIcon icon={faMaximize} />
+            </div>
           </li>
         </ul>
       </nav>

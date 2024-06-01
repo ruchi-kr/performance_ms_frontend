@@ -447,7 +447,7 @@ const EmployeeReportDateWise = () => {
 
                 </table>
                 {/* PAGINATION */}
-                <div className="row float-right">
+                {/* <div className="row float-right">
                   <nav
                     aria-label="Page navigation example"
                     className="d-flex align-self-end mt-3"
@@ -479,7 +479,7 @@ const EmployeeReportDateWise = () => {
                           </a>
                         </li>
                       ))}
-                      {/* <div>{currentPage}/{totalPages}</div> */}
+                     
                       <li className="page-item">
                         <a
                           className="page-link"
@@ -492,15 +492,14 @@ const EmployeeReportDateWise = () => {
                       </li>
                     </ul>
                   </nav>
-                  {/* {totalPages <= currentPage && <p className='text-info'>No records</p>} */}
                   {totalPages <= currentPage ? (
                     <>
                       <p className="text-info">No records</p>
                     </>
                   ) : (
-                    <>{/* <p>{currentPage}/{totalPages}</p> */}</>
+                    <></>
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
