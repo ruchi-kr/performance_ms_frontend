@@ -46,6 +46,8 @@ const TaskDelay = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const project_id = queryParams.get("project_id");
+  const module_name = queryParams.get("module_name").replace(/%20/g, ' ');
+  const project_name = queryParams.get("project_name").replace(/%20/g, ' ');
   //    const getEmployeeReportHandler = async (page, formattedFromDate, formattedToDate) => {
   //        try {
   //            const response = await axios.get(
@@ -229,7 +231,8 @@ const TaskDelay = () => {
           <div className="container-fluid bg-white">
             <div className="row mt-5">
               <div className="col-12 mx-auto">
-                <h3 className="text-primary">Project Tasks Delay</h3>
+                <h3 className="text-primary text-capitalize">{project_name}</h3>
+                <h4 className="text-primary text-capitalize">{module_name} Module Tasks Delays</h4>
                 <hr className="bg-primary border-4" />
                 {/* <Row gutter={24}>
                   <Col
@@ -335,7 +338,7 @@ const TaskDelay = () => {
                 <div className="d-flex justify-content-between mt-3 mr-2">
                   <Col>
                     <NavLink
-                      to={`/manager/project/delay/${project_id}`}
+                      to={`/manager/project/delay/${project_id}/?project_id=${project_id}&project_name=${project_name}`}
                       className=" d-flex align-items-center"
                     >
                       <ArrowLeftOutlined style={{ fontSize: "1.5rem" }} />
