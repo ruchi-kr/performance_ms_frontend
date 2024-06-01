@@ -168,6 +168,30 @@ export const nav = [
     isManager: true,
     isEmployee: false,
   },
+  {
+    path: "/manager/report/project/detailed/:project_id",
+    element: <ManagerParticularProjectReport />,
+    isPrivate: true,
+    isAdmin: true,
+    isManager: true,
+    isEmployee: false,
+  },
+  {
+    path: "/manager/project/delay/:project_id",
+    element: <ProjectDelay />,
+    isPrivate: true,
+    isAdmin: true,
+    isManager: true,
+    isEmployee: false,
+  },
+  {
+    path: "/manager/module/delay/:module_id",
+    element: <TaskDelay />,
+    isPrivate: true,
+    isAdmin: true,
+    isManager: true,
+    isEmployee: false,
+  },
   // manager url
   {
     path: "/manager",
@@ -300,25 +324,5 @@ export const nav = [
     isManager: true,
     isEmployee: true,
   },
-  {
-    path: "/manager/report/project/detailed/:project_id",
-    element: <ManagerParticularProjectReport />,
-    isPrivate: true,
-    isAdmin: true,
-    isManager: true,
-  },
-  {
-    path: "/manager/project/delay/:project_id",
-    element: <ProjectDelay />,
-    isPrivate: true,
-    isAdmin: true,
-    isManager: true,
-  },
-  {
-    path: "/manager/module/delay/:module_id",
-    element: <TaskDelay />,
-    isPrivate: true,
-    isAdmin: true,
-    isManager: true,
-  },
+  
 ];
