@@ -473,21 +473,25 @@ const ManagerProjectReport = () => {
                               </td>
 
                               <td className=" text-center">
-                                <NavLink
-                                  to={`/manager/project/delay/${item.project_id}/?project_id=${item.project_id}&project_name=${item.project_name}`}
-                                >
-                                  {item.delay_days >= 0 ? (
-                                    item.delay_days === 0 ? (
-                                      <span>{item.delay_days}</span>
-                                    ) : (
+                                {item.delay_days >= 0 ? (
+                                  item.delay_days === 0 ? (
+                                    <span>{item.delay_days}</span>
+                                  ) : (
+                                    <NavLink
+                                      to={`/manager/project/delay/${item.project_id}/?project_id=${item.project_id}&project_name=${item.project_name}`}
+                                    >
                                       <Tag className="text-danger" color="red">
                                         {item.delay_days + 1}
                                       </Tag>
-                                    )
-                                  ) : (
-                                    "-"
-                                  )}
-                                </NavLink>
+                                    </NavLink>
+                                  )
+                                ) : (
+                                  <NavLink
+                                    to={`/manager/project/delay/${item.project_id}/?project_id=${item.project_id}&project_name=${item.project_name}`}
+                                  >
+                                    -
+                                  </NavLink>
+                                )}
                               </td>
                               <td className=" text-center">
                                 {(
