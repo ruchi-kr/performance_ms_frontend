@@ -105,12 +105,14 @@ const ProjectMaster = () => {
   const [projectId, setprojectId] = useState(null);
   // create project
   const projectFormSubmit = (values) => {
+    console.log("project form submit",values);
     projectForm
       .validateFields()
       .then(async (values) => {
         try {
           const requestData = {
             ...values,
+            
             id: editingProject ? editingProject.project_id : null,
           };
           const url = editingProject

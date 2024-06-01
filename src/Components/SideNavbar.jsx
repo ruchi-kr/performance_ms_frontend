@@ -8,8 +8,10 @@ import {
   faGear,
   faFolderOpen,
   faChevronRight,
+  faAngleRight
 } from "@fortawesome/free-solid-svg-icons";
 
+import {faCircle} from "@fortawesome/free-regular-svg-icons";
 const SideNavbar = () => {
   let [username, SetUserName] = useState("");
   useEffect(function () {
@@ -229,7 +231,7 @@ const SideNavbar = () => {
                           />
                           <p>Reports</p>
                           {/* <i className="fas fa-angle-left right"></i> */}
-                          {/* <FontAwesomeIcon icon={faChevronRight} className="right" /> */}
+                          {/* <FontAwesomeIcon icon={faAngleRight} className="right"/> */}
                         </div>
                         <ul className="mt-3 nav ">
                         {/* className="nav nav-treeview mt-3" */}
@@ -244,7 +246,8 @@ const SideNavbar = () => {
                               }`}
                               to="/reportproject-wise"
                             >
-                              <i className="far fa-circle nav-icon" />
+                              {/* <i className="far fa-circle nav-icon" /> */}
+                              <FontAwesomeIcon icon={faCircle} className="nav-icon"/>
                               <p>Project-wise</p>
                             </Link>
                           </li>
@@ -257,7 +260,8 @@ const SideNavbar = () => {
                                   : ""
                               }`}
                             >
-                              <i className="far fa-circle nav-icon" />
+                              {/* <i className="far fa-circle nav-icon" /> */}
+                              <FontAwesomeIcon icon={faCircle} className="nav-icon"/>
                               <p>Date-wise</p>
                             </Link>
                           </li>
@@ -299,10 +303,11 @@ const SideNavbar = () => {
                         <NavLink
                           className={`nav-link text-white text-decoration-none ${
                             window.location.pathname ===
-                            `/projectplan/:project_id=null`
+                            "/projectplan/:project_id=null"
                               ? "bg-cyan"
                               : ""
                           }`}
+                         
                           to="/projectplan/?project_id=null"
                           // onClick={()=>{ window.location.href = "/projectplan/?project_id=null";}}
                         >
@@ -320,58 +325,59 @@ const SideNavbar = () => {
                                                     </Link>
                                                 </li> */}
                       <li className="nav-item btnhovergrey mt-3">
-                        <a href="" className="nav-link text-white">
+                        <div className="nav-link text-white">
                           <FontAwesomeIcon
                             className="nav-icon"
                             icon={faFolderOpen}
                           />
                           <p>Reports</p>
-                          <i className="fas fa-angle-left right"></i>
-                        </a>
-                        {/* <ul className="nav nav-treeview mt-3"> */}
+                          {/* <i className="fas fa-angle-left right"></i> */}
+                          {/* <FontAwesomeIcon icon={faAngleRight} className="right"/> */}
+                        </div>
+                        <ul className="nav mt-3">
                         <div>
                           <li className="nav-item">
                             <Link
                               className={`nav-link text-white ${
                                 window.location.pathname ===
-                                "/reportproject-wise"
+                                "/manager/report/project"
                                   ? "bg-cyan"
                                   : ""
                               }`}
                               to="/manager/report/project"
                             >
-                              <i className="far fa-circle nav-icon" />
+                              <FontAwesomeIcon icon={faCircle} className="nav-icon"/>
                               <p>Project Report</p>
                             </Link>
                           </li>
                           <li className="nav-item">
                             <Link
                               className={`nav-link text-white ${
-                                window.location.pathname === "/reportdate-wise"
+                                window.location.pathname === "/manager/report/project/detailed"
                                   ? "bg-cyan"
                                   : ""
                               }`}
                               to="/manager/report/project/detailed"
                             >
-                              <i className="far fa-circle nav-icon" />
+                             <FontAwesomeIcon icon={faCircle} className="nav-icon"/>
                               <p>Project Detailed Report</p>
                             </Link>
                           </li>
                           <li className="nav-item">
                             <Link
                               className={`nav-link text-white ${
-                                window.location.pathname === "/reportdate-wise"
+                                window.location.pathname === "/manager/report/employee"
                                   ? "bg-cyan"
                                   : ""
                               }`}
                               to="/manager/report/employee"
                             >
-                              <i className="far fa-circle nav-icon" />
+                              <FontAwesomeIcon icon={faCircle} className="nav-icon"/>
                               <p>Employee Detailed Report</p>
                             </Link>
                           </li>
                         </div>
-                        {/* </ul> */}
+                        </ul>
                       </li>
                      
                       <li className="nav-item fixed-bottom ">

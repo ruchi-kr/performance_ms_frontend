@@ -921,7 +921,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                               }
                               min="1"
                               max="24"
-                              defaultValue="0"
+                              // defaultValue="0"
                             />
                             {!record.allocated_time && (
                               <span className="text-danger">*</span>
@@ -942,7 +942,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                           ? "3rem"
                                           : "100%",
                                     }}
-                                    defaultValue={0}
+                                    // defaultValue={0}
                                     className="form-control form-control-sm"
                                     value={record.actual_time}
                                     onChange={(e) =>
@@ -970,7 +970,7 @@ const[ miscellaneous,setMiscellaneous]=useState(false);
                                               ? "3rem"
                                               : "100%",
                                         }}
-                                        defaultValue={0}
+                                        // defaultValue={0}
                                         className="form-control form-control-sm"
                                         value={record.task_percent}
                                         onChange={(e) =>{
