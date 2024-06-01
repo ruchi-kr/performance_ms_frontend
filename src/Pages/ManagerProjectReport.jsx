@@ -396,13 +396,24 @@ const ManagerProjectReport = () => {
                   <tbody className="table-group-divider">
                     {reportData &&
                       reportData.map((item, index) => {
-                        let totalAllocated = item.tasks_details.reduce((acc, i) => {
-                          return acc + (i.allocated_time !== null ? i.allocated_time : 0);
-                        }, 0);
-                        
-                        let totalActual = item.tasks_details.reduce((acc, i) => {
-                          return acc + (i.actual_time !== null ? i.actual_time : 0);
-                        }, 0);
+                        let totalAllocated = item.tasks_details.reduce(
+                          (acc, i) => {
+                            return (
+                              acc +
+                              (i.allocated_time !== null ? i.allocated_time : 0)
+                            );
+                          },
+                          0
+                        );
+
+                        let totalActual = item.tasks_details.reduce(
+                          (acc, i) => {
+                            return (
+                              acc + (i.actual_time !== null ? i.actual_time : 0)
+                            );
+                          },
+                          0
+                        );
                         return (
                           <React.Fragment key={item.employee_id}>
                             <tr onClick={() => handleRowClick(index)}>
@@ -451,28 +462,32 @@ const ManagerProjectReport = () => {
                                   ? parseFloat(
                                       item.total_allocated_time
                                     ).toFixed(2)
-                                  : 0.00}
+                                  : 0.0}
                               </td>
                               <td className=" text-center">
                                 {item.total_actual_time !== null
                                   ? parseFloat(item.total_actual_time).toFixed(
                                       2
                                     )
-                                  : 0.00}
+                                  : 0.0}
                               </td>
 
                               <td className=" text-center">
-                                {item.delay_days >= 0 ? (
-                                  item.delay_days===0?
-                                  <span >
-                                    {item.delay_days}
-                                  </span>:
-                                  <span className="text-danger">
-                                    {item.delay_days + 1}
-                                  </span>
-                                ) : (
-                                  "-"
-                                )}
+                                <NavLink
+                                  to={`/manager/project/delay/${item.project_id}/?project_id=${item.project_id}`}
+                                >
+                                  {item.delay_days >= 0 ? (
+                                    item.delay_days === 0 ? (
+                                      <span>{item.delay_days}</span>
+                                    ) : (
+                                      <span className="text-danger">
+                                        {item.delay_days + 1}
+                                      </span>
+                                    )
+                                  ) : (
+                                    "-"
+                                  )}
+                                </NavLink>
                               </td>
                               <td className=" text-center">
                                 {(
@@ -489,9 +504,12 @@ const ManagerProjectReport = () => {
                                 ).toFixed(2)}
                               </td>
                               <td className=" text-center">
-                                {(totalActual===0 && totalAllocated===0)?"-":((totalActual / totalAllocated) * 100).toFixed(
-                                  2
-                                )}
+                                {totalActual === 0 && totalAllocated === 0
+                                  ? "-"
+                                  : (
+                                      (totalActual / totalAllocated) *
+                                      100
+                                    ).toFixed(2)}
                               </td>
                             </tr>
                             {(expandedRows.includes(index) ||
@@ -529,11 +547,13 @@ const ManagerProjectReport = () => {
                                                 index + 1
                                               }.${taskIndex + 1}`}</td>
                                               <td className="text-capitalize">
-                                                {task.name !== "null"
-                                                  ? task.name
-                                                  :  <span className="d-flex justify-content-center align-items-center">
-                                                  -
-                                                </span>}
+                                                {task.name !== "null" ? (
+                                                  task.name
+                                                ) : (
+                                                  <span className="d-flex justify-content-center align-items-center">
+                                                    -
+                                                  </span>
+                                                )}
                                               </td>
                                               <td className="text-capitalize">
                                                 {task.module_name}
