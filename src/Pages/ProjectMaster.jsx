@@ -368,7 +368,7 @@ const ProjectMaster = () => {
                       ? "View Project"
                       : "Add Project"
                   }
-                  visible={modalVisible}
+                  open={modalVisible}
                   // onOk={projectFormSubmit}
                   onOk={() => {
                     projectFormSubmit();
@@ -550,7 +550,7 @@ const ProjectMaster = () => {
 
                 <Modal
                   title=""
-                  visible={secondModalVisible}
+                  open={secondModalVisible}
                   onOk={() => {
                     setSecondModalVisible(false);
 

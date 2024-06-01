@@ -244,7 +244,7 @@ const JobRoleMaster = () => {
                 {/* modal */}
                 <Modal
                   title={editingManager ? "Edit Job Role" : viewJobRole ? "View Job Role" : "Add Job Role"}
-                  visible={modalVisible}
+                  open={modalVisible}
                   onOk={jobroleFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);

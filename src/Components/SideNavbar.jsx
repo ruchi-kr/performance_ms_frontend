@@ -33,21 +33,21 @@ const SideNavbar = () => {
         {/* Brand Logo */}
         {user_type == "1" ? (
           <>
-            {/* <Link
+            <Link
               to="/homepage"
               className="brand-link text-decoration-none  mt-4"
-            > */}
+            >
               {/* <img src="" alt="Logo" class="brand-image img-circle elevation-3" style={{opacity: .8}}/> */}
-              <span class="brand-text text-info text-wrap fw-bolder ">
+              <span className="brand-text text-info text-wrap fw-bolder ">
                 Performance Management System
               </span>
-            {/* </Link> */}
+            </Link>
           </>
         ) : (
           <>
             <Link to="" className="brand-link text-decoration-none  mt-4">
               {/* <img src="" alt="Logo" class="brand-image img-circle elevation-3" style={{opacity: .8}}/> */}
-              <span class="brand-text text-info text-wrap fw-bolder ">
+              <span className="brand-text text-info text-wrap fw-bolder ">
                 Performance Management System
               </span>
             </Link>
@@ -222,16 +222,17 @@ const SideNavbar = () => {
                         </Link>
                       </li>
                       <li className="nav-item btnhovergrey mt-3">
-                        <a href="" className="nav-link text-white">
+                        <div className="nav-link text-white">
                           <FontAwesomeIcon
                             className="nav-icon"
                             icon={faFolderOpen}
                           />
                           <p>Reports</p>
-                          <i class="fas fa-angle-left right"></i>
+                          {/* <i className="fas fa-angle-left right"></i> */}
                           {/* <FontAwesomeIcon icon={faChevronRight} className="right" /> */}
-                        </a>
-                        {/* <ul className="nav nav-treeview mt-3"> */}
+                        </div>
+                        <ul className="mt-3 nav ">
+                        {/* className="nav nav-treeview mt-3" */}
                         <div>
                           <li className="nav-item">
                             <Link
@@ -261,7 +262,7 @@ const SideNavbar = () => {
                             </Link>
                           </li>
                         </div>
-                        {/* </ul> */}
+                        </ul>
                       </li>
                       <li className="nav-item fixed-bottom ">
                         <button
