@@ -34,6 +34,8 @@ import AssignTeamNew from "../Pages/AssignTeamNew";
 import EmployeeReportPwBifur from "../Pages/EmployeeReportPwBifur";
 import EmployeeReportDwCopy from "../Pages/EmployeeReportDwCopy";
 import ManagerParticularProjectReport from "../Pages/ManagerParticularProjectReport";
+import ProjectDelay from "../Pages/ProjectDelay";
+import TaskDelay from "../Pages/TaskDelay";
 export const nav = [
   // public
   {
@@ -264,7 +266,14 @@ export const nav = [
     isManager: false,
     isEmployee: true,
   },
-    { path: "/expanded-row/:expandedRowIndex", element: <EmployeeReportPwBifur />, isPrivate: true, isAdmin: false, isManager: false, isEmployee: true },
+  {
+    path: "/expanded-row/:expandedRowIndex",
+    element: <EmployeeReportPwBifur />,
+    isPrivate: true,
+    isAdmin: false,
+    isManager: false,
+    isEmployee: true,
+  },
 
   // employee manager admin url
   {
@@ -293,7 +302,21 @@ export const nav = [
   },
   {
     path: "/manager/report/project/detailed/:project_id",
-    element: <ManagerParticularProjectReport/>,
+    element: <ManagerParticularProjectReport />,
+    isPrivate: true,
+    isAdmin: true,
+    isManager: true,
+  },
+  {
+    path: "/manager/project/delay/:project_id",
+    element: <ProjectDelay />,
+    isPrivate: true,
+    isAdmin: true,
+    isManager: true,
+  },
+  {
+    path: "/manager/module/delay/:module_id",
+    element: <TaskDelay />,
     isPrivate: true,
     isAdmin: true,
     isManager: true,
