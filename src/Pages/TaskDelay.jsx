@@ -362,13 +362,39 @@ const TaskDelay = () => {
                         S.No.
                       </th>
                       <th scope="col">Task Name</th>
-                      <th scope="col">module st/end dt</th>
-                      <th scope="col">task st/end dt</th>
+
+                     
+                      <th scope="col">
+                      <div
+                          className="d-flex flex-column"
+                          style={{ width: "6rem" }}
+                        >
+                          <span>Module</span>
+                          <span> Start Dt./</span>
+                          <span> End Dt.</span>
+                        </div>
+                      </th>
+                      <th scope="col">
+                      <div
+                          className="d-flex flex-column"
+                          style={{ width: "6rem" }}
+                        >
+                          <span>Task</span>
+                          <span> Start Dt./</span>
+                          <span> End Dt.</span>
+                        </div>
+                      </th>
                       <th scope="col">Planned Hours</th>
                       <th scope="col">Allocated Hours</th>
                       <th scope="col">Actual Hours</th>
                       <th scope="col" className="">
-                        Assigned To
+                      <div
+                          className="d-flex flex-column"
+                          style={{ width: "6rem" }}
+                        >
+                          <span>Responsibility</span>
+                        </div>
+                       
                       </th>
                       <th scope="col" className="">
                         Status
@@ -381,7 +407,7 @@ const TaskDelay = () => {
                   <tbody>
                     {moduleDelayData.map((task, taskIndex) => (
                       <tr key={taskIndex}>
-                        <td className="text-center">{`${taskIndex + 1}`}</td>
+                        <td className="text-center">{taskIndex + 1}.</td>
                         <td className="text-capitalize">
                           {task.task_name !== "null" ? (
                             task.task_name

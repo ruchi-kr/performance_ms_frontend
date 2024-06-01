@@ -416,7 +416,7 @@ const ProjectReport = () => {
                           <td className="text-center">{index + 1}.</td>
                           <td className="text-capitalize">
                             <NavLink
-                              to={`/manager/report/project/detailed/${item.project_id}`}
+                              to={`/manager/report/project/detailed/`}
                             >
                               {item.project_name}
                             </NavLink>
