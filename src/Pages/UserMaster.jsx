@@ -290,7 +290,7 @@ const UserMaster = () => {
                       ? "View User"
                       : "Add User"
                   }
-                  visible={modalVisible}
+                  open={modalVisible}
                   onOk={userFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);

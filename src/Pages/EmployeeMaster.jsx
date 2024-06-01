@@ -359,7 +359,7 @@ const EmployeeMaster = () => {
                       ? "View Employee"
                       : "Add Employee"
                   }
-                  visible={modalVisible}
+                  open={modalVisible}
                   onOk={employeeFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);

@@ -275,7 +275,7 @@ const calculateAverageEfficiency = (modules) => {
                     <div className="col-sm-4 col-md-3 col-lg-4 ">
                       <div className="mb-3">
                         <label className="text-capitalize textcolumntitle fw-bold text-info">
-                          From  Date
+                          From Start Date
                         </label>
                         <DatePicker
                           onChange={handleFromDateChange}
@@ -292,7 +292,7 @@ const calculateAverageEfficiency = (modules) => {
                     <div className="col-sm-4 col-md-3 col-lg-4">
                       <div className="mb-3">
                         <label className="text-capitalize textcolumntitle fw-bold text-info">
-                          To  Date
+                          To Start Date
                         </label>
                         <DatePicker
                           onChange={handleToDateChange}
@@ -350,7 +350,7 @@ const calculateAverageEfficiency = (modules) => {
                       reportData.map((item, index) => (
                        
                         <React.Fragment key={item.user_id}>
-                          <tr onClick={() => handleRowClick(index)}>
+                          <tr style={{ cursor: "pointer" }} onClick={() => handleRowClick(index)}>
                             <th scope="row">{index + 1}</th>
                             <td className="text-capitalize">
                             <NavLink
@@ -412,8 +412,8 @@ const calculateAverageEfficiency = (modules) => {
                                         (module, moduleIndex) => (
                                           <React.Fragment key={moduleIndex}>
                                           <tr className="module-row">
-                                            <td className="text-primary">{index+1}.{moduleIndex+1}</td>
-                                            <td className="text-capitalize text-primary" colSpan="7" >{module.module_name}</td>
+                                            <td className="text-primary" style={{cursor:"default"}}>{index+1}.{moduleIndex+1}</td>
+                                            <td className="text-capitalize text-primary" colSpan="7" style={{cursor:"default"}} >{module.module_name}</td>
                                           </tr>
                                             {module.tasks && ((module.tasks).map(
                                               (task, taskIndex) => (

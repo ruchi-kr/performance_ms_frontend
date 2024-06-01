@@ -335,7 +335,7 @@ const DesignationMaster = () => {
                       ? "View Designation"
                       : "Add Designation"
                   }
-                  visible={modalVisible}
+                  open={modalVisible}
                   onOk={managerFormSubmit}
                   onCancel={() => {
                     setModalVisible(false);
