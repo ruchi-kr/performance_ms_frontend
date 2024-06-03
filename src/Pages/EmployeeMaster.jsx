@@ -475,7 +475,7 @@ const EmployeeMaster = () => {
                           name="experience"
                           label={
                             <span className="text-info">
-                              Experience(in years)
+                              Experience (in years)
                             </span>
                           }
                           rules={[
