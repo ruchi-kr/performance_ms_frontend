@@ -341,6 +341,7 @@ const calculateAverageEfficiency = (modules) => {
 
                       <th scope="col">Alloc hrs</th>
                       <th scope="col">Man hrs</th>
+                      
                       <th scope="col">My Efficiency (%)</th>
                     </tr>
                   </thead>
@@ -399,10 +400,11 @@ const calculateAverageEfficiency = (modules) => {
   Start Date
   <span>End Date</span>
 </th>
-                                      <th>Status</th>
-                                      <th>% Completion</th>
-                                      <th>Alloc hrs</th>
+<th>Alloc hrs</th>
                                       <th>Actual hrs</th>
+                                      <th>% Completion</th>
+                                      <th>Status</th>
+                                      <th>Alloc hrs/Act hrs (%)</th>
                                       {/* <th>per task</th> */}
                                     </tr>
                                   </thead>
@@ -413,7 +415,7 @@ const calculateAverageEfficiency = (modules) => {
                                           <React.Fragment key={moduleIndex}>
                                           <tr className="module-row">
                                             <td className="text-primary" style={{cursor:"default"}}>{index+1}.{moduleIndex+1}</td>
-                                            <td className="text-capitalize text-primary" colSpan="7" style={{cursor:"default"}} >{module.module_name}</td>
+                                            <td className="text-capitalize text-primary" colSpan="8" style={{cursor:"default"}} >{module.module_name}</td>
                                           </tr>
                                             {module.tasks && ((module.tasks).map(
                                               (task, taskIndex) => (
@@ -449,7 +451,8 @@ const calculateAverageEfficiency = (modules) => {
     <td className="text-primary">---</td>
   )}
 </td>
-<td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+<td>{task.employee_allocated_time}</td>
+                                                  <td>{task.employee_actual_time}</td>
                                               {/* <td>{task.status}</td> */}
                                                   {/* <td>{task.task_percent}</td> */}
                                                   <Progress
@@ -460,8 +463,9 @@ const calculateAverageEfficiency = (modules) => {
         to: "#87d068",
       }}
     />
-                                                  <td>{task.employee_allocated_time}</td>
-                                                  <td>{task.employee_actual_time}</td>
+             <td className="text-capitalize" style={{ color: task.status === 'inprocess' ? 'orange' : task.status === 'notstarted' ? 'red' : task.status === 'transfer' ? 'blue' : 'green' }}>{task.status==="transfer" ? "Transfered":task.status}</td> 
+                                    
+                                                  <td>{((task.employee_allocated_time/task.employee_actual_time)*100).toFixed(2)}</td>
                                                   {/* <td>{!task.per_task_efficiency ? "---": task.per_task_efficiency}</td> */}
                                                 </tr>
                                               )

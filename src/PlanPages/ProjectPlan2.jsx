@@ -270,7 +270,7 @@ const ProjectPlan = () => {
                     Select Project
                   </label>
                   <Select
-                    allowClear={true}
+                    // allowClear
                     defaultValue={project_id}
                     onChange={projectChangeHandler}
                     placeholder="Select Project"
@@ -547,7 +547,7 @@ const ProjectPlan = () => {
                                   {wonModules.length > 0 && (
                                     <tr>
                                       {/* <td>{rfpModules.length == null ? index : index+1}</td> */}
-                                      <td>{index}</td>
+                                      <td>{index+1}</td>
                                       <td colSpan={1}>
                                         <p
                                           className={`text-primary text-capitalize ${
@@ -714,7 +714,7 @@ const ProjectPlan = () => {
                                 <React.Fragment key={index}>
                                   {inprocessModules.length > 0 && (
                                     <tr>
-                                      <td>{index}</td>
+                                      <td>{index+1}</td>
                                       <td colSpan={1}>
                                         <p
                                           className={`text-primary text-capitalize ${
