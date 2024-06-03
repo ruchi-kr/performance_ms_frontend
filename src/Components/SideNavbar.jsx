@@ -31,7 +31,7 @@ const SideNavbar = () => {
   return (
     <>
       {/* Main Sidebar Container */}
-      <aside className="main-sidebar bg-dark elevation-2 mb-3">
+      <aside className="main-sidebar  bg-dark elevation-2 mb-3 sidebar-collapse">
         {/* Brand Logo */}
         {user_type == "1" ? (
           <>
@@ -47,7 +47,7 @@ const SideNavbar = () => {
           </>
         ) : (
           <>
-            <Link to="" className="brand-link text-decoration-none  mt-4">
+            <Link to="/assignteam" className="brand-link text-decoration-none  mt-4">
               {/* <img src="" alt="Logo" class="brand-image img-circle elevation-3" style={{opacity: .8}}/> */}
               <span className="brand-text text-info text-wrap fw-bolder ">
                 Performance Management System
@@ -58,7 +58,7 @@ const SideNavbar = () => {
 
         {/* Sidebar */}
         <div className="sidebar">
-          <nav className="mt-2">
+          <nav className="mt-2 ">
             <ul
               className="nav nav-pills nav-sidebar flex-column"
               data-widget="treeview"

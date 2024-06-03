@@ -192,8 +192,8 @@ const ManagerParticularEmployeeReport = () => {
           (task.allocated_time / task.actual_time) * task.task_percent;
         totalWeightedPercentage += weightedPercentage;
         totalWeightedActualHours += weightedPercentage;
-        count++;
       }
+      count++;
       if (task.status === "completed") completed++;
       else if (task.status === "inprocess") inprocess++;
       else if (task.status === "transfer") transfered++;
