@@ -24,7 +24,7 @@ import {
 } from "../Config.js";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
-import { Select, Modal, Input, Button, Popover,Skeleton,Spin } from "antd";
+import { Select, Modal, Input, Button, Popover,Spin } from "antd";
 import dayjs from "dayjs";
 import {
   getAllModules,
@@ -34,7 +34,6 @@ import {
   getProjectPlan,
 } from "../Config.js";
 import { Space } from "antd";
-import DTSSkeleton from "../Skeleton/DTSSkeleton.jsx";
 const { TextArea } = Input;
 
 const { Option } = Select;
