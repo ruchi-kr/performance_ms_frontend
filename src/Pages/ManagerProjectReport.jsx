@@ -21,6 +21,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -425,12 +426,17 @@ const ManagerProjectReport = () => {
                                   {item.project_name}
                                 </NavLink> */}
                                 <div
-                                  onClick={() =>
-                                    handleNavigation(item.project_id)
-                                  }
-                                  style={{ cursor: "pointer", color: "blue" }}
+                                 
+                                  // style={{ cursor: "pointer", color: "blue" }}
                                 >
-                                  {item.project_name}
+                                  {item.project_name} &nbsp;<FontAwesomeIcon
+                    icon={faArrowUpRightFromSquare}
+                    size="xs"
+                     style={{ cursor: "pointer", color: "blue" }}
+                    onClick={() =>
+                      handleNavigation(item.project_id)
+                    }
+                  />
                                 </div>
                               </td>
                               <td>
@@ -478,9 +484,10 @@ const ManagerProjectReport = () => {
                                     <span>{item.delay_days}</span>
                                   ) : (
                                     <NavLink
+                                      // className=""
                                       to={`/manager/project/delay/${item.project_id}/?project_id=${item.project_id}&project_name=${item.project_name}`}
                                     >
-                                      <Tag className="text-danger" color="red">
+                                      <Tag className="text-danger text-decoration-underline" color="red">
                                         {item.delay_days + 1}
                                       </Tag>
                                     </NavLink>

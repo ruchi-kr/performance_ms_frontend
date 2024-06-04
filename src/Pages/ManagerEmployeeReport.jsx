@@ -21,6 +21,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router-dom";
 const { Search } = Input;
@@ -365,11 +366,16 @@ const ManagerEmployeeReport = () => {
                             <tr onClick={() => handleRowClick(index)}>
                               <td>{index + 1}.</td>
                               <td className="text-capitalize">
-                                <NavLink
+                               
+                                  {item.name} &nbsp; <NavLink
                                   to={`/manager/report/employee/${item.employee_id}`}
-                                >
-                                  {item.name}
-                                </NavLink>
+                                ><FontAwesomeIcon
+                    icon={faArrowUpRightFromSquare}
+                    size="xs"
+                    //  style={{ cursor: "pointer", color: "blue" }}
+                    
+                  /> </NavLink>
+                               
                               </td>
                               <td className="text-center">
                                 {item.total_allocated_time}{" "}
@@ -464,14 +470,14 @@ const ManagerEmployeeReport = () => {
                                                 {task.actual_time}
                                               </td>
                                               <td>
-                                                <Flex vertical gap="middle">
+                                                {/* <Flex vertical gap="middle">
                                                   <Flex
                                                     vertical
                                                     gap="small"
                                                     style={{
                                                       width: 120,
                                                     }}
-                                                  >
+                                                  > */}
                                                     <Progress
                                                       percent={
                                                         task.task_percent
@@ -487,7 +493,7 @@ const ManagerEmployeeReport = () => {
                                                         to: "#87d068",
                                                       }}
                                                     />
-                                                  </Flex>
+                                                  {/* </Flex> */}
                                                   {(() => {
                                                     let className =
                                                       "text-capitalize ";
@@ -524,7 +530,7 @@ const ManagerEmployeeReport = () => {
                                                       </span>
                                                     );
                                                   })()}
-                                                </Flex>
+                                                {/* </Flex> */}
                                               </td>
                                             </tr>
                                           )

@@ -293,11 +293,11 @@ const EmployeeReportDateWise = () => {
         <tr className="">
           <td>{index + 1}</td>
           <td>{date}</td>
-          <td colSpan={6} className="">
+          {/* <td colSpan={6} className="">
             <p className='text-capitalize'>
               Task Completion Rate - {report.task_completion_rate}%
             </p>
-          </td>
+          </td> */}
         </tr>
         {projects.map((project, projectIndex) => {
           const currentProjectName = project.project_name;

@@ -22,6 +22,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { faFilePdf, faFileExcel } from "@fortawesome/free-regular-svg-icons";
+import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { NavLink, useNavigate, useParams, useLocation } from "react-router-dom";
@@ -408,11 +409,15 @@ const ProjectDelay = () => {
                         </td>
                         <td className="text-capitalize">
                           {task.task_name !== null ? (
-                            <NavLink
+                           
+                             <> {task.task_name} <NavLink
                               to={`/manager/module/delay/${task.module_id}/?project_id=${project_id}&module_name=${task.module_name}&project_name=${project_name}`}
-                            >
-                              {task.task_name}
-                            </NavLink>
+                            ><FontAwesomeIcon
+                    icon={faArrowUpRightFromSquare}
+                    size="xs"
+                     style={{ cursor: "pointer", color: "blue" }}                  
+                  /></NavLink>
+                  </>
                           ) : (
                             <span className="center">-</span>
                           )}
