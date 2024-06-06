@@ -502,7 +502,7 @@ useEffect(() => {
 // Calculate milliseconds until 12 PM
 function calculateMillisecondsUntil12PM() {
     var now = new Date(); // Get current time
-    var targetTime = new Date(now); // Create a new date object with current date/time
+    var targetTime = new Date(currentTime); // Create a new date object with current date/time
     targetTime.setHours(12, 0, 0, 0); // Set target time to 12:00:00 PM
     if (now.getHours() >= 12) { // If current time is already past 12 PM
         targetTime.setDate(targetTime.getDate() + 1); // Move target time to tomorrow
